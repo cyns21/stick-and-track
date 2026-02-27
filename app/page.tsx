@@ -35,7 +35,7 @@ import {
  * (file name can be changed below via MAP_IMAGE_SRC)
  */
 
-const MAP_IMAGE_SRC = "/ucd-map.jpg";
+const MAP_IMAGE_SRC = "/ucdmap.jpeg";
 
 const demoFriends = [
   { id: "f1", name: "Alex", handle: "@alex" },
