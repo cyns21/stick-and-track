@@ -19,7 +19,7 @@ import {
   LocateFixed,
   Info,
   CheckCircle2,
-  Sparkles,
+  Plus,
 } from "lucide-react";
 
 /**
@@ -32,10 +32,9 @@ import {
  *
  * MAP IMAGE:
  * Put your UC Davis map image in: /public/ucd-map.jpg
- * (file name can be changed below via MAP_IMAGE_SRC)
  */
 
-const MAP_IMAGE_SRC = "/ucdmap.jpeg";
+const MAP_IMAGE_SRC = "/ucd-map.jpg";
 
 const demoFriends = [
   { id: "f1", name: "Alex", handle: "@alex" },
@@ -376,11 +375,7 @@ function Sheet({
   );
 }
 
-type StatusKey =
-  | "nearby"
-  | "out_of_range"
-  | "shared"
-  | "shared_with_me";
+type StatusKey = "nearby" | "out_of_range" | "shared" | "shared_with_me";
 
 type Item = {
   id: string;
@@ -392,36 +387,30 @@ type Item = {
   battery: number;
   isPublic: boolean;
   followers: string[];
-  owner?: string; // for shared_with_me
+  owner?: string;
 };
 
 function statusMeta(status: StatusKey) {
-  if (status === "nearby")
-    return { label: "Nearby", badge: "bg-emerald-500/15 text-emerald-300" };
-  if (status === "out_of_range")
-    return { label: "Out of range", badge: "bg-amber-500/15 text-amber-300" };
-  if (status === "shared")
-    return { label: "Shared", badge: "bg-sky-500/15 text-sky-300" };
-  return {
-    label: "Shared with me",
-    badge: "bg-indigo-500/15 text-indigo-300",
-  };
+  if (status === "shared_with_me")
+    return {
+      label: "Shared with me",
+      badge: "bg-indigo-500/15 text-indigo-300",
+    };
+  return { label: "My item", badge: "bg-neutral-900 text-neutral-200" };
 }
 
 function ItemCard({
   item,
   onOpen,
+  onQuickShare,
   onPing,
   onPlaySound,
-  onShare,
-  onTogglePrivacy,
 }: {
   item: Item;
   onOpen: () => void;
+  onQuickShare: () => void;
   onPing: () => void;
   onPlaySound: () => void;
-  onShare: () => void;
-  onTogglePrivacy: () => void;
 }) {
   const meta = statusMeta(item.status);
   const isPro = item.model === "Pro";
@@ -444,59 +433,48 @@ function ItemCard({
               )}
             </div>
             <div className="text-xs text-neutral-500 mt-1">
-              Last seen: <span className="text-neutral-300">{item.lastSeen}</span>
+              Last seen <span className="text-neutral-300">{item.lastSeen}</span>
               <span className="text-neutral-600"> · </span>
               <span className="text-neutral-300">{item.place}</span>
             </div>
           </div>
 
-          <button
-            onClick={onOpen}
-            className="h-10 w-10 rounded-2xl bg-neutral-900 flex items-center justify-center hover:bg-neutral-800 transition"
-            aria-label="Open"
-          >
-            <Info className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Quick share icon (less clunky) */}
+            <button
+              onClick={onQuickShare}
+              className="h-10 w-10 rounded-2xl bg-neutral-900 flex items-center justify-center hover:bg-neutral-800 transition"
+              aria-label="Share"
+              disabled={isSharedWithMe}
+            >
+              <Share2 className="h-5 w-5" />
+            </button>
+
+            <button
+              onClick={onOpen}
+              className="h-10 w-10 rounded-2xl bg-neutral-900 flex items-center justify-center hover:bg-neutral-800 transition"
+              aria-label="Info"
+            >
+              <Info className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
-        {/* Larger tap targets + bigger icons (esp Share/Public/Private) */}
-        <div
-          className={cx(
-            "mt-4 grid gap-2",
-            isPro ? "grid-cols-2" : "grid-cols-3"
-          )}
-        >
+        {/* Keep actions minimal */}
+        <div className={cx("mt-4 grid gap-2", isPro ? "grid-cols-2" : "grid-cols-1")}>
           <Button variant="secondary" onClick={onPing}>
             <Bell className="h-4 w-4" /> Ping
           </Button>
-
           {isPro && (
             <Button variant="secondary" onClick={onPlaySound}>
               <Volume2 className="h-5 w-5" /> Play sound
             </Button>
           )}
-
-          <Button variant="secondary" onClick={onShare}>
-            <Share2 className="h-5 w-5" /> Share
-          </Button>
-
-          <Button
-            variant="secondary"
-            onClick={onTogglePrivacy}
-            disabled={isSharedWithMe}
-          >
-            {item.isPublic ? (
-              <Globe className="h-5 w-5" />
-            ) : (
-              <Lock className="h-5 w-5" />
-            )}
-            {item.isPublic ? "Public" : "Private"}
-          </Button>
         </div>
 
         {isSharedWithMe && (
           <div className="mt-3 text-xs text-neutral-600">
-            Privacy is controlled by the owner.
+            Shared with you. Controls are limited.
           </div>
         )}
       </CardContent>
@@ -515,8 +493,6 @@ function MapMock({
   items: Item[];
   onOpenSelected: () => void;
 }) {
-  // Hand-tuned pin positions for your UC Davis screenshot
-  // (percent based within the map container)
   const placeToXY: Record<string, { x: number; y: number }> = {
     "Memorial Union": { x: 58, y: 33 },
     "Shields Library": { x: 72, y: 63 },
@@ -528,27 +504,28 @@ function MapMock({
   const pins = useMemo(() => {
     return items.map((it) => {
       const xy = placeToXY[it.place] || placeToXY["Nearby"];
-      return { id: it.id, x: xy.x, y: xy.y, status: it.status };
+      return {
+        id: it.id,
+        x: xy.x,
+        y: xy.y,
+        isSharedWithMe: it.status === "shared_with_me",
+      };
     });
   }, [items]);
 
   const selected = items.find((x) => x.id === selectedId) || items[0];
 
-  const pinColor = (status: StatusKey) => {
-    if (status === "nearby") return "bg-emerald-500";
-    if (status === "out_of_range") return "bg-amber-500";
-    if (status === "shared") return "bg-sky-500";
-    return "bg-indigo-500";
-  };
+  const pinColor = (isSharedWithMe: boolean) =>
+    isSharedWithMe ? "bg-indigo-500" : "bg-white";
+
+  const selXY = placeToXY[selected.place] || placeToXY["Nearby"];
 
   return (
     <div className="rounded-3xl overflow-hidden border border-neutral-900 bg-neutral-950">
       <div className="p-4 border-b border-neutral-900 flex items-center justify-between">
         <div>
           <div className="text-sm text-neutral-100">Campus Map</div>
-          <div className="text-xs text-neutral-500">
-            Tap pins to view last seen
-          </div>
+          <div className="text-xs text-neutral-500">Tap pins to view last seen</div>
         </div>
         <Button
           variant="secondary"
@@ -562,16 +539,13 @@ function MapMock({
       </div>
 
       <div className="relative h-[290px]">
-        {/* Map image background */}
         <img
           src={MAP_IMAGE_SRC}
           alt="Map"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        {/* Dark overlay to match the sleek vibe */}
         <div className="absolute inset-0 bg-neutral-950/30" />
 
-        {/* Pins */}
         {pins.map((p) => {
           const isSel = p.id === selectedId;
           return (
@@ -588,7 +562,7 @@ function MapMock({
               <div
                 className={cx(
                   "h-4 w-4 rounded-full",
-                  pinColor(p.status),
+                  pinColor(p.isSharedWithMe),
                   isSel ? "ring-4 ring-white/30" : "ring-2 ring-white/15"
                 )}
               />
@@ -597,14 +571,11 @@ function MapMock({
           );
         })}
 
-        {/* Floating info bubble for selected pin (Option B) */}
+        {/* Floating info bubble */}
         {selected && (
           <div
             className="absolute -translate-x-1/2 -translate-y-[115%]"
-            style={{
-              left: `${(placeToXY[selected.place] || placeToXY["Nearby"]).x}%`,
-              top: `${(placeToXY[selected.place] || placeToXY["Nearby"]).y}%`,
-            }}
+            style={{ left: `${selXY.x}%`, top: `${selXY.y}%` }}
           >
             <div className="max-w-[250px] rounded-2xl border border-neutral-800 bg-neutral-950/90 backdrop-blur px-3 py-2 shadow-2xl">
               <div className="flex items-start justify-between gap-3">
@@ -634,15 +605,9 @@ function MapMock({
       </div>
 
       <div className="p-4">
-        <div className="flex items-center gap-3 text-xs text-neutral-500">
+        <div className="flex items-center gap-4 text-xs text-neutral-500">
           <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" /> Nearby
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-amber-500" /> Out of range
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-sky-500" /> Shared
+            <span className="h-2 w-2 rounded-full bg-white" /> My items
           </span>
           <span className="inline-flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-indigo-500" /> Shared with me
@@ -730,7 +695,7 @@ function SetupFlow({
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
             <div className="min-w-0">
               <div className="text-sm text-neutral-200">Public (followers)</div>
-              <div className="text-xs text-neutral-500 truncate">
+              <div className="text-xs text-neutral-500">
                 Friends can view location to help you find it
               </div>
             </div>
@@ -860,6 +825,11 @@ export default function Page() {
     [items, selectedItemId]
   );
 
+  const ownedItems = useMemo(
+    () => items.filter((it) => it.status !== "shared_with_me"),
+    [items]
+  );
+
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -868,9 +838,22 @@ export default function Page() {
   const [toast, setToast] = useState<string | null>(null);
   const [initialSetupCode, setInitialSetupCode] = useState("STICK-4FNN");
 
-  // Settings toggles (for realism)
   const [notifOn, setNotifOn] = useState(true);
   const [locationOn, setLocationOn] = useState(true);
+
+  // Share tab item selection (owned-only)
+  const [shareItemId, setShareItemId] = useState<string>("i2");
+  const shareItem = useMemo(
+    () => ownedItems.find((x) => x.id === shareItemId) ?? ownedItems[0],
+    [ownedItems, shareItemId]
+  );
+
+  useEffect(() => {
+    // keep share dropdown valid if list changes
+    if (ownedItems.length && !ownedItems.some((x) => x.id === shareItemId)) {
+      setShareItemId(ownedItems[0].id);
+    }
+  }, [ownedItems, shareItemId]);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -886,8 +869,6 @@ export default function Page() {
     );
   };
 
-  // Deep-link support (future NFC):
-  // /?setup=1&code=STICK-1234
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code") || "STICK-4FNN";
@@ -914,20 +895,17 @@ export default function Page() {
       model,
       status: "nearby",
       lastSeen: "Just now",
-      place: "Nearby",
+      place: place.name,
       battery: 100,
       isPublic: !!isPublic,
       followers: isPublic ? demoFriends.map((f) => f.id).slice(0, 2) : [],
     };
 
-    // Seed a plausible “last seen” after pairing
-    const seededPlace = place.name;
-    setItems((p) => [{ ...newItem, place: seededPlace }, ...p]);
+    setItems((p) => [newItem, ...p]);
     setSelectedItemId(id);
     goToApp("map");
     showToast("Tracker added");
 
-    // Clean URL back to normal after demo deep-link
     const url = new URL(window.location.href);
     url.searchParams.delete("setup");
     url.searchParams.delete("code");
@@ -1000,20 +978,11 @@ export default function Page() {
 
         <div className="mt-4 flex gap-2">
           <Button onClick={() => setStage("setup")}>
-            <Sparkles className="h-4 w-4" /> Add a tracker (demo)
+            <Plus className="h-4 w-4" /> Add a tracker
           </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              goToApp("map");
-            }}
-          >
+          <Button variant="secondary" onClick={() => goToApp("map")}>
             View app
           </Button>
-        </div>
-
-        <div className="mt-4 text-xs text-neutral-500">
-          Demo claim: location updates in minutes after disconnect.
         </div>
       </div>
     </div>
@@ -1024,7 +993,7 @@ export default function Page() {
       <div className="flex items-center justify-between">
         <div className="text-sm text-neutral-400">Your items</div>
         <Button size="sm" onClick={() => setStage("setup")}>
-          <Sparkles className="h-4 w-4" /> Add
+          <Plus className="h-4 w-4" /> Add
         </Button>
       </div>
 
@@ -1037,18 +1006,19 @@ export default function Page() {
               setSelectedItemId(it.id);
               setDetailsOpen(true);
             }}
+            onQuickShare={() => {
+              if (it.status === "shared_with_me") {
+                showToast("Shared item");
+                return;
+              }
+              setShareItemId(it.id);
+              setTab("friends");
+              showToast("Opened sharing");
+            }}
             onPing={() =>
-              showToast(it.model === "Pro" ? "Ping + sound ready" : "Ping sent")
+              showToast(it.model === "Pro" ? "Ping sent" : "Ping sent")
             }
             onPlaySound={() => showToast("Playing sound…")}
-            onShare={() => {
-              setSelectedItemId(it.id);
-              setShareOpen(true);
-            }}
-            onTogglePrivacy={() => {
-              updateItem(it.id, { isPublic: !it.isPublic });
-              showToast(!it.isPublic ? "Now public" : "Now private");
-            }}
           />
         ))}
       </div>
@@ -1065,30 +1035,6 @@ export default function Page() {
         items={items}
         onOpenSelected={() => setDetailsOpen(true)}
       />
-
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="text-sm text-neutral-200">Selected</div>
-              <div className="text-lg font-semibold text-neutral-50 truncate">
-                {selectedItem?.name}
-              </div>
-              <div className="text-xs text-neutral-500 mt-1">
-                Last seen <span className="text-neutral-300">{selectedItem?.lastSeen}</span>
-                <span className="text-neutral-600"> · </span>
-                <span className="text-neutral-300">{selectedItem?.place}</span>
-                {selectedItem?.status === "shared_with_me" && selectedItem?.owner
-                  ? ` · Owner: ${selectedItem.owner}`
-                  : ""}
-              </div>
-            </div>
-            <Button variant="secondary" onClick={() => setDetailsOpen(true)}>
-              Details
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
 
       <Card>
         <CardContent className="p-4">
@@ -1124,14 +1070,10 @@ export default function Page() {
   );
 
   const FriendsTab = () => {
-    const it = selectedItem;
+    const it = shareItem;
     const followers = (it?.followers ?? []).map(
       (fid: string) =>
-        demoFriends.find((f) => f.id === fid) || {
-          id: fid,
-          name: fid,
-          handle: "",
-        }
+        demoFriends.find((f) => f.id === fid) || { id: fid, name: fid, handle: "" }
     );
 
     return (
@@ -1139,21 +1081,29 @@ export default function Page() {
         <div className="flex items-center justify-between">
           <div>
             <div className="text-sm text-neutral-400">Sharing</div>
-            <div className="text-base text-neutral-50 font-medium">
-              {it?.name}
-            </div>
-            {it?.status === "shared_with_me" && it?.owner && (
-              <div className="text-xs text-neutral-600">Owner: {it.owner}</div>
-            )}
           </div>
-          <Button
-            size="sm"
-            onClick={() => setShareOpen(true)}
-            disabled={it?.status === "shared_with_me"}
-          >
+          <Button size="sm" onClick={() => setShareOpen(true)} disabled={!it}>
             <Share2 className="h-4 w-4" /> Share
           </Button>
         </div>
+
+        {/* Dropdown for owned items */}
+        <Card>
+          <CardContent className="p-4 space-y-2">
+            <div className="text-xs text-neutral-500">Select item</div>
+            <select
+              value={shareItemId}
+              onChange={(e) => setShareItemId(e.target.value)}
+              className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-3 py-2 text-neutral-100 outline-none focus:ring-2 focus:ring-white/20"
+            >
+              {ownedItems.map((x) => (
+                <option key={x.id} value={x.id}>
+                  {x.name}
+                </option>
+              ))}
+            </select>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardContent className="p-4 space-y-3">
@@ -1189,7 +1139,6 @@ export default function Page() {
                         });
                         showToast("Removed");
                       }}
-                      disabled={it?.status === "shared_with_me"}
                     >
                       Remove
                     </Button>
@@ -1203,9 +1152,7 @@ export default function Page() {
             <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
               <div>
                 <div className="text-sm text-neutral-200">Public</div>
-                <div className="text-xs text-neutral-500">
-                  Allow followers to see location
-                </div>
+                <div className="text-xs text-neutral-500">Allow followers to see location</div>
               </div>
               <Switch
                 checked={!!it?.isPublic}
@@ -1215,13 +1162,6 @@ export default function Page() {
                 }}
               />
             </div>
-
-            {it?.status === "shared_with_me" && (
-              <div className="text-xs text-neutral-600">
-                This item is shared with you by {it.owner}. Sharing controls are
-                limited.
-              </div>
-            )}
           </CardContent>
         </Card>
 
@@ -1234,7 +1174,7 @@ export default function Page() {
             <div className="rounded-2xl bg-neutral-900 px-3 py-2 text-xs text-neutral-200 font-mono overflow-hidden text-ellipsis">
               sticktrack.app/follow/{it?.id}
             </div>
-            <Button variant="secondary" onClick={() => showToast("Copied link")}> 
+            <Button variant="secondary" onClick={() => showToast("Copied link")}>
               Copy link
             </Button>
           </CardContent>
@@ -1254,17 +1194,13 @@ export default function Page() {
               <div className="text-sm text-neutral-200">Account</div>
               <div className="text-xs text-neutral-500">Demo User</div>
             </div>
-            <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">
-              Demo
-            </Badge>
+            <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">Demo</Badge>
           </div>
 
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
             <div className="min-w-0">
               <div className="text-sm text-neutral-200">Notifications</div>
-              <div className="text-xs text-neutral-500 truncate">
-                Alerts when items disconnect or move
-              </div>
+              <div className="text-xs text-neutral-500">Alerts when items disconnect</div>
             </div>
             <Switch checked={notifOn} onChange={setNotifOn} />
           </div>
@@ -1272,20 +1208,14 @@ export default function Page() {
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
             <div className="min-w-0">
               <div className="text-sm text-neutral-200">Location</div>
-              <div className="text-xs text-neutral-500 truncate">
-                Required for map + last known location
-              </div>
+              <div className="text-xs text-neutral-500">Required for tracking</div>
             </div>
             <Switch checked={locationOn} onChange={setLocationOn} />
           </div>
         </CardContent>
       </Card>
 
-      <Button
-        variant="secondary"
-        className="w-full"
-        onClick={() => setStage("marketing")}
-      >
+      <Button variant="secondary" className="w-full" onClick={() => setStage("marketing")}>
         Back to storefront
       </Button>
     </div>
@@ -1314,16 +1244,6 @@ export default function Page() {
     </div>
   );
 
-  const cancelSetup = () => {
-    // If they were in the app already, return to app; otherwise back to storefront
-    if (stage === "setup") {
-      // If already have items, go to app (map is the “main” feature)
-      goToApp("map");
-    } else {
-      setStage("marketing");
-    }
-  };
-
   return (
     <PhoneFrame>
       {stage === "marketing" && <Marketing />}
@@ -1331,7 +1251,6 @@ export default function Page() {
         <SetupFlow
           onFinish={addItemFromSetup}
           onCancel={() => {
-            // If setup started from marketing, return there; else go to app
             setStage("app");
             setTab("home");
           }}
@@ -1340,7 +1259,6 @@ export default function Page() {
       )}
       {stage === "app" && <AppShell />}
 
-      {/* Details sheet */}
       <Sheet
         open={detailsOpen}
         onClose={() => setDetailsOpen(false)}
@@ -1350,9 +1268,7 @@ export default function Page() {
         <div className="space-y-3">
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4">
             <div className="text-xs text-neutral-500">Last known location</div>
-            <div className="mt-2 text-sm text-neutral-200">
-              {selectedItem?.place}
-            </div>
+            <div className="mt-2 text-sm text-neutral-200">{selectedItem?.place}</div>
             <div className="text-xs text-neutral-600">
               Updated {selectedItem?.lastSeen}
               {selectedItem?.status === "shared_with_me" && selectedItem?.owner
@@ -1368,7 +1284,8 @@ export default function Page() {
             <Button
               variant="secondary"
               onClick={() => {
-                setShareOpen(true);
+                setShareItemId(selectedItem!.id);
+                setTab("friends");
                 setDetailsOpen(false);
               }}
               disabled={selectedItem?.status === "shared_with_me"}
@@ -1398,15 +1315,14 @@ export default function Page() {
         </div>
       </Sheet>
 
-      {/* Share modal */}
       <Modal
         open={shareOpen}
         onClose={() => setShareOpen(false)}
-        title={`Share ${selectedItem?.name || "item"}`}
+        title={`Share ${shareItem?.name || "item"}`}
       >
         <div className="space-y-2">
           {demoFriends.map((f) => {
-            const cur = selectedItem?.followers ?? [];
+            const cur = shareItem?.followers ?? [];
             const isFollowing = cur.includes(f.id);
             return (
               <div
@@ -1421,14 +1337,13 @@ export default function Page() {
                   variant={isFollowing ? "secondary" : "primary"}
                   size="sm"
                   onClick={() => {
-                    updateItem(selectedItem!.id, {
+                    updateItem(shareItem!.id, {
                       followers: isFollowing
                         ? cur.filter((x: string) => x !== f.id)
                         : [...cur, f.id],
                     });
                     showToast(isFollowing ? "Removed" : "Added");
                   }}
-                  disabled={selectedItem?.status === "shared_with_me"}
                 >
                   {isFollowing ? "Remove" : "Add"}
                 </Button>
@@ -1443,7 +1358,6 @@ export default function Page() {
         </div>
       </Modal>
 
-      {/* Edit modal */}
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit item">
         <div className="space-y-2">
           <div className="text-xs text-neutral-500">Name</div>
@@ -1459,11 +1373,8 @@ export default function Page() {
         </div>
       </Modal>
 
-      {/* Delete modal */}
       <Modal open={deleteOpen} onClose={() => setDeleteOpen(false)} title="Remove tracker?">
-        <div className="text-sm text-neutral-400">
-          This removes it from your list.
-        </div>
+        <div className="text-sm text-neutral-400">This removes it from your list.</div>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
             Cancel
@@ -1484,7 +1395,6 @@ export default function Page() {
         </div>
       </Modal>
 
-      {/* Toast */}
       {toast && (
         <div className="fixed left-1/2 -translate-x-1/2 bottom-24 z-50">
           <div className="rounded-2xl border border-neutral-800 bg-neutral-950/90 backdrop-blur px-4 py-2 text-sm text-neutral-100 shadow-xl">
