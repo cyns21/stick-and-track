@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Plus,
   MapPin,
   Home,
   Users,
@@ -20,6 +19,7 @@ import {
   LocateFixed,
   Info,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 
 /**
@@ -30,21 +30,25 @@ import {
  * ✅ Deploys cleanly to Vercel
  * ✅ Future NFC deep-link ready: /?setup=1&code=STICK-1234
  *
- * Note: true /setup route requires adding app/setup/page.tsx.
- * For now we use query params so you can demo today with one page.
+ * MAP IMAGE:
+ * Put your UC Davis map image in: /public/ucd-map.jpg
+ * (file name can be changed below via MAP_IMAGE_SRC)
  */
 
+const MAP_IMAGE_SRC = "/ucd-map.jpg";
+
 const demoFriends = [
-  { id: "f1", name: "Jess", handle: "@jess" },
-  { id: "f2", name: "Tony", handle: "@tony" },
-  { id: "f3", name: "Stella", handle: "@stella" },
+  { id: "f1", name: "Alex", handle: "@alex" },
+  { id: "f2", name: "John", handle: "@john" },
+  { id: "f3", name: "Maya", handle: "@maya" },
+  { id: "f4", name: "Sam", handle: "@sam" },
 ];
 
 const campusPlaces = [
   { id: "p1", name: "Memorial Union", tag: "MU" },
   { id: "p2", name: "Shields Library", tag: "Shields" },
-  { id: "p3", name: "ARC", tag: "ARC" },
-  { id: "p4", name: "Silo", tag: "Silo" },
+  { id: "p3", name: "Teaching & Learning Complex", tag: "TLC" },
+  { id: "p4", name: "East Quad", tag: "Quad" },
 ];
 
 function cx(...xs: Array<string | false | null | undefined>) {
@@ -62,7 +66,7 @@ function Button({
 }: {
   children: React.ReactNode;
   onClick?: () => void;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "ghost";
   size?: "sm" | "md";
   className?: string;
   disabled?: boolean;
@@ -75,6 +79,8 @@ function Button({
       "bg-white text-black hover:bg-neutral-200 disabled:bg-neutral-600 disabled:text-neutral-200",
     secondary:
       "bg-neutral-900 text-neutral-100 hover:bg-neutral-800 border border-neutral-800 disabled:opacity-60",
+    ghost:
+      "bg-transparent text-neutral-200 hover:bg-neutral-900 border border-neutral-900",
   };
   const sizes = {
     sm: "h-9 px-3 text-sm",
@@ -116,31 +122,71 @@ function Input({
   );
 }
 
-function Badge({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function Badge({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <span className={cx("inline-flex items-center rounded-xl px-2.5 py-1 text-xs", className)}>
+    <span
+      className={cx(
+        "inline-flex items-center rounded-xl px-2.5 py-1 text-xs",
+        className
+      )}
+    >
       {children}
     </span>
   );
 }
 
-function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function Card({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className={cx("rounded-3xl border border-neutral-900 bg-neutral-950/70", className)}>
+    <div
+      className={cx(
+        "rounded-3xl border border-neutral-900 bg-neutral-950/70",
+        className
+      )}
+    >
       {children}
     </div>
   );
 }
 
-function CardHeader({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function CardHeader({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <div className={cx("p-4 pb-2", className)}>{children}</div>;
 }
 
-function CardContent({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function CardContent({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <div className={cx("p-4", className)}>{children}</div>;
 }
 
-function Switch({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+function Switch({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
   return (
     <button
       type="button"
@@ -164,7 +210,10 @@ function Switch({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 function Progress({ value }: { value: number }) {
   return (
     <div className="h-2 w-full rounded-full bg-neutral-900 border border-neutral-800 overflow-hidden">
-      <div className="h-full bg-white" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
+      <div
+        className="h-full bg-white"
+        style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
+      />
     </div>
   );
 }
@@ -175,7 +224,7 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
       <div className="w-[390px] max-w-full">
         <div className="rounded-[2.2rem] border border-neutral-800 bg-neutral-950 shadow-2xl overflow-hidden">
           <div className="h-10 flex items-center justify-between px-5 border-b border-neutral-900">
-            <div className="text-xs text-neutral-400">Stick & Track (demo)</div>
+            <div className="text-xs text-neutral-400">Stick & Track</div>
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-emerald-500" />
               <div className="text-xs text-neutral-500">Connected</div>
@@ -183,15 +232,20 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
           </div>
           <div className="bg-neutral-950">{children}</div>
         </div>
-        <div className="text-center text-xs text-neutral-500 mt-3">
-          Tip: This is deployable—use it as a real link in your slides.
-        </div>
       </div>
     </div>
   );
 }
 
-function Pill({ icon: Icon, label, right }: { icon: any; label: string; right: string }) {
+function Pill({
+  icon: Icon,
+  label,
+  right,
+}: {
+  icon: any;
+  label: string;
+  right: string;
+}) {
   return (
     <div className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3">
       <div className="flex items-center gap-3">
@@ -207,8 +261,22 @@ function Pill({ icon: Icon, label, right }: { icon: any; label: string; right: s
 
 type TabKey = "home" | "map" | "friends" | "settings";
 
-function BottomNav({ tab, setTab }: { tab: TabKey; setTab: React.Dispatch<React.SetStateAction<TabKey>> }) {
-  const Item = ({ id, Icon, label }: { id: TabKey; Icon: any; label: string }) => (
+function BottomNav({
+  tab,
+  setTab,
+}: {
+  tab: TabKey;
+  setTab: React.Dispatch<React.SetStateAction<TabKey>>;
+}) {
+  const Item = ({
+    id,
+    Icon,
+    label,
+  }: {
+    id: TabKey;
+    Icon: any;
+    label: string;
+  }) => (
     <button
       onClick={() => setTab(id)}
       className={cx(
@@ -233,85 +301,17 @@ function BottomNav({ tab, setTab }: { tab: TabKey; setTab: React.Dispatch<React.
   );
 }
 
-function MapMock({
-  selectedId,
-  setSelectedId,
-  items,
+function Modal({
+  open,
+  onClose,
+  title,
+  children,
 }: {
-  selectedId: string;
-  setSelectedId: (id: string) => void;
-  items: any[];
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
 }) {
-  const pins = useMemo(() => {
-    const base = [
-      { x: 18, y: 28 },
-      { x: 62, y: 22 },
-      { x: 72, y: 58 },
-      { x: 28, y: 66 },
-      { x: 44, y: 46 },
-    ];
-    return items.map((it, idx) => ({
-      id: it.id,
-      x: base[idx % base.length].x + (idx % 2 ? 6 : 0),
-      y: base[idx % base.length].y + (idx % 3 ? 4 : 0),
-      status: it.status,
-    }));
-  }, [items]);
-
-  return (
-    <div className="rounded-3xl overflow-hidden border border-neutral-900 bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950">
-      <div className="p-4 border-b border-neutral-900 flex items-center justify-between">
-        <div>
-          <div className="text-sm text-neutral-100">Campus Map</div>
-          <div className="text-xs text-neutral-500">Tap pins to view last seen</div>
-        </div>
-        <Button variant="secondary" size="sm" className="rounded-2xl">
-          <LocateFixed className="h-4 w-4" />
-          Locate
-        </Button>
-      </div>
-
-      <div className="relative h-[260px]">
-        <div className="absolute inset-0 opacity-60">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(16,185,129,0.14),transparent_35%),radial-gradient(circle_at_70%_60%,rgba(59,130,246,0.12),transparent_40%),radial-gradient(circle_at_45%_80%,rgba(245,158,11,0.10),transparent_35%)]" />
-          <div className="absolute inset-0 [background-image:linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:26px_26px]" />
-        </div>
-
-        {pins.map((p) => {
-          const isSel = p.id === selectedId;
-          const color =
-            p.status === "nearby"
-              ? "bg-emerald-500"
-              : p.status === "out_of_range"
-              ? "bg-amber-500"
-              : "bg-sky-500";
-          return (
-            <button
-              key={p.id}
-              onClick={() => setSelectedId(p.id)}
-              className={cx("absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition", isSel ? "scale-110" : "scale-100")}
-              style={{ left: `${p.x}%`, top: `${p.y}%` }}
-              aria-label="pin"
-            >
-              <div className={cx("h-4 w-4 rounded-full", color, isSel ? "ring-4 ring-white/20" : "ring-2 ring-white/10")} />
-              <div className="h-4 w-4 rounded-full -mt-2 opacity-25 bg-white/10" />
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="p-4">
-        <div className="flex items-center gap-3 text-xs text-neutral-500">
-          <span className="inline-flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Nearby</span>
-          <span className="inline-flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-amber-500" /> Out of range</span>
-          <span className="inline-flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-sky-500" /> Shared</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Modal({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50">
@@ -322,7 +322,11 @@ function Modal({ open, onClose, title, children }: { open: boolean; onClose: () 
             <div>
               <div className="text-lg font-semibold text-neutral-50">{title}</div>
             </div>
-            <button className="h-9 w-9 rounded-2xl bg-neutral-900 hover:bg-neutral-800 transition" onClick={onClose} aria-label="close" />
+            <button
+              className="h-9 w-9 rounded-2xl bg-neutral-900 hover:bg-neutral-800 transition"
+              onClick={onClose}
+              aria-label="close"
+            />
           </div>
           <div className="mt-3">{children}</div>
         </div>
@@ -331,7 +335,19 @@ function Modal({ open, onClose, title, children }: { open: boolean; onClose: () 
   );
 }
 
-function Sheet({ open, onClose, title, subtitle, children }: { open: boolean; onClose: () => void; title: string; subtitle?: string; children: React.ReactNode }) {
+function Sheet({
+  open,
+  onClose,
+  title,
+  subtitle,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50">
@@ -339,11 +355,19 @@ function Sheet({ open, onClose, title, subtitle, children }: { open: boolean; on
       <div className="absolute left-0 right-0 bottom-0">
         <div className="rounded-t-3xl border border-neutral-800 bg-neutral-950 p-4 shadow-2xl">
           <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="text-lg font-semibold text-neutral-50">{title}</div>
-              {subtitle && <div className="text-sm text-neutral-500 mt-1">{subtitle}</div>}
+            <div className="min-w-0">
+              <div className="text-lg font-semibold text-neutral-50 truncate">
+                {title}
+              </div>
+              {subtitle && (
+                <div className="text-sm text-neutral-500 mt-1 truncate">
+                  {subtitle}
+                </div>
+              )}
             </div>
-            <Button variant="secondary" size="sm" onClick={onClose}>Close</Button>
+            <Button variant="secondary" size="sm" onClick={onClose}>
+              Close
+            </Button>
           </div>
           <div className="mt-4">{children}</div>
         </div>
@@ -352,34 +376,72 @@ function Sheet({ open, onClose, title, subtitle, children }: { open: boolean; on
   );
 }
 
+type StatusKey =
+  | "nearby"
+  | "out_of_range"
+  | "shared"
+  | "shared_with_me";
+
+type Item = {
+  id: string;
+  name: string;
+  model: "Slim" | "Pro";
+  status: StatusKey;
+  lastSeen: string;
+  place: string;
+  battery: number;
+  isPublic: boolean;
+  followers: string[];
+  owner?: string; // for shared_with_me
+};
+
+function statusMeta(status: StatusKey) {
+  if (status === "nearby")
+    return { label: "Nearby", badge: "bg-emerald-500/15 text-emerald-300" };
+  if (status === "out_of_range")
+    return { label: "Out of range", badge: "bg-amber-500/15 text-amber-300" };
+  if (status === "shared")
+    return { label: "Shared", badge: "bg-sky-500/15 text-sky-300" };
+  return {
+    label: "Shared with me",
+    badge: "bg-indigo-500/15 text-indigo-300",
+  };
+}
+
 function ItemCard({
   item,
   onOpen,
   onPing,
+  onPlaySound,
   onShare,
   onTogglePrivacy,
 }: {
-  item: any;
+  item: Item;
   onOpen: () => void;
   onPing: () => void;
+  onPlaySound: () => void;
   onShare: () => void;
   onTogglePrivacy: () => void;
 }) {
-  const statusBadge =
-    item.status === "nearby"
-      ? { label: "Nearby", className: "bg-emerald-500/15 text-emerald-300" }
-      : item.status === "out_of_range"
-      ? { label: "Out of range", className: "bg-amber-500/15 text-amber-300" }
-      : { label: "Shared", className: "bg-sky-500/15 text-sky-300" };
+  const meta = statusMeta(item.status);
+  const isPro = item.model === "Pro";
+  const isSharedWithMe = item.status === "shared_with_me";
 
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="text-base text-neutral-50 font-medium">{item.name}</div>
-              <Badge className={cx("rounded-xl", statusBadge.className)}>{statusBadge.label}</Badge>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="text-base text-neutral-50 font-medium truncate">
+                {item.name}
+              </div>
+              <Badge className={cx("rounded-xl", meta.badge)}>{meta.label}</Badge>
+              {isSharedWithMe && item.owner && (
+                <Badge className="rounded-xl bg-neutral-900 text-neutral-200">
+                  Owner: {item.owner}
+                </Badge>
+              )}
             </div>
             <div className="text-xs text-neutral-500 mt-1">
               Last seen: <span className="text-neutral-300">{item.lastSeen}</span>
@@ -387,6 +449,7 @@ function ItemCard({
               <span className="text-neutral-300">{item.place}</span>
             </div>
           </div>
+
           <button
             onClick={onOpen}
             className="h-10 w-10 rounded-2xl bg-neutral-900 flex items-center justify-center hover:bg-neutral-800 transition"
@@ -396,28 +459,207 @@ function ItemCard({
           </button>
         </div>
 
-        <div className="mt-4 grid grid-cols-3 gap-2">
+        {/* Larger tap targets + bigger icons (esp Share/Public/Private) */}
+        <div
+          className={cx(
+            "mt-4 grid gap-2",
+            isPro ? "grid-cols-2" : "grid-cols-3"
+          )}
+        >
           <Button variant="secondary" onClick={onPing}>
             <Bell className="h-4 w-4" /> Ping
           </Button>
+
+          {isPro && (
+            <Button variant="secondary" onClick={onPlaySound}>
+              <Volume2 className="h-5 w-5" /> Play sound
+            </Button>
+          )}
+
           <Button variant="secondary" onClick={onShare}>
-            <Share2 className="h-4 w-4" /> Share
+            <Share2 className="h-5 w-5" /> Share
           </Button>
-          <Button variant="secondary" onClick={onTogglePrivacy}>
-            {item.isPublic ? <Globe className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+
+          <Button
+            variant="secondary"
+            onClick={onTogglePrivacy}
+            disabled={isSharedWithMe}
+          >
+            {item.isPublic ? (
+              <Globe className="h-5 w-5" />
+            ) : (
+              <Lock className="h-5 w-5" />
+            )}
             {item.isPublic ? "Public" : "Private"}
           </Button>
         </div>
+
+        {isSharedWithMe && (
+          <div className="mt-3 text-xs text-neutral-600">
+            Privacy is controlled by the owner.
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 }
 
+function MapMock({
+  selectedId,
+  setSelectedId,
+  items,
+  onOpenSelected,
+}: {
+  selectedId: string;
+  setSelectedId: (id: string) => void;
+  items: Item[];
+  onOpenSelected: () => void;
+}) {
+  // Hand-tuned pin positions for your UC Davis screenshot
+  // (percent based within the map container)
+  const placeToXY: Record<string, { x: number; y: number }> = {
+    "Memorial Union": { x: 58, y: 33 },
+    "Shields Library": { x: 72, y: 63 },
+    "Teaching & Learning Complex": { x: 22, y: 74 },
+    "East Quad": { x: 60, y: 52 },
+    Nearby: { x: 48, y: 45 },
+  };
+
+  const pins = useMemo(() => {
+    return items.map((it) => {
+      const xy = placeToXY[it.place] || placeToXY["Nearby"];
+      return { id: it.id, x: xy.x, y: xy.y, status: it.status };
+    });
+  }, [items]);
+
+  const selected = items.find((x) => x.id === selectedId) || items[0];
+
+  const pinColor = (status: StatusKey) => {
+    if (status === "nearby") return "bg-emerald-500";
+    if (status === "out_of_range") return "bg-amber-500";
+    if (status === "shared") return "bg-sky-500";
+    return "bg-indigo-500";
+  };
+
+  return (
+    <div className="rounded-3xl overflow-hidden border border-neutral-900 bg-neutral-950">
+      <div className="p-4 border-b border-neutral-900 flex items-center justify-between">
+        <div>
+          <div className="text-sm text-neutral-100">Campus Map</div>
+          <div className="text-xs text-neutral-500">
+            Tap pins to view last seen
+          </div>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="rounded-2xl"
+          onClick={() => setSelectedId(selected?.id)}
+        >
+          <LocateFixed className="h-4 w-4" />
+          Locate
+        </Button>
+      </div>
+
+      <div className="relative h-[290px]">
+        {/* Map image background */}
+        <img
+          src={MAP_IMAGE_SRC}
+          alt="Map"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        {/* Dark overlay to match the sleek vibe */}
+        <div className="absolute inset-0 bg-neutral-950/30" />
+
+        {/* Pins */}
+        {pins.map((p) => {
+          const isSel = p.id === selectedId;
+          return (
+            <button
+              key={p.id}
+              onClick={() => setSelectedId(p.id)}
+              className={cx(
+                "absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition",
+                isSel ? "scale-110" : "scale-100"
+              )}
+              style={{ left: `${p.x}%`, top: `${p.y}%` }}
+              aria-label="pin"
+            >
+              <div
+                className={cx(
+                  "h-4 w-4 rounded-full",
+                  pinColor(p.status),
+                  isSel ? "ring-4 ring-white/30" : "ring-2 ring-white/15"
+                )}
+              />
+              <div className="h-4 w-4 rounded-full -mt-2 opacity-20 bg-white/10" />
+            </button>
+          );
+        })}
+
+        {/* Floating info bubble for selected pin (Option B) */}
+        {selected && (
+          <div
+            className="absolute -translate-x-1/2 -translate-y-[115%]"
+            style={{
+              left: `${(placeToXY[selected.place] || placeToXY["Nearby"]).x}%`,
+              top: `${(placeToXY[selected.place] || placeToXY["Nearby"]).y}%`,
+            }}
+          >
+            <div className="max-w-[250px] rounded-2xl border border-neutral-800 bg-neutral-950/90 backdrop-blur px-3 py-2 shadow-2xl">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-sm font-medium text-neutral-50 truncate">
+                    {selected.name}
+                  </div>
+                  <div className="text-[11px] text-neutral-500 truncate">
+                    {selected.place} · {selected.lastSeen}
+                    {selected.status === "shared_with_me" && selected.owner
+                      ? ` · Owner: ${selected.owner}`
+                      : ""}
+                  </div>
+                </div>
+                <button
+                  onClick={onOpenSelected}
+                  className="h-7 w-7 rounded-xl bg-neutral-900 hover:bg-neutral-800 transition flex items-center justify-center"
+                  aria-label="details"
+                >
+                  <Info className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            <div className="mx-auto h-0 w-0 border-x-[8px] border-x-transparent border-t-[10px] border-t-neutral-950/90" />
+          </div>
+        )}
+      </div>
+
+      <div className="p-4">
+        <div className="flex items-center gap-3 text-xs text-neutral-500">
+          <span className="inline-flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" /> Nearby
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-amber-500" /> Out of range
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-sky-500" /> Shared
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-indigo-500" /> Shared with me
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SetupFlow({
   onFinish,
+  onCancel,
   initialCode,
 }: {
   onFinish: (x: any) => void;
+  onCancel: () => void;
   initialCode: string;
 }) {
   const [step, setStep] = useState(0);
@@ -433,10 +675,10 @@ function SetupFlow({
   const steps = [
     {
       title: "Verify your new tracker",
-      desc: "Scan the sticker's NFC tag or enter the setup code.",
+      desc: "Tap the sticker to verify and pair.",
       content: (
         <div className="space-y-3">
-          <Pill icon={ScanLine} label="NFC scan" right="Hold phone near sticker" />
+          <Pill icon={ScanLine} label="Tap sticker" right="Hold phone near sticker" />
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 space-y-2">
             <div className="text-xs text-neutral-500">Setup code</div>
             <Input value={code} onChange={setCode} />
@@ -473,8 +715,8 @@ function SetupFlow({
             </div>
             <div className="text-xs text-neutral-500">
               {model === "Slim"
-                ? "Ultra-thin, silent (best for wallets/bottles)"
-                : "Has speaker for sound alerts (best for keys/bikes)"}
+                ? "Ideal for wallets, water bottles, books"
+                : "Best for keys, backpacks, laptops"}
             </div>
           </div>
         </div>
@@ -486,9 +728,11 @@ function SetupFlow({
       content: (
         <div className="space-y-3">
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
-            <div>
+            <div className="min-w-0">
               <div className="text-sm text-neutral-200">Public (followers)</div>
-              <div className="text-xs text-neutral-500">Friends can view location to help you find it</div>
+              <div className="text-xs text-neutral-500 truncate">
+                Friends can view location to help you find it
+              </div>
             </div>
             <Switch checked={isPublic} onChange={setIsPublic} />
           </div>
@@ -496,8 +740,11 @@ function SetupFlow({
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4">
             <div className="text-xs text-neutral-500">Example followers</div>
             <div className="mt-3 flex flex-wrap gap-2">
-              {demoFriends.map((f) => (
-                <Badge key={f.id} className="rounded-2xl bg-neutral-900 text-neutral-200">
+              {demoFriends.slice(0, 3).map((f) => (
+                <Badge
+                  key={f.id}
+                  className="rounded-2xl bg-neutral-900 text-neutral-200"
+                >
                   {f.name}
                 </Badge>
               ))}
@@ -512,11 +759,19 @@ function SetupFlow({
 
   return (
     <div className="p-5 space-y-4">
-      <div className="space-y-2">
-        <div className="text-xs text-neutral-500">Setup</div>
-        <div className="text-xl font-semibold text-neutral-50">{steps[step].title}</div>
-        <div className="text-sm text-neutral-400">{steps[step].desc}</div>
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <div className="text-xs text-neutral-500">Setup</div>
+          <div className="text-xl font-semibold text-neutral-50">
+            {steps[step].title}
+          </div>
+        </div>
+        <Button variant="ghost" size="sm" onClick={onCancel}>
+          Cancel
+        </Button>
       </div>
+
+      <div className="text-sm text-neutral-400">{steps[step].desc}</div>
 
       <Progress value={pct} />
 
@@ -535,7 +790,9 @@ function SetupFlow({
         {step < steps.length - 1 ? (
           <Button onClick={() => setStep((s) => s + 1)}>Continue</Button>
         ) : (
-          <Button onClick={() => onFinish({ code, name, model, isPublic })}>Finish setup</Button>
+          <Button onClick={() => onFinish({ code, name, model, isPublic })}>
+            Finish setup
+          </Button>
         )}
       </div>
     </div>
@@ -543,13 +800,14 @@ function SetupFlow({
 }
 
 export default function Page() {
-  const [stage, setStage] = useState<"marketing" | "setup" | "app">("marketing");
+  const [stage, setStage] = useState<"marketing" | "setup" | "app">(
+    "marketing"
+  );
   const [tab, setTab] = useState<TabKey>("home");
 
-  const [selectedItemId, setSelectedItemId] = useState("i1");
+  const [selectedItemId, setSelectedItemId] = useState("i2");
 
-  // Preloaded items per your request:
-  const [items, setItems] = useState<any[]>([
+  const [items, setItems] = useState<Item[]>([
     {
       id: "i1",
       name: "Wallet",
@@ -566,7 +824,7 @@ export default function Page() {
       name: "Bike",
       model: "Pro",
       status: "shared",
-      lastSeen: "12 min ago",
+      lastSeen: "2 min ago",
       place: "Memorial Union",
       battery: 64,
       isPublic: true,
@@ -578,10 +836,22 @@ export default function Page() {
       model: "Slim",
       status: "nearby",
       lastSeen: "Just now",
-      place: "ARC",
+      place: "Teaching & Learning Complex",
       battery: 91,
       isPublic: false,
       followers: [],
+    },
+    {
+      id: "i4",
+      name: "Laptop",
+      model: "Pro",
+      status: "shared_with_me",
+      lastSeen: "5 min ago",
+      place: "East Quad",
+      battery: 73,
+      isPublic: false,
+      followers: [],
+      owner: "Alex",
     },
   ]);
 
@@ -598,6 +868,10 @@ export default function Page() {
   const [toast, setToast] = useState<string | null>(null);
   const [initialSetupCode, setInitialSetupCode] = useState("STICK-4FNN");
 
+  // Settings toggles (for realism)
+  const [notifOn, setNotifOn] = useState(true);
+  const [locationOn, setLocationOn] = useState(true);
+
   const showToast = (message: string) => {
     setToast(message);
     // @ts-ignore
@@ -606,8 +880,10 @@ export default function Page() {
     showToast._t = window.setTimeout(() => setToast(null), 1800);
   };
 
-  const updateItem = (id: string, patch: any) => {
-    setItems((prev) => prev.map((it) => (it.id === id ? { ...it, ...patch } : it)));
+  const updateItem = (id: string, patch: Partial<Item>) => {
+    setItems((prev) =>
+      prev.map((it) => (it.id === id ? ({ ...it, ...patch } as Item) : it))
+    );
   };
 
   // Deep-link support (future NFC):
@@ -624,10 +900,15 @@ export default function Page() {
     }
   }, []);
 
+  const goToApp = (defaultTab: TabKey = "home") => {
+    setStage("app");
+    setTab(defaultTab);
+  };
+
   const addItemFromSetup = ({ name, model, isPublic }: any) => {
     const place = campusPlaces[Math.floor(Math.random() * campusPlaces.length)];
     const id = `i${Math.floor(Math.random() * 9000) + 100}`;
-    const newItem = {
+    const newItem: Item = {
       id,
       name: name || "New Item",
       model,
@@ -637,12 +918,13 @@ export default function Page() {
       battery: 100,
       isPublic: !!isPublic,
       followers: isPublic ? demoFriends.map((f) => f.id).slice(0, 2) : [],
-      _seedPlace: place.name,
     };
-    setItems((p) => [newItem, ...p]);
+
+    // Seed a plausible “last seen” after pairing
+    const seededPlace = place.name;
+    setItems((p) => [{ ...newItem, place: seededPlace }, ...p]);
     setSelectedItemId(id);
-    setStage("app");
-    setTab("home");
+    goToApp("map");
     showToast("Tracker added");
 
     // Clean URL back to normal after demo deep-link
@@ -653,18 +935,13 @@ export default function Page() {
   };
 
   const Header = ({ title }: { title: string }) => (
-    <div className="px-5 pt-5 pb-3 flex items-start justify-between gap-3">
-      <div>
-        <div className="text-xl font-semibold text-neutral-50">{title}</div>
-        <div className="text-sm text-neutral-500">Minimal tracking. Maximum peace of mind.</div>
-      </div>
-      <button
-        onClick={() => setStage("setup")}
-        className="h-10 w-10 rounded-2xl bg-neutral-900 flex items-center justify-center hover:bg-neutral-800 transition"
-        aria-label="Add"
-      >
-        <Plus className="h-4 w-4" />
-      </button>
+    <div className="px-5 pt-5 pb-3">
+      <div className="text-xl font-semibold text-neutral-50">{title}</div>
+      {(stage === "marketing" || (stage === "app" && tab === "home")) && (
+        <div className="text-sm text-neutral-500">
+          Stick it. Forget it. We’ll track it.
+        </div>
+      )}
     </div>
   );
 
@@ -674,8 +951,12 @@ export default function Page() {
         <div className="inline-flex items-center gap-2 rounded-2xl bg-neutral-900 px-3 py-1 text-xs text-neutral-200">
           <CheckCircle2 className="h-4 w-4" /> Demo storefront
         </div>
-        <div className="mt-4 text-2xl font-semibold text-neutral-50">Stick & Track</div>
-        <div className="mt-1 text-sm text-neutral-400">A slim tracker with smart switching—Bluetooth nearby, location update when it disconnects.</div>
+        <div className="mt-4 text-2xl font-semibold text-neutral-50">
+          Stick & Track
+        </div>
+        <div className="mt-1 text-sm text-neutral-400">
+          Stick it. Forget it. We’ll track it.
+        </div>
 
         <div className="mt-5 grid grid-cols-2 gap-3">
           <Card>
@@ -684,8 +965,15 @@ export default function Page() {
               <div className="text-xs text-neutral-500">Ultra-thin, silent</div>
             </CardHeader>
             <CardContent className="pt-0 space-y-2">
-              <div className="flex items-center gap-2 text-xs text-neutral-400"><VolumeX className="h-4 w-4" /> No speaker</div>
-              <div className="flex items-center gap-2 text-xs text-neutral-400"><BatteryFull className="h-4 w-4" /> 2+ years battery</div>
+              <div className="flex items-center gap-2 text-xs text-neutral-400">
+                <VolumeX className="h-4 w-4" /> No speaker
+              </div>
+              <div className="flex items-center gap-2 text-xs text-neutral-400">
+                <BatteryFull className="h-4 w-4" /> 2+ years battery
+              </div>
+              <div className="text-xs text-neutral-500">
+                Ideal for wallets, water bottles, books
+              </div>
               <div className="text-sm text-neutral-50 font-medium">$20</div>
             </CardContent>
           </Card>
@@ -696,8 +984,15 @@ export default function Page() {
               <div className="text-xs text-neutral-500">Compact + speaker</div>
             </CardHeader>
             <CardContent className="pt-0 space-y-2">
-              <div className="flex items-center gap-2 text-xs text-neutral-400"><Volume2 className="h-4 w-4" /> Sound alerts</div>
-              <div className="flex items-center gap-2 text-xs text-neutral-400"><BatteryFull className="h-4 w-4" /> 2+ years battery</div>
+              <div className="flex items-center gap-2 text-xs text-neutral-400">
+                <Volume2 className="h-4 w-4" /> Sound alerts
+              </div>
+              <div className="flex items-center gap-2 text-xs text-neutral-400">
+                <BatteryFull className="h-4 w-4" /> 2+ years battery
+              </div>
+              <div className="text-xs text-neutral-500">
+                Best for keys, backpacks, laptops
+              </div>
               <div className="text-sm text-neutral-50 font-medium">$55</div>
             </CardContent>
           </Card>
@@ -705,24 +1000,22 @@ export default function Page() {
 
         <div className="mt-4 flex gap-2">
           <Button onClick={() => setStage("setup")}>
-            <Plus className="h-4 w-4" /> Add a tracker (demo)
+            <Sparkles className="h-4 w-4" /> Add a tracker (demo)
           </Button>
-          <Button variant="secondary" onClick={() => { setStage("app"); setTab("home"); }}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              goToApp("map");
+            }}
+          >
             View app
           </Button>
         </div>
-      </div>
 
-      <Card>
-        <CardContent className="p-4 space-y-3">
-          <div className="text-sm text-neutral-200">Why it’s faster</div>
-          <div className="text-xs text-neutral-500">Demo copy: When Bluetooth disconnects, we instantly trigger a “last known location” update.</div>
-          <div className="grid grid-cols-2 gap-2">
-            <Pill icon={Bell} label="Quick ping" right="minutes" />
-            <Pill icon={BatteryFull} label="Low energy" right="2+ yrs" />
-          </div>
-        </CardContent>
-      </Card>
+        <div className="mt-4 text-xs text-neutral-500">
+          Demo claim: location updates in minutes after disconnect.
+        </div>
+      </div>
     </div>
   );
 
@@ -731,7 +1024,7 @@ export default function Page() {
       <div className="flex items-center justify-between">
         <div className="text-sm text-neutral-400">Your items</div>
         <Button size="sm" onClick={() => setStage("setup")}>
-          <Plus className="h-4 w-4" /> Add
+          <Sparkles className="h-4 w-4" /> Add
         </Button>
       </div>
 
@@ -740,10 +1033,22 @@ export default function Page() {
           <ItemCard
             key={it.id}
             item={it}
-            onOpen={() => { setSelectedItemId(it.id); setDetailsOpen(true); }}
-            onPing={() => showToast(it.model === "Pro" ? "Playing sound…" : "Ping sent")}
-            onShare={() => { setSelectedItemId(it.id); setShareOpen(true); }}
-            onTogglePrivacy={() => { updateItem(it.id, { isPublic: !it.isPublic }); showToast(!it.isPublic ? "Now public" : "Now private"); }}
+            onOpen={() => {
+              setSelectedItemId(it.id);
+              setDetailsOpen(true);
+            }}
+            onPing={() =>
+              showToast(it.model === "Pro" ? "Ping + sound ready" : "Ping sent")
+            }
+            onPlaySound={() => showToast("Playing sound…")}
+            onShare={() => {
+              setSelectedItemId(it.id);
+              setShareOpen(true);
+            }}
+            onTogglePrivacy={() => {
+              updateItem(it.id, { isPublic: !it.isPublic });
+              showToast(!it.isPublic ? "Now public" : "Now private");
+            }}
           />
         ))}
       </div>
@@ -753,19 +1058,65 @@ export default function Page() {
   const MapTab = () => (
     <div className="px-5 pb-4 space-y-3">
       <div className="text-sm text-neutral-400">Map</div>
-      <MapMock selectedId={selectedItemId} setSelectedId={setSelectedItemId} items={items} />
+
+      <MapMock
+        selectedId={selectedItemId}
+        setSelectedId={setSelectedItemId}
+        items={items}
+        onOpenSelected={() => setDetailsOpen(true)}
+      />
 
       <Card>
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="min-w-0">
               <div className="text-sm text-neutral-200">Selected</div>
-              <div className="text-lg font-semibold text-neutral-50">{selectedItem?.name}</div>
+              <div className="text-lg font-semibold text-neutral-50 truncate">
+                {selectedItem?.name}
+              </div>
               <div className="text-xs text-neutral-500 mt-1">
-                Last seen <span className="text-neutral-300">{selectedItem?.lastSeen}</span> · <span className="text-neutral-300">{selectedItem?.place}</span>
+                Last seen <span className="text-neutral-300">{selectedItem?.lastSeen}</span>
+                <span className="text-neutral-600"> · </span>
+                <span className="text-neutral-300">{selectedItem?.place}</span>
+                {selectedItem?.status === "shared_with_me" && selectedItem?.owner
+                  ? ` · Owner: ${selectedItem.owner}`
+                  : ""}
               </div>
             </div>
-            <Button variant="secondary" onClick={() => setDetailsOpen(true)}>Details</Button>
+            <Button variant="secondary" onClick={() => setDetailsOpen(true)}>
+              Details
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-sm text-neutral-200">Last known locations</div>
+          <div className="mt-3 space-y-2">
+            {items.map((it) => (
+              <button
+                key={it.id}
+                onClick={() => setSelectedItemId(it.id)}
+                className={cx(
+                  "w-full flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3 text-left",
+                  it.id === selectedItemId ? "border-neutral-700" : ""
+                )}
+              >
+                <div className="min-w-0">
+                  <div className="text-sm text-neutral-200 truncate">
+                    {it.name}
+                    {it.status === "shared_with_me" && it.owner
+                      ? ` (Owner: ${it.owner})`
+                      : ""}
+                  </div>
+                  <div className="text-xs text-neutral-600 truncate">
+                    {it.place} · {it.lastSeen}
+                  </div>
+                </div>
+                <div className="text-xs text-neutral-500">View</div>
+              </button>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -775,7 +1126,12 @@ export default function Page() {
   const FriendsTab = () => {
     const it = selectedItem;
     const followers = (it?.followers ?? []).map(
-      (fid: string) => demoFriends.find((f) => f.id === fid) || { id: fid, name: fid, handle: "" }
+      (fid: string) =>
+        demoFriends.find((f) => f.id === fid) || {
+          id: fid,
+          name: fid,
+          handle: "",
+        }
     );
 
     return (
@@ -783,9 +1139,18 @@ export default function Page() {
         <div className="flex items-center justify-between">
           <div>
             <div className="text-sm text-neutral-400">Sharing</div>
-            <div className="text-base text-neutral-50 font-medium">{it?.name}</div>
+            <div className="text-base text-neutral-50 font-medium">
+              {it?.name}
+            </div>
+            {it?.status === "shared_with_me" && it?.owner && (
+              <div className="text-xs text-neutral-600">Owner: {it.owner}</div>
+            )}
           </div>
-          <Button size="sm" onClick={() => setShareOpen(true)}>
+          <Button
+            size="sm"
+            onClick={() => setShareOpen(true)}
+            disabled={it?.status === "shared_with_me"}
+          >
             <Share2 className="h-4 w-4" /> Share
           </Button>
         </div>
@@ -795,15 +1160,22 @@ export default function Page() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-neutral-200">Followers</div>
-                <div className="text-xs text-neutral-500">People who can help locate your item</div>
+                <div className="text-xs text-neutral-500">
+                  People who can help locate your item
+                </div>
               </div>
-              <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">{followers.length}</Badge>
+              <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">
+                {followers.length}
+              </Badge>
             </div>
 
             {followers.length ? (
               <div className="space-y-2">
                 {followers.map((f: any) => (
-                  <div key={f.id} className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3">
+                  <div
+                    key={f.id}
+                    className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3"
+                  >
                     <div>
                       <div className="text-sm text-neutral-200">{f.name}</div>
                       <div className="text-xs text-neutral-600">{f.handle}</div>
@@ -811,7 +1183,13 @@ export default function Page() {
                     <Button
                       variant="secondary"
                       size="sm"
-                      onClick={() => { updateItem(it.id, { followers: it.followers.filter((x: string) => x !== f.id) }); showToast("Removed"); }}
+                      onClick={() => {
+                        updateItem(it!.id, {
+                          followers: it!.followers.filter((x: string) => x !== f.id),
+                        });
+                        showToast("Removed");
+                      }}
+                      disabled={it?.status === "shared_with_me"}
                     >
                       Remove
                     </Button>
@@ -825,19 +1203,40 @@ export default function Page() {
             <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
               <div>
                 <div className="text-sm text-neutral-200">Public</div>
-                <div className="text-xs text-neutral-500">Allow followers to see location</div>
+                <div className="text-xs text-neutral-500">
+                  Allow followers to see location
+                </div>
               </div>
-              <Switch checked={!!it?.isPublic} onChange={(v) => { updateItem(it.id, { isPublic: v }); showToast(v ? "Now public" : "Now private"); }} />
+              <Switch
+                checked={!!it?.isPublic}
+                onChange={(v) => {
+                  updateItem(it!.id, { isPublic: v });
+                  showToast(v ? "Now public" : "Now private");
+                }}
+              />
             </div>
+
+            {it?.status === "shared_with_me" && (
+              <div className="text-xs text-neutral-600">
+                This item is shared with you by {it.owner}. Sharing controls are
+                limited.
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4 space-y-2">
             <div className="text-sm text-neutral-200">Share link</div>
-            <div className="text-xs text-neutral-500">(Demo) Send this to friends for follower access.</div>
-            <div className="rounded-2xl bg-neutral-900 px-3 py-2 text-xs text-neutral-200 font-mono">sticktrack.app/follow/{it?.id}</div>
-            <Button variant="secondary" onClick={() => showToast("Copied link")}>Copy link</Button>
+            <div className="text-xs text-neutral-500">
+              (Demo) Send this to friends for follower access.
+            </div>
+            <div className="rounded-2xl bg-neutral-900 px-3 py-2 text-xs text-neutral-200 font-mono overflow-hidden text-ellipsis">
+              sticktrack.app/follow/{it?.id}
+            </div>
+            <Button variant="secondary" onClick={() => showToast("Copied link")}> 
+              Copy link
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -849,49 +1248,62 @@ export default function Page() {
       <div className="text-sm text-neutral-400">Settings</div>
 
       <Card>
-        <CardContent className="p-4 space-y-3">
+        <CardContent className="p-4 space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm text-neutral-200">Account</div>
               <div className="text-xs text-neutral-500">Demo User</div>
             </div>
-            <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">Demo</Badge>
+            <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">
+              Demo
+            </Badge>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <Pill icon={Bell} label="Notifications" right="On" />
-            <Pill icon={MapPin} label="Location" right="Allowed" />
+
+          <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
+            <div className="min-w-0">
+              <div className="text-sm text-neutral-200">Notifications</div>
+              <div className="text-xs text-neutral-500 truncate">
+                Alerts when items disconnect or move
+              </div>
+            </div>
+            <Switch checked={notifOn} onChange={setNotifOn} />
+          </div>
+
+          <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
+            <div className="min-w-0">
+              <div className="text-sm text-neutral-200">Location</div>
+              <div className="text-xs text-neutral-500 truncate">
+                Required for map + last known location
+              </div>
+            </div>
+            <Switch checked={locationOn} onChange={setLocationOn} />
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="p-4 space-y-3">
-          <div className="text-sm text-neutral-200">Demo controls</div>
-          <div className="grid grid-cols-2 gap-2">
-            <Button variant="secondary" onClick={() => showToast("Simulated: BLE disconnect → location update")}>Simulate disconnect</Button>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                const pick = items[Math.floor(Math.random() * items.length)];
-                const place = campusPlaces[Math.floor(Math.random() * campusPlaces.length)];
-                updateItem(pick.id, { status: "out_of_range", place: place.name, lastSeen: "2 min ago" });
-                setSelectedItemId(pick.id);
-                showToast(`Updated: ${pick.name}`);
-              }}
-            >
-              Randomize location
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Button variant="secondary" className="w-full" onClick={() => setStage("marketing")}>Back to storefront</Button>
+      <Button
+        variant="secondary"
+        className="w-full"
+        onClick={() => setStage("marketing")}
+      >
+        Back to storefront
+      </Button>
     </div>
   );
 
   const AppShell = () => (
     <div className="min-h-[720px] flex flex-col">
-      <Header title={tab === "home" ? "Home" : tab === "map" ? "Map" : tab === "friends" ? "Share" : "Settings"} />
+      <Header
+        title={
+          tab === "home"
+            ? "Home"
+            : tab === "map"
+            ? "Map"
+            : tab === "friends"
+            ? "Share"
+            : "Settings"
+        }
+      />
       <div className="flex-1">
         {tab === "home" && <HomeTab />}
         {tab === "map" && <MapTab />}
@@ -902,10 +1314,30 @@ export default function Page() {
     </div>
   );
 
+  const cancelSetup = () => {
+    // If they were in the app already, return to app; otherwise back to storefront
+    if (stage === "setup") {
+      // If already have items, go to app (map is the “main” feature)
+      goToApp("map");
+    } else {
+      setStage("marketing");
+    }
+  };
+
   return (
     <PhoneFrame>
       {stage === "marketing" && <Marketing />}
-      {stage === "setup" && <SetupFlow onFinish={addItemFromSetup} initialCode={initialSetupCode} />}
+      {stage === "setup" && (
+        <SetupFlow
+          onFinish={addItemFromSetup}
+          onCancel={() => {
+            // If setup started from marketing, return there; else go to app
+            setStage("app");
+            setTab("home");
+          }}
+          initialCode={initialSetupCode}
+        />
+      )}
       {stage === "app" && <AppShell />}
 
       {/* Details sheet */}
@@ -918,29 +1350,69 @@ export default function Page() {
         <div className="space-y-3">
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4">
             <div className="text-xs text-neutral-500">Last known location</div>
-            <div className="mt-2 text-sm text-neutral-200">{selectedItem?.place}</div>
-            <div className="text-xs text-neutral-600">Updated {selectedItem?.lastSeen}</div>
+            <div className="mt-2 text-sm text-neutral-200">
+              {selectedItem?.place}
+            </div>
+            <div className="text-xs text-neutral-600">
+              Updated {selectedItem?.lastSeen}
+              {selectedItem?.status === "shared_with_me" && selectedItem?.owner
+                ? ` · Owner: ${selectedItem.owner}`
+                : ""}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <Button onClick={() => showToast("Requested location update")}> <MapPin className="h-4 w-4" /> Update</Button>
-            <Button variant="secondary" onClick={() => { setShareOpen(true); setDetailsOpen(false); }}> <Share2 className="h-4 w-4" /> Share</Button>
+            <Button onClick={() => showToast("Requested location update")}> 
+              <MapPin className="h-4 w-4" /> Update
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setShareOpen(true);
+                setDetailsOpen(false);
+              }}
+              disabled={selectedItem?.status === "shared_with_me"}
+            >
+              <Share2 className="h-5 w-5" /> Share
+            </Button>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <Button variant="secondary" onClick={() => setEditOpen(true)}><Pencil className="h-4 w-4" /> Edit</Button>
-            <Button variant="secondary" onClick={() => setDeleteOpen(true)}><Trash2 className="h-4 w-4" /> Remove</Button>
+            <Button variant="secondary" onClick={() => setEditOpen(true)}>
+              <Pencil className="h-4 w-4" /> Edit
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setDeleteOpen(true)}
+              disabled={selectedItem?.status === "shared_with_me"}
+            >
+              <Trash2 className="h-4 w-4" /> Remove
+            </Button>
           </div>
+
+          {selectedItem?.status === "shared_with_me" && (
+            <div className="text-xs text-neutral-600">
+              This item is shared with you. Only the owner can remove it.
+            </div>
+          )}
         </div>
       </Sheet>
 
       {/* Share modal */}
-      <Modal open={shareOpen} onClose={() => setShareOpen(false)} title={`Share ${selectedItem?.name || "item"}`}>
+      <Modal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        title={`Share ${selectedItem?.name || "item"}`}
+      >
         <div className="space-y-2">
           {demoFriends.map((f) => {
-            const isFollowing = (selectedItem?.followers ?? []).includes(f.id);
+            const cur = selectedItem?.followers ?? [];
+            const isFollowing = cur.includes(f.id);
             return (
-              <div key={f.id} className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3">
+              <div
+                key={f.id}
+                className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3"
+              >
                 <div>
                   <div className="text-sm text-neutral-200">{f.name}</div>
                   <div className="text-xs text-neutral-600">{f.handle}</div>
@@ -949,10 +1421,14 @@ export default function Page() {
                   variant={isFollowing ? "secondary" : "primary"}
                   size="sm"
                   onClick={() => {
-                    const cur = selectedItem?.followers ?? [];
-                    updateItem(selectedItem.id, { followers: isFollowing ? cur.filter((x: string) => x !== f.id) : [...cur, f.id] });
+                    updateItem(selectedItem!.id, {
+                      followers: isFollowing
+                        ? cur.filter((x: string) => x !== f.id)
+                        : [...cur, f.id],
+                    });
                     showToast(isFollowing ? "Removed" : "Added");
                   }}
+                  disabled={selectedItem?.status === "shared_with_me"}
                 >
                   {isFollowing ? "Remove" : "Add"}
                 </Button>
@@ -961,7 +1437,9 @@ export default function Page() {
           })}
         </div>
         <div className="mt-4 flex justify-end">
-          <Button variant="secondary" onClick={() => setShareOpen(false)}>Done</Button>
+          <Button variant="secondary" onClick={() => setShareOpen(false)}>
+            Done
+          </Button>
         </div>
       </Modal>
 
@@ -969,21 +1447,30 @@ export default function Page() {
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit item">
         <div className="space-y-2">
           <div className="text-xs text-neutral-500">Name</div>
-          <Input value={selectedItem?.name || ""} onChange={(v) => updateItem(selectedItem.id, { name: v })} />
+          <Input
+            value={selectedItem?.name || ""}
+            onChange={(v) => updateItem(selectedItem!.id, { name: v })}
+          />
         </div>
         <div className="mt-4 flex justify-end">
-          <Button variant="secondary" onClick={() => setEditOpen(false)}>Done</Button>
+          <Button variant="secondary" onClick={() => setEditOpen(false)}>
+            Done
+          </Button>
         </div>
       </Modal>
 
       {/* Delete modal */}
       <Modal open={deleteOpen} onClose={() => setDeleteOpen(false)} title="Remove tracker?">
-        <div className="text-sm text-neutral-400">This removes it from the demo list.</div>
+        <div className="text-sm text-neutral-400">
+          This removes it from your list.
+        </div>
         <div className="mt-4 flex justify-end gap-2">
-          <Button variant="secondary" onClick={() => setDeleteOpen(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
+            Cancel
+          </Button>
           <Button
             onClick={() => {
-              const id = selectedItem.id;
+              const id = selectedItem!.id;
               setItems((prev) => prev.filter((x) => x.id !== id));
               const left = items.filter((x) => x.id !== id);
               setSelectedItemId(left[0]?.id || "");
