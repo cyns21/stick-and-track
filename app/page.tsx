@@ -31,10 +31,10 @@ import {
  * ✅ Future NFC deep-link ready: /?setup=1&code=STICK-1234
  *
  * MAP IMAGE:
- * Put your UC Davis map image in: /public/ucd-map.jpg
+ * Put your UC Davis map image in: /public/ucdmap.jpeg
  */
 
-const MAP_IMAGE_SRC = "/ucd-map.jpg";
+const MAP_IMAGE_SRC = "/ucdmap.jpeg";
 
 const demoFriends = [
   { id: "f1", name: "Alex", handle: "@alex" },
@@ -394,9 +394,14 @@ function statusMeta(status: StatusKey) {
   if (status === "shared_with_me")
     return {
       label: "Shared with me",
-      badge: "bg-indigo-500/15 text-indigo-300",
+      badge: "bg-sky-500/15 text-sky-300",
+      dot: "bg-sky-500",
     };
-  return { label: "My item", badge: "bg-neutral-900 text-neutral-200" };
+  return {
+    label: "My item",
+    badge: "bg-emerald-500/15 text-emerald-300",
+    dot: "bg-emerald-500",
+  };
 }
 
 function ItemCard({
@@ -422,16 +427,22 @@ function ItemCard({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="text-base text-neutral-50 font-medium truncate">
-                {item.name}
+              <div className="flex items-center gap-2 min-w-0">
+                <span className={cx("h-2 w-2 rounded-full", meta.dot)} />
+                <div className="text-base text-neutral-50 font-medium truncate">
+                  {item.name}
+                </div>
               </div>
+
               <Badge className={cx("rounded-xl", meta.badge)}>{meta.label}</Badge>
+
               {isSharedWithMe && item.owner && (
                 <Badge className="rounded-xl bg-neutral-900 text-neutral-200">
                   Owner: {item.owner}
                 </Badge>
               )}
             </div>
+
             <div className="text-xs text-neutral-500 mt-1">
               Last seen <span className="text-neutral-300">{item.lastSeen}</span>
               <span className="text-neutral-600"> · </span>
@@ -440,7 +451,7 @@ function ItemCard({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Quick share icon (less clunky) */}
+            {/* Quick share icon */}
             <button
               onClick={onQuickShare}
               className="h-10 w-10 rounded-2xl bg-neutral-900 flex items-center justify-center hover:bg-neutral-800 transition"
@@ -460,7 +471,6 @@ function ItemCard({
           </div>
         </div>
 
-        {/* Keep actions minimal */}
         <div className={cx("mt-4 grid gap-2", isPro ? "grid-cols-2" : "grid-cols-1")}>
           <Button variant="secondary" onClick={onPing}>
             <Bell className="h-4 w-4" /> Ping
@@ -515,8 +525,9 @@ function MapMock({
 
   const selected = items.find((x) => x.id === selectedId) || items[0];
 
+  // Only 2 pin colors: My items (green) vs Shared with me (blue)
   const pinColor = (isSharedWithMe: boolean) =>
-    isSharedWithMe ? "bg-indigo-500" : "bg-white";
+    isSharedWithMe ? "bg-sky-500" : "bg-emerald-500";
 
   const selXY = placeToXY[selected.place] || placeToXY["Nearby"];
 
@@ -566,7 +577,7 @@ function MapMock({
                   isSel ? "ring-4 ring-white/30" : "ring-2 ring-white/15"
                 )}
               />
-              <div className="h-4 w-4 rounded-full -mt-2 opacity-20 bg-white/10" />
+              <div className="h-4 w-4 rounded-full -mt-2 opacity-20 bg-black/20" />
             </button>
           );
         })}
@@ -607,10 +618,10 @@ function MapMock({
       <div className="p-4">
         <div className="flex items-center gap-4 text-xs text-neutral-500">
           <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-white" /> My items
+            <span className="h-2 w-2 rounded-full bg-emerald-500" /> My items
           </span>
           <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-indigo-500" /> Shared with me
+            <span className="h-2 w-2 rounded-full bg-sky-500" /> Shared with me
           </span>
         </div>
       </div>
@@ -765,9 +776,7 @@ function SetupFlow({
 }
 
 export default function Page() {
-  const [stage, setStage] = useState<"marketing" | "setup" | "app">(
-    "marketing"
-  );
+  const [stage, setStage] = useState<"marketing" | "setup" | "app">("marketing");
   const [tab, setTab] = useState<TabKey>("home");
 
   const [selectedItemId, setSelectedItemId] = useState("i2");
@@ -849,7 +858,6 @@ export default function Page() {
   );
 
   useEffect(() => {
-    // keep share dropdown valid if list changes
     if (ownedItems.length && !ownedItems.some((x) => x.id === shareItemId)) {
       setShareItemId(ownedItems[0].id);
     }
@@ -929,9 +937,7 @@ export default function Page() {
         <div className="inline-flex items-center gap-2 rounded-2xl bg-neutral-900 px-3 py-1 text-xs text-neutral-200">
           <CheckCircle2 className="h-4 w-4" /> Demo storefront
         </div>
-        <div className="mt-4 text-2xl font-semibold text-neutral-50">
-          Stick & Track
-        </div>
+        <div className="mt-4 text-2xl font-semibold text-neutral-50">Stick & Track</div>
         <div className="mt-1 text-sm text-neutral-400">
           Stick it. Forget it. We’ll track it.
         </div>
@@ -1015,9 +1021,7 @@ export default function Page() {
               setTab("friends");
               showToast("Opened sharing");
             }}
-            onPing={() =>
-              showToast(it.model === "Pro" ? "Ping sent" : "Ping sent")
-            }
+            onPing={() => showToast("Ping sent")}
             onPlaySound={() => showToast("Playing sound…")}
           />
         ))}
@@ -1027,8 +1031,7 @@ export default function Page() {
 
   const MapTab = () => (
     <div className="px-5 pb-4 space-y-3">
-      <div className="text-sm text-neutral-400">Map</div>
-
+      {/* removed redundant subheading */}
       <MapMock
         selectedId={selectedItemId}
         setSelectedId={setSelectedItemId}
@@ -1078,14 +1081,7 @@ export default function Page() {
 
     return (
       <div className="px-5 pb-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-sm text-neutral-400">Sharing</div>
-          </div>
-          <Button size="sm" onClick={() => setShareOpen(true)} disabled={!it}>
-            <Share2 className="h-4 w-4" /> Share
-          </Button>
-        </div>
+        {/* removed redundant subheading + removed top Share button */}
 
         {/* Dropdown for owned items */}
         <Card>
@@ -1107,16 +1103,21 @@ export default function Page() {
 
         <Card>
           <CardContent className="p-4 space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="text-sm text-neutral-200">Followers</div>
                 <div className="text-xs text-neutral-500">
                   People who can help locate your item
                 </div>
               </div>
-              <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">
-                {followers.length}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">
+                  {followers.length}
+                </Badge>
+                <Button size="sm" onClick={() => setShareOpen(true)} disabled={!it}>
+                  <Plus className="h-4 w-4" /> Add new followers
+                </Button>
+              </div>
             </div>
 
             {followers.length ? (
@@ -1185,7 +1186,7 @@ export default function Page() {
 
   const SettingsTab = () => (
     <div className="px-5 pb-4 space-y-3">
-      <div className="text-sm text-neutral-400">Settings</div>
+      {/* removed redundant subheading */}
 
       <Card>
         <CardContent className="p-4 space-y-4">
@@ -1215,7 +1216,11 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      <Button variant="secondary" className="w-full" onClick={() => setStage("marketing")}>
+      <Button
+        variant="secondary"
+        className="w-full"
+        onClick={() => setStage("marketing")}
+      >
         Back to storefront
       </Button>
     </div>
@@ -1277,22 +1282,47 @@ export default function Page() {
             </div>
           </div>
 
+          {/* Update + Public/Private (replaces duplicate Share button) */}
           <div className="grid grid-cols-2 gap-2">
-            <Button onClick={() => showToast("Requested location update")}> 
+            <Button onClick={() => showToast("Requested location update")}>
               <MapPin className="h-4 w-4" /> Update
             </Button>
+
             <Button
               variant="secondary"
+              onClick={() => {
+                if (selectedItem?.status === "shared_with_me") return;
+                updateItem(selectedItem!.id, { isPublic: !selectedItem!.isPublic });
+                showToast(selectedItem!.isPublic ? "Now private" : "Now public");
+              }}
+              disabled={selectedItem?.status === "shared_with_me"}
+            >
+              {selectedItem?.isPublic ? (
+                <>
+                  <Globe className="h-5 w-5" /> Public
+                </>
+              ) : (
+                <>
+                  <Lock className="h-5 w-5" /> Private
+                </>
+              )}
+            </Button>
+          </div>
+
+          {/* Keep access to Share tab (for Map info use-case) without duplicating Share button */}
+          {selectedItem?.status !== "shared_with_me" && (
+            <Button
+              variant="ghost"
+              className="w-full"
               onClick={() => {
                 setShareItemId(selectedItem!.id);
                 setTab("friends");
                 setDetailsOpen(false);
               }}
-              disabled={selectedItem?.status === "shared_with_me"}
             >
-              <Share2 className="h-5 w-5" /> Share
+              <Users className="h-4 w-4" /> Open Share tab
             </Button>
-          </div>
+          )}
 
           <div className="grid grid-cols-2 gap-2">
             <Button variant="secondary" onClick={() => setEditOpen(true)}>
@@ -1318,7 +1348,7 @@ export default function Page() {
       <Modal
         open={shareOpen}
         onClose={() => setShareOpen(false)}
-        title={`Share ${shareItem?.name || "item"}`}
+        title={`Add followers — ${shareItem?.name || "item"}`}
       >
         <div className="space-y-2">
           {demoFriends.map((f) => {
@@ -1373,7 +1403,11 @@ export default function Page() {
         </div>
       </Modal>
 
-      <Modal open={deleteOpen} onClose={() => setDeleteOpen(false)} title="Remove tracker?">
+      <Modal
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        title="Remove tracker?"
+      >
         <div className="text-sm text-neutral-400">This removes it from your list.</div>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
