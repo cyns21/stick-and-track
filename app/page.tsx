@@ -958,7 +958,7 @@ export default function Page() {
               <div className="text-xs text-neutral-500">
                 Ideal for wallets, water bottles, books
               </div>
-              <div className="text-sm text-neutral-50 font-medium">$20</div>
+              <div className="text-sm text-neutral-50 font-medium">$15</div>
             </CardContent>
           </Card>
 
@@ -977,7 +977,7 @@ export default function Page() {
               <div className="text-xs text-neutral-500">
                 Best for keys, backpacks, laptops
               </div>
-              <div className="text-sm text-neutral-50 font-medium">$55</div>
+              <div className="text-sm text-neutral-50 font-medium">$25</div>
             </CardContent>
           </Card>
         </div>
