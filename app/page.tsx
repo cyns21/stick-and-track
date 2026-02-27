@@ -205,8 +205,10 @@ function Pill({ icon: Icon, label, right }: { icon: any; label: string; right: s
   );
 }
 
-function BottomNav({ tab, setTab }: { tab: string; setTab: (t: string) => void }) {
-  const Item = ({ id, Icon, label }: { id: string; Icon: any; label: string }) => (
+type TabKey = "home" | "map" | "friends" | "settings";
+
+function BottomNav({ tab, setTab }: { tab: TabKey; setTab: React.Dispatch<React.SetStateAction<TabKey>> }) {
+  const Item = ({ id, Icon, label }: { id: TabKey; Icon: any; label: string }) => (
     <button
       onClick={() => setTab(id)}
       className={cx(
@@ -542,7 +544,7 @@ function SetupFlow({
 
 export default function Page() {
   const [stage, setStage] = useState<"marketing" | "setup" | "app">("marketing");
-  const [tab, setTab] = useState<"home" | "map" | "friends" | "settings">("home");
+  const [tab, setTab] = useState<TabKey>("home");
 
   const [selectedItemId, setSelectedItemId] = useState("i1");
 
