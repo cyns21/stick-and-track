@@ -223,7 +223,7 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
       <div className="w-[390px] max-w-full">
         <div className="rounded-[2.2rem] border border-neutral-800 bg-neutral-950 shadow-2xl overflow-hidden">
           <div className="h-10 flex items-center justify-between px-5 border-b border-neutral-900">
-            <div className="text-xs text-neutral-400">Stick & Track</div>
+            <div className="text-xs text-neutral-400">Stick 'n Track</div>
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-emerald-500" />
               <div className="text-xs text-neutral-500">Connected</div>
@@ -937,7 +937,7 @@ export default function Page() {
         <div className="inline-flex items-center gap-2 rounded-2xl bg-neutral-900 px-3 py-1 text-xs text-neutral-200">
           <CheckCircle2 className="h-4 w-4" /> Demo storefront
         </div>
-        <div className="mt-4 text-2xl font-semibold text-neutral-50">Stick & Track</div>
+        <div className="mt-4 text-2xl font-semibold text-neutral-50">Stick 'n Track</div>
         <div className="mt-1 text-sm text-neutral-400">
           Stick it. Forget it. We’ll track it.
         </div>
