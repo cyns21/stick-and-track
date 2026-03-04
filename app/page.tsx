@@ -36,38 +36,34 @@ import {
 
 const MAP_IMAGE_SRC = "/ucdmap.jpeg";
 
-const demoFriends = [
+type FollowerProfile = {
+  id: string;
+  name: string;
+  handle: string;
+};
+
+const demoFriends: FollowerProfile[] = [
   { id: "f1", name: "Alex", handle: "@alex" },
   { id: "f2", name: "John", handle: "@john" },
   { id: "f3", name: "Maya", handle: "@maya" },
   { id: "f4", name: "Sam", handle: "@sam" },
 ];
 
-function normalizeFollowerInput(value: string) {
+function normalizeFollowerInput(value: string): FollowerProfile | null {
   const trimmed = value.trim();
   if (!trimmed) return null;
 
-  const handle = trimmed.startsWith("@") ? trimmed : `@${trimmed}`;
-  const slug = handle.slice(1).toLowerCase().replace(/[^a-z0-9._-]/g, "");
+  const base = trimmed.startsWith("@") ? trimmed.slice(1) : trimmed;
+  const slug = base.toLowerCase().replace(/[^a-z0-9._-]/g, "");
   if (!slug) return null;
+
+  const handle = `@${slug}`;
 
   return {
     id: `custom:${slug}`,
-    name: handle,
+    name: trimmed.startsWith("@") ? handle : trimmed,
     handle,
   };
-}
-
-function getFollowerProfile(id: string) {
-  const friend = demoFriends.find((entry) => entry.id === id);
-  if (friend) return friend;
-
-  if (id.startsWith("custom:")) {
-    const handle = `@${id.slice("custom:".length)}`;
-    return { id, name: handle, handle };
-  }
-
-  return { id, name: id, handle: "" };
 }
 
 const campusPlaces = [
@@ -283,13 +279,17 @@ function Pill({
 }
 
 function FollowerPicker({
+  people,
   selectedIds,
   onToggle,
+  onCreateCustom,
   title = "Suggested people",
   emptyLabel = "No matching people found.",
 }: {
+  people: FollowerProfile[];
   selectedIds: string[];
   onToggle: (id: string) => void;
+  onCreateCustom: (profile: FollowerProfile) => void;
   title?: string;
   emptyLabel?: string;
 }) {
@@ -298,24 +298,33 @@ function FollowerPicker({
 
   const filteredFriends = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return demoFriends;
+    if (!q) return people;
 
-    return demoFriends.filter((friend) => {
+    return people.filter((friend) => {
       return (
         friend.name.toLowerCase().includes(q) ||
         friend.handle.toLowerCase().includes(q.replace(/^@/, ""))
       );
     });
-  }, [query]);
+  }, [people, query]);
+
+  const hasCustomMatch = customFollower
+    ? people.some(
+        (friend) =>
+          friend.id === customFollower.id ||
+          friend.name.toLowerCase() === customFollower.name.toLowerCase() ||
+          friend.handle.toLowerCase() === customFollower.handle.toLowerCase()
+      )
+    : false;
 
   return (
     <div className="space-y-3">
       <div className="space-y-2">
-        <div className="text-xs text-neutral-500">Search by username</div>
+        <div className="text-xs text-neutral-500">Search by name or username</div>
         <Input
           value={query}
           onChange={setQuery}
-          placeholder="@alex or Maya"
+          placeholder="@alex or Cynthia"
         />
       </div>
 
@@ -327,23 +336,21 @@ function FollowerPicker({
           </Badge>
         </div>
 
-        {customFollower && !demoFriends.some((friend) => friend.handle === customFollower.handle) && (
+        {customFollower && !hasCustomMatch && (
           <div className="mt-3 rounded-2xl border border-neutral-900 bg-neutral-950 px-4 py-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-sm text-neutral-200">{customFollower.handle}</div>
+                <div className="text-sm text-neutral-200">{customFollower.name}</div>
                 <div className="text-xs text-neutral-600">
-                  Add custom follower for demo
+                  {customFollower.handle}
                 </div>
               </div>
               <Button
-                variant={
-                  selectedIds.includes(customFollower.id) ? "secondary" : "primary"
-                }
+                variant="primary"
                 size="sm"
-                onClick={() => onToggle(customFollower.id)}
+                onClick={() => onCreateCustom(customFollower)}
               >
-                {selectedIds.includes(customFollower.id) ? "Remove" : "Add"}
+                Add
               </Button>
             </div>
           </div>
@@ -760,10 +767,12 @@ function SetupFlow({
   onFinish,
   onCancel,
   initialCode,
+  availableFollowers,
 }: {
   onFinish: (x: any) => void;
   onCancel: () => void;
   initialCode: string;
+  availableFollowers: FollowerProfile[];
 }) {
   const [step, setStep] = useState(0);
   const [code, setCode] = useState(initialCode || "STICK-4FNN");
@@ -772,6 +781,7 @@ function SetupFlow({
   const [model, setModel] = useState<"Slim" | "Pro">("Slim");
   const [isPublic, setIsPublic] = useState(false);
   const [followers, setFollowers] = useState<string[]>([]);
+  const [customFollowers, setCustomFollowers] = useState<FollowerProfile[]>([]);
 
   useEffect(() => {
     setCode(initialCode || "STICK-4FNN");
@@ -782,6 +792,20 @@ function SetupFlow({
       current.includes(id)
         ? current.filter((followerId) => followerId !== id)
         : [...current, id]
+    );
+  };
+
+  const setupFollowers = useMemo(
+    () => [...availableFollowers, ...customFollowers],
+    [availableFollowers, customFollowers]
+  );
+
+  const addCustomFollower = (profile: FollowerProfile) => {
+    setCustomFollowers((current) =>
+      current.some((entry) => entry.id === profile.id) ? current : [...current, profile]
+    );
+    setFollowers((current) =>
+      current.includes(profile.id) ? current : [...current, profile.id]
     );
   };
 
@@ -850,8 +874,10 @@ function SetupFlow({
 
           {isPublic ? (
             <FollowerPicker
+              people={setupFollowers}
               selectedIds={followers}
               onToggle={toggleFollower}
+              onCreateCustom={addCustomFollower}
               title="Suggested followers"
             />
           ) : (
@@ -908,7 +934,18 @@ function SetupFlow({
         {step < steps.length - 1 ? (
           <Button onClick={() => setStep((s) => s + 1)}>Continue</Button>
         ) : (
-          <Button onClick={() => onFinish({ code, name, model, isPublic, followers })}>
+          <Button
+            onClick={() =>
+              onFinish({
+                code,
+                name,
+                model,
+                isPublic,
+                followers,
+                customFollowers,
+              })
+            }
+          >
             Finish setup
           </Button>
         )}
@@ -995,6 +1032,7 @@ export default function Page() {
 
   const [toast, setToast] = useState<string | null>(null);
   const [initialSetupCode, setInitialSetupCode] = useState("STICK-4FNN");
+  const [customFollowers, setCustomFollowers] = useState<FollowerProfile[]>([]);
 
   const [notifOn, setNotifOn] = useState(true);
   const [locationOn, setLocationOn] = useState(true);
@@ -1023,6 +1061,24 @@ export default function Page() {
   const updateItem = (id: string, patch: Partial<Item>) => {
     setItems((prev) =>
       prev.map((it) => (it.id === id ? ({ ...it, ...patch } as Item) : it))
+    );
+  };
+
+  const allFollowers = useMemo(
+    () => [...demoFriends, ...customFollowers],
+    [customFollowers]
+  );
+
+  const getFollowerProfile = (id: string) =>
+    allFollowers.find((entry) => entry.id === id) || {
+      id,
+      name: id,
+      handle: "",
+    };
+
+  const addCustomFollower = (profile: FollowerProfile) => {
+    setCustomFollowers((current) =>
+      current.some((entry) => entry.id === profile.id) ? current : [...current, profile]
     );
   };
 
@@ -1061,7 +1117,23 @@ export default function Page() {
     setStage("marketing");
   };
 
-  const addItemFromSetup = ({ name, model, isPublic, followers }: any) => {
+  const addItemFromSetup = ({
+    name,
+    model,
+    isPublic,
+    followers,
+    customFollowers: setupCustomFollowers,
+  }: any) => {
+    setCustomFollowers((current) => {
+      const next = [...current];
+      (setupCustomFollowers ?? []).forEach((profile: FollowerProfile) => {
+        if (!next.some((entry) => entry.id === profile.id)) {
+          next.push(profile);
+        }
+      });
+      return next;
+    });
+
     const place = campusPlaces[Math.floor(Math.random() * campusPlaces.length)];
     const id = `i${Math.floor(Math.random() * 9000) + 100}`;
     const newItem: Item = {
@@ -1453,6 +1525,7 @@ export default function Page() {
             onFinish={addItemFromSetup}
             onCancel={exitSetup}
             initialCode={initialSetupCode}
+            availableFollowers={allFollowers}
           />
         </div>
       )}
@@ -1543,6 +1616,7 @@ export default function Page() {
         title={`Add followers — ${shareItem?.name || "item"}`}
       >
         <FollowerPicker
+          people={allFollowers}
           selectedIds={shareItem?.followers ?? []}
           onToggle={(id) => {
             if (!shareItem) return;
@@ -1556,6 +1630,17 @@ export default function Page() {
                 : [...currentFollowers, id],
             });
             showToast(isFollowing ? "Removed" : "Added");
+          }}
+          onCreateCustom={(profile) => {
+            addCustomFollower(profile);
+            if (!shareItem) return;
+
+            if (shareItem.followers.includes(profile.id)) return;
+
+            updateItem(shareItem.id, {
+              followers: [...shareItem.followers, profile.id],
+            });
+            showToast("Added");
           }}
           title="Suggested followers"
         />
