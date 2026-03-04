@@ -324,7 +324,7 @@ function FollowerPicker({
         <Input
           value={query}
           onChange={setQuery}
-          placeholder="@alex or Cynthia"
+          placeholder="@alex or Alex"
         />
       </div>
 
@@ -977,7 +977,7 @@ export default function Page() {
       place: "Shields Library",
       battery: 82,
       isPublic: false,
-      followers: ["f1"],
+      followers: [],
     },
     {
       id: "i2",
@@ -988,7 +988,7 @@ export default function Page() {
       place: "Memorial Union",
       battery: 64,
       isPublic: true,
-      followers: ["f2", "f3"],
+      followers: [],
     },
     {
       id: "i3",
