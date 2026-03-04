@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   MapPin,
-  Home,
   Users,
   Settings,
   ScanLine,
@@ -40,6 +39,11 @@ type FollowerProfile = {
   id: string;
   name: string;
   handle: string;
+};
+
+type FriendLocation = FollowerProfile & {
+  place: string;
+  lastSeen: string;
 };
 
 const demoFriends: FollowerProfile[] = [
@@ -389,7 +393,7 @@ function FollowerPicker({
   );
 }
 
-type TabKey = "home" | "map" | "friends" | "settings";
+type TabKey = "find" | "friends" | "settings";
 
 function BottomNav({
   tab,
@@ -421,9 +425,8 @@ function BottomNav({
 
   return (
     <div className="shrink-0 border-t border-neutral-900 bg-neutral-950/95 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/85">
-      <div className="grid grid-cols-4 gap-2 px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
-        <Item id="home" Icon={Home} label="Home" />
-        <Item id="map" Icon={MapPin} label="Map" />
+      <div className="grid grid-cols-3 gap-2 px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
+        <Item id="find" Icon={MapPin} label="Find" />
         <Item id="friends" Icon={Users} label="Share" />
         <Item id="settings" Icon={Settings} label="Settings" />
       </div>
@@ -630,11 +633,13 @@ function MapMock({
   selectedId,
   setSelectedId,
   items,
+  friendLocations,
   onOpenSelected,
 }: {
   selectedId: string;
   setSelectedId: (id: string) => void;
   items: Item[];
+  friendLocations: FriendLocation[];
   onOpenSelected: () => void;
 }) {
   const placeToXY: Record<string, { x: number; y: number }> = {
@@ -716,6 +721,24 @@ function MapMock({
           );
         })}
 
+        {friendLocations.map((friend, index) => {
+          const xy = placeToXY[friend.place] || placeToXY["Nearby"];
+          return (
+            <div
+              key={friend.id}
+              className="absolute -translate-x-1/2 -translate-y-1/2"
+              style={{
+                left: `${xy.x + (index % 2 === 0 ? -3 : 3)}%`,
+                top: `${xy.y + (index % 2 === 0 ? 3 : -3)}%`,
+              }}
+            >
+              <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-sky-500/90 text-[9px] font-semibold text-white shadow-lg">
+                {friend.name.slice(0, 1).toUpperCase()}
+              </div>
+            </div>
+          );
+        })}
+
         {/* Floating info bubble */}
         {selected && (
           <div
@@ -756,6 +779,12 @@ function MapMock({
           </span>
           <span className="inline-flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-sky-500" /> Shared with me
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="flex h-3 w-3 items-center justify-center rounded-full bg-sky-500/90 text-[7px] font-semibold text-white">
+              A
+            </span>{" "}
+            Friends
           </span>
         </div>
       </div>
@@ -956,14 +985,15 @@ function SetupFlow({
 
 export default function Page() {
   const [stage, setStage] = useState<"marketing" | "setup" | "app">("marketing");
-  const [tab, setTab] = useState<TabKey>("home");
+  const [tab, setTab] = useState<TabKey>("find");
   const [setupReturn, setSetupReturn] = useState<{
     stage: "marketing" | "app";
     tab: TabKey;
   }>({
     stage: "marketing",
-    tab: "home",
+    tab: "find",
   });
+  const [findSheetExpanded, setFindSheetExpanded] = useState(false);
 
   const [selectedItemId, setSelectedItemId] = useState("i2");
 
@@ -1082,6 +1112,19 @@ export default function Page() {
     );
   };
 
+  const friendLocations = useMemo<FriendLocation[]>(
+    () => [
+      { ...getFollowerProfile("f1"), place: "Memorial Union", lastSeen: "3 min ago" },
+      { ...getFollowerProfile("f2"), place: "East Quad", lastSeen: "Just now" },
+      {
+        ...getFollowerProfile("f3"),
+        place: "Shields Library",
+        lastSeen: "6 min ago",
+      },
+    ],
+    [allFollowers]
+  );
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code") || "STICK-4FNN";
@@ -1090,12 +1133,12 @@ export default function Page() {
     setInitialSetupCode(code);
 
     if (setup === "1") {
-      setSetupReturn({ stage: "marketing", tab: "home" });
+      setSetupReturn({ stage: "marketing", tab: "find" });
       setStage("setup");
     }
   }, []);
 
-  const goToApp = (defaultTab: TabKey = "home") => {
+  const goToApp = (defaultTab: TabKey = "find") => {
     setStage("app");
     setTab(defaultTab);
   };
@@ -1150,7 +1193,7 @@ export default function Page() {
 
     setItems((p) => [newItem, ...p]);
     setSelectedItemId(id);
-    goToApp("map");
+    goToApp("find");
     showToast("Tracker added");
 
     const url = new URL(window.location.href);
@@ -1162,7 +1205,7 @@ export default function Page() {
   const Header = ({ title }: { title: string }) => (
     <div className="px-5 pt-5 pb-3">
       <div className="text-xl font-semibold text-neutral-50">{title}</div>
-      {(stage === "marketing" || (stage === "app" && tab === "home")) && (
+      {(stage === "marketing" || (stage === "app" && tab === "find")) && (
         <div className="text-sm text-neutral-500">
           Stick it. Forget it. We’ll track it.
         </div>
@@ -1231,7 +1274,7 @@ export default function Page() {
           <Button onClick={openSetup}>
             <Plus className="h-4 w-4" /> Add a tracker
           </Button>
-          <Button variant="secondary" onClick={() => goToApp("map")}>
+          <Button variant="secondary" onClick={() => goToApp("find")}>
             View app
           </Button>
         </div>
@@ -1280,6 +1323,7 @@ export default function Page() {
         selectedId={selectedItemId}
         setSelectedId={setSelectedItemId}
         items={items}
+        friendLocations={friendLocations}
         onOpenSelected={() => setDetailsOpen(true)}
       />
 
@@ -1313,6 +1357,120 @@ export default function Page() {
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+
+  const FindTab = () => (
+    <div className="px-5 pb-4">
+      <div className="space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="text-sm text-neutral-200">Live map</div>
+            <div className="text-xs text-neutral-500">
+              View your items, shared items, and nearby friends in one place.
+            </div>
+          </div>
+          <Button size="sm" onClick={openSetup}>
+            <Plus className="h-4 w-4" /> Add
+          </Button>
+        </div>
+
+        <MapMock
+          selectedId={selectedItemId}
+          setSelectedId={setSelectedItemId}
+          items={items}
+          friendLocations={friendLocations}
+          onOpenSelected={() => setDetailsOpen(true)}
+        />
+
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
+            <button
+              onClick={() => setFindSheetExpanded((current) => !current)}
+              className="flex w-full items-center justify-between px-4 py-3 text-left"
+            >
+              <div>
+                <div className="text-sm font-medium text-neutral-100">Items</div>
+                <div className="text-xs text-neutral-500">
+                  Pull up to browse all trackers and their latest activity.
+                </div>
+              </div>
+              <div className="text-xs text-neutral-400">
+                {findSheetExpanded ? "Collapse" : "Expand"}
+              </div>
+            </button>
+            <div className="flex justify-center pb-2">
+              <div className="h-1.5 w-10 rounded-full bg-neutral-800" />
+            </div>
+            <div
+              className={cx(
+                "space-y-2 overflow-y-auto px-4 pb-4 transition-all",
+                findSheetExpanded ? "max-h-[320px]" : "max-h-[184px]"
+              )}
+            >
+              {items.map((it) => (
+                <button
+                  key={it.id}
+                  onClick={() => {
+                    setSelectedItemId(it.id);
+                    setDetailsOpen(true);
+                  }}
+                  className={cx(
+                    "w-full rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3 text-left",
+                    it.id === selectedItemId ? "border-neutral-700 bg-neutral-900/80" : ""
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-sm text-neutral-100 truncate">
+                        {it.name}
+                        {it.status === "shared_with_me" && it.owner
+                          ? ` (Owner: ${it.owner})`
+                          : ""}
+                      </div>
+                      <div className="mt-1 text-xs text-neutral-500 truncate">
+                        {it.place} · {it.lastSeen}
+                      </div>
+                    </div>
+                    <Badge
+                      className={cx(
+                        "rounded-2xl",
+                        it.status === "shared_with_me"
+                          ? "bg-sky-500/15 text-sky-300"
+                          : "bg-emerald-500/15 text-emerald-300"
+                      )}
+                    >
+                      {it.status === "shared_with_me" ? "Shared" : "Mine"}
+                    </Badge>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-sm text-neutral-200">Friends on the map</div>
+            <div className="mt-3 space-y-2">
+              {friendLocations.map((friend) => (
+                <div
+                  key={friend.id}
+                  className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3"
+                >
+                  <div>
+                    <div className="text-sm text-neutral-100">{friend.name}</div>
+                    <div className="text-xs text-neutral-500">
+                      {friend.place} · {friend.lastSeen}
+                    </div>
+                  </div>
+                  <div className="text-xs text-sky-300">{friend.handle}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 
@@ -1497,18 +1655,15 @@ export default function Page() {
     <div className="h-full min-h-0 flex flex-col">
       <Header
         title={
-          tab === "home"
-            ? "Home"
-            : tab === "map"
-            ? "Map"
+          tab === "find"
+            ? "Find"
             : tab === "friends"
             ? "Share"
             : "Settings"
         }
       />
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        {tab === "home" && <HomeTab />}
-        {tab === "map" && <MapTab />}
+        {tab === "find" && <FindTab />}
         {tab === "friends" && <FriendsTab />}
         {tab === "settings" && <SettingsTab />}
       </div>
