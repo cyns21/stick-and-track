@@ -43,6 +43,33 @@ const demoFriends = [
   { id: "f4", name: "Sam", handle: "@sam" },
 ];
 
+function normalizeFollowerInput(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const handle = trimmed.startsWith("@") ? trimmed : `@${trimmed}`;
+  const slug = handle.slice(1).toLowerCase().replace(/[^a-z0-9._-]/g, "");
+  if (!slug) return null;
+
+  return {
+    id: `custom:${slug}`,
+    name: handle,
+    handle,
+  };
+}
+
+function getFollowerProfile(id: string) {
+  const friend = demoFriends.find((entry) => entry.id === id);
+  if (friend) return friend;
+
+  if (id.startsWith("custom:")) {
+    const handle = `@${id.slice("custom:".length)}`;
+    return { id, name: handle, handle };
+  }
+
+  return { id, name: id, handle: "" };
+}
+
 const campusPlaces = [
   { id: "p1", name: "Memorial Union", tag: "MU" },
   { id: "p2", name: "Shields Library", tag: "Shields" },
@@ -267,6 +294,7 @@ function FollowerPicker({
   emptyLabel?: string;
 }) {
   const [query, setQuery] = useState("");
+  const customFollower = normalizeFollowerInput(query);
 
   const filteredFriends = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -298,6 +326,28 @@ function FollowerPicker({
             {selectedIds.length} added
           </Badge>
         </div>
+
+        {customFollower && !demoFriends.some((friend) => friend.handle === customFollower.handle) && (
+          <div className="mt-3 rounded-2xl border border-neutral-900 bg-neutral-950 px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-sm text-neutral-200">{customFollower.handle}</div>
+                <div className="text-xs text-neutral-600">
+                  Add custom follower for demo
+                </div>
+              </div>
+              <Button
+                variant={
+                  selectedIds.includes(customFollower.id) ? "secondary" : "primary"
+                }
+                size="sm"
+                onClick={() => onToggle(customFollower.id)}
+              >
+                {selectedIds.includes(customFollower.id) ? "Remove" : "Add"}
+              </Button>
+            </div>
+          </div>
+        )}
 
         {filteredFriends.length ? (
           <div className="mt-3 space-y-2">
@@ -390,7 +440,7 @@ function Modal({
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div className="absolute left-1/2 top-1/2 w-[92%] max-w-[420px] -translate-x-1/2 -translate-y-1/2">
-        <div className="rounded-3xl border border-neutral-800 bg-neutral-950 p-4 shadow-2xl">
+        <div className="max-h-[min(84dvh,720px)] overflow-y-auto rounded-3xl border border-neutral-800 bg-neutral-950 p-4 shadow-2xl">
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="text-lg font-semibold text-neutral-50">{title}</div>
@@ -1196,9 +1246,8 @@ export default function Page() {
 
   const FriendsTab = () => {
     const it = shareItem;
-    const followers = (it?.followers ?? []).map(
-      (fid: string) =>
-        demoFriends.find((f) => f.id === fid) || { id: fid, name: fid, handle: "" }
+    const followers = (it?.followers ?? []).map((fid: string) =>
+      getFollowerProfile(fid)
     );
 
     return (
@@ -1399,11 +1448,13 @@ export default function Page() {
     <PhoneFrame>
       {stage === "marketing" && <Marketing />}
       {stage === "setup" && (
-        <SetupFlow
-          onFinish={addItemFromSetup}
-          onCancel={exitSetup}
-          initialCode={initialSetupCode}
-        />
+        <div className="h-full overflow-y-auto overscroll-contain">
+          <SetupFlow
+            onFinish={addItemFromSetup}
+            onCancel={exitSetup}
+            initialCode={initialSetupCode}
+          />
+        </div>
       )}
       {stage === "app" && <AppShell />}
 
