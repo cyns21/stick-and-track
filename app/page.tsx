@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   MapPin,
   Users,
@@ -663,6 +663,7 @@ function MapMock({
   }, [items]);
 
   const selected = items.find((x) => x.id === selectedId) || items[0];
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   // Only 2 pin colors: My items (green) vs Shared with me (blue)
   const pinColor = (isSharedWithMe: boolean) =>
@@ -670,33 +671,60 @@ function MapMock({
 
   const selXY = placeToXY[selected.place] || placeToXY["Nearby"];
 
+  const centerOnPoint = (x: number, y: number) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const content = viewport.firstElementChild as HTMLDivElement | null;
+    if (!content) return;
+
+    const targetLeft = (content.scrollWidth * x) / 100 - viewport.clientWidth / 2;
+    const targetTop = (content.scrollHeight * y) / 100 - viewport.clientHeight / 2;
+
+    viewport.scrollTo({
+      left: Math.max(0, targetLeft),
+      top: Math.max(0, targetTop),
+      behavior: "smooth",
+    });
+  };
+
+  useEffect(() => {
+    centerOnPoint(selXY.x, selXY.y);
+  }, [selectedId]);
+
   return (
     <div className="rounded-3xl overflow-hidden border border-neutral-900 bg-neutral-950">
       <div className="p-4 border-b border-neutral-900 flex items-center justify-between">
         <div>
           <div className="text-sm text-neutral-100">Campus Map</div>
-          <div className="text-xs text-neutral-500">Tap pins to view last seen</div>
+          <div className="text-xs text-neutral-500">
+            Drag the map and tap pins to view last seen
+          </div>
         </div>
         <Button
           variant="secondary"
           size="sm"
           className="rounded-2xl"
-          onClick={() => setSelectedId(selected?.id)}
+          onClick={() => centerOnPoint(selXY.x, selXY.y)}
         >
           <LocateFixed className="h-4 w-4" />
-          Locate
+          Center
         </Button>
       </div>
 
-      <div className="relative h-[290px]">
-        <img
-          src={MAP_IMAGE_SRC}
-          alt="Map"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-neutral-950/30" />
+      <div
+        ref={viewportRef}
+        className="h-[52dvh] min-h-[380px] max-h-[560px] overflow-auto overscroll-contain touch-pan-x touch-pan-y"
+      >
+        <div className="relative h-[720px] min-w-[150%]">
+          <img
+            src={MAP_IMAGE_SRC}
+            alt="Map"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-neutral-950/30" />
 
-        {pins.map((p) => {
+          {pins.map((p) => {
           const isSel = p.id === selectedId;
           return (
             <button
@@ -719,9 +747,9 @@ function MapMock({
               <div className="h-4 w-4 rounded-full -mt-2 opacity-20 bg-black/20" />
             </button>
           );
-        })}
+          })}
 
-        {friendLocations.map((friend, index) => {
+          {friendLocations.map((friend, index) => {
           const xy = placeToXY[friend.place] || placeToXY["Nearby"];
           return (
             <div
@@ -737,7 +765,7 @@ function MapMock({
               </div>
             </div>
           );
-        })}
+          })}
 
         {/* Floating info bubble */}
         {selected && (
@@ -770,6 +798,10 @@ function MapMock({
             <div className="mx-auto h-0 w-0 border-x-[8px] border-x-transparent border-t-[10px] border-t-neutral-950/90" />
           </div>
         )}
+          <div className="pointer-events-none absolute bottom-3 right-3 rounded-2xl border border-neutral-800 bg-neutral-950/80 px-3 py-1.5 text-[11px] text-neutral-300 backdrop-blur">
+            Drag to pan
+          </div>
+        </div>
       </div>
 
       <div className="p-4">
