@@ -255,6 +255,83 @@ function Pill({
   );
 }
 
+function FollowerPicker({
+  selectedIds,
+  onToggle,
+  title = "Suggested people",
+  emptyLabel = "No matching people found.",
+}: {
+  selectedIds: string[];
+  onToggle: (id: string) => void;
+  title?: string;
+  emptyLabel?: string;
+}) {
+  const [query, setQuery] = useState("");
+
+  const filteredFriends = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return demoFriends;
+
+    return demoFriends.filter((friend) => {
+      return (
+        friend.name.toLowerCase().includes(q) ||
+        friend.handle.toLowerCase().includes(q.replace(/^@/, ""))
+      );
+    });
+  }, [query]);
+
+  return (
+    <div className="space-y-3">
+      <div className="space-y-2">
+        <div className="text-xs text-neutral-500">Search by username</div>
+        <Input
+          value={query}
+          onChange={setQuery}
+          placeholder="@alex or Maya"
+        />
+      </div>
+
+      <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-xs text-neutral-500">{title}</div>
+          <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">
+            {selectedIds.length} added
+          </Badge>
+        </div>
+
+        {filteredFriends.length ? (
+          <div className="mt-3 space-y-2">
+            {filteredFriends.map((friend) => {
+              const isSelected = selectedIds.includes(friend.id);
+
+              return (
+                <div
+                  key={friend.id}
+                  className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950 px-4 py-3"
+                >
+                  <div>
+                    <div className="text-sm text-neutral-200">{friend.name}</div>
+                    <div className="text-xs text-neutral-600">{friend.handle}</div>
+                  </div>
+                  <Button
+                    variant={isSelected ? "secondary" : "primary"}
+                    size="sm"
+                    onClick={() => onToggle(friend.id)}
+                  >
+                    {isSelected ? "Remove" : "Add"}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="mt-3 text-sm text-neutral-500">{emptyLabel}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 type TabKey = "home" | "map" | "friends" | "settings";
 
 function BottomNav({
@@ -644,10 +721,19 @@ function SetupFlow({
   const [name, setName] = useState("Keys");
   const [model, setModel] = useState<"Slim" | "Pro">("Slim");
   const [isPublic, setIsPublic] = useState(false);
+  const [followers, setFollowers] = useState<string[]>([]);
 
   useEffect(() => {
     setCode(initialCode || "STICK-4FNN");
   }, [initialCode]);
+
+  const toggleFollower = (id: string) => {
+    setFollowers((current) =>
+      current.includes(id)
+        ? current.filter((followerId) => followerId !== id)
+        : [...current, id]
+    );
+  };
 
   const steps = [
     {
@@ -712,19 +798,20 @@ function SetupFlow({
             <Switch checked={isPublic} onChange={setIsPublic} />
           </div>
 
-          <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4">
-            <div className="text-xs text-neutral-500">Example followers</div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {demoFriends.slice(0, 3).map((f) => (
-                <Badge
-                  key={f.id}
-                  className="rounded-2xl bg-neutral-900 text-neutral-200"
-                >
-                  {f.name}
-                </Badge>
-              ))}
+          {isPublic ? (
+            <FollowerPicker
+              selectedIds={followers}
+              onToggle={toggleFollower}
+              title="Suggested followers"
+            />
+          ) : (
+            <div className="rounded-2xl border border-dashed border-neutral-800 bg-neutral-950/40 p-4">
+              <div className="text-sm text-neutral-300">Private for now</div>
+              <div className="mt-1 text-xs text-neutral-500">
+                Turn on Public to pick friends who can help locate this item.
+              </div>
             </div>
-          </div>
+          )}
         </div>
       ),
     },
@@ -771,7 +858,7 @@ function SetupFlow({
         {step < steps.length - 1 ? (
           <Button onClick={() => setStep((s) => s + 1)}>Continue</Button>
         ) : (
-          <Button onClick={() => onFinish({ code, name, model, isPublic })}>
+          <Button onClick={() => onFinish({ code, name, model, isPublic, followers })}>
             Finish setup
           </Button>
         )}
@@ -924,7 +1011,7 @@ export default function Page() {
     setStage("marketing");
   };
 
-  const addItemFromSetup = ({ name, model, isPublic }: any) => {
+  const addItemFromSetup = ({ name, model, isPublic, followers }: any) => {
     const place = campusPlaces[Math.floor(Math.random() * campusPlaces.length)];
     const id = `i${Math.floor(Math.random() * 9000) + 100}`;
     const newItem: Item = {
@@ -936,7 +1023,7 @@ export default function Page() {
       place: place.name,
       battery: 100,
       isPublic: !!isPublic,
-      followers: isPublic ? demoFriends.map((f) => f.id).slice(0, 2) : [],
+      followers: isPublic ? followers ?? [] : [],
     };
 
     setItems((p) => [newItem, ...p]);
@@ -1117,8 +1204,15 @@ export default function Page() {
     return (
       <div className="px-5 pb-4 space-y-3">
         <Card>
-          <CardContent className="p-4 space-y-2">
-            <div className="text-xs text-neutral-500">Select item</div>
+          <CardContent className="p-4 space-y-3">
+            <div>
+              <div className="text-sm font-medium text-neutral-100">
+                Followers are assigned per item
+              </div>
+              <div className="text-xs text-neutral-500">
+                Choose the exact tracker these people should follow.
+              </div>
+            </div>
             <select
               value={shareItemId}
               onChange={(e) => setShareItemId(e.target.value)}
@@ -1130,6 +1224,19 @@ export default function Page() {
                 </option>
               ))}
             </select>
+            {it && (
+              <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3">
+                <div className="text-xs uppercase tracking-[0.18em] text-neutral-500">
+                  Selected item
+                </div>
+                <div className="mt-1 text-base font-medium text-neutral-100">
+                  {it.name}
+                </div>
+                <div className="text-xs text-neutral-500">
+                  Only followers for this item can help locate it.
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -1384,37 +1491,23 @@ export default function Page() {
         onClose={() => setShareOpen(false)}
         title={`Add followers — ${shareItem?.name || "item"}`}
       >
-        <div className="space-y-2">
-          {demoFriends.map((f) => {
-            const cur = shareItem?.followers ?? [];
-            const isFollowing = cur.includes(f.id);
-            return (
-              <div
-                key={f.id}
-                className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3"
-              >
-                <div>
-                  <div className="text-sm text-neutral-200">{f.name}</div>
-                  <div className="text-xs text-neutral-600">{f.handle}</div>
-                </div>
-                <Button
-                  variant={isFollowing ? "secondary" : "primary"}
-                  size="sm"
-                  onClick={() => {
-                    updateItem(shareItem!.id, {
-                      followers: isFollowing
-                        ? cur.filter((x: string) => x !== f.id)
-                        : [...cur, f.id],
-                    });
-                    showToast(isFollowing ? "Removed" : "Added");
-                  }}
-                >
-                  {isFollowing ? "Remove" : "Add"}
-                </Button>
-              </div>
-            );
-          })}
-        </div>
+        <FollowerPicker
+          selectedIds={shareItem?.followers ?? []}
+          onToggle={(id) => {
+            if (!shareItem) return;
+
+            const currentFollowers = shareItem.followers;
+            const isFollowing = currentFollowers.includes(id);
+
+            updateItem(shareItem.id, {
+              followers: isFollowing
+                ? currentFollowers.filter((followerId: string) => followerId !== id)
+                : [...currentFollowers, id],
+            });
+            showToast(isFollowing ? "Removed" : "Added");
+          }}
+          title="Suggested followers"
+        />
         <div className="mt-4 flex justify-end">
           <Button variant="secondary" onClick={() => setShareOpen(false)}>
             Done
