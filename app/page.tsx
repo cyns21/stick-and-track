@@ -1331,7 +1331,7 @@ export default function Page() {
                 Followers are assigned per item
               </div>
               <div className="text-xs text-neutral-500">
-                Choose the exact tracker these people should follow.
+                Select the tracker you want to share with followers.
               </div>
             </div>
             <select
