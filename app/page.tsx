@@ -978,7 +978,9 @@ export default function Page() {
           <Card>
             <CardHeader>
               <div className="text-sm text-neutral-100">Slim</div>
-              <div className="text-xs text-neutral-500">Ultra-thin, silent</div>
+              <div className="min-h-[2.5rem] text-xs text-neutral-500">
+                Ultra-thin, silent
+              </div>
             </CardHeader>
             <CardContent className="pt-0 space-y-2">
               <div className="flex items-center gap-2 text-xs text-neutral-400">
@@ -997,7 +999,9 @@ export default function Page() {
           <Card>
             <CardHeader>
               <div className="text-sm text-neutral-100">Pro</div>
-              <div className="text-xs text-neutral-500">Compact + speaker</div>
+              <div className="min-h-[2.5rem] text-xs text-neutral-500">
+                Compact + speaker
+              </div>
             </CardHeader>
             <CardContent className="pt-0 space-y-2">
               <div className="flex items-center gap-2 text-xs text-neutral-400">
