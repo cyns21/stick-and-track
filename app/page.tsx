@@ -757,8 +757,14 @@ function SetupFlow({
       <div className="flex items-center justify-between gap-3">
         <Button
           variant="secondary"
-          onClick={() => setStep((s) => Math.max(0, s - 1))}
-          disabled={step === 0}
+          onClick={() => {
+            if (step === 0) {
+              onCancel();
+              return;
+            }
+
+            setStep((s) => s - 1);
+          }}
         >
           Back
         </Button>
@@ -777,6 +783,13 @@ function SetupFlow({
 export default function Page() {
   const [stage, setStage] = useState<"marketing" | "setup" | "app">("marketing");
   const [tab, setTab] = useState<TabKey>("home");
+  const [setupReturn, setSetupReturn] = useState<{
+    stage: "marketing" | "app";
+    tab: TabKey;
+  }>({
+    stage: "marketing",
+    tab: "home",
+  });
 
   const [selectedItemId, setSelectedItemId] = useState("i2");
 
@@ -884,6 +897,7 @@ export default function Page() {
     setInitialSetupCode(code);
 
     if (setup === "1") {
+      setSetupReturn({ stage: "marketing", tab: "home" });
       setStage("setup");
     }
   }, []);
@@ -891,6 +905,23 @@ export default function Page() {
   const goToApp = (defaultTab: TabKey = "home") => {
     setStage("app");
     setTab(defaultTab);
+  };
+
+  const openSetup = () => {
+    setSetupReturn({
+      stage: stage === "app" ? "app" : "marketing",
+      tab,
+    });
+    setStage("setup");
+  };
+
+  const exitSetup = () => {
+    if (setupReturn.stage === "app") {
+      goToApp(setupReturn.tab);
+      return;
+    }
+
+    setStage("marketing");
   };
 
   const addItemFromSetup = ({ name, model, isPublic }: any) => {
@@ -984,7 +1015,7 @@ export default function Page() {
         </div>
 
         <div className="mt-4 flex gap-2">
-          <Button onClick={() => setStage("setup")}>
+          <Button onClick={openSetup}>
             <Plus className="h-4 w-4" /> Add a tracker
           </Button>
           <Button variant="secondary" onClick={() => goToApp("map")}>
@@ -999,7 +1030,7 @@ export default function Page() {
     <div className="px-5 pb-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="text-sm text-neutral-400">Your items</div>
-        <Button size="sm" onClick={() => setStage("setup")}>
+        <Button size="sm" onClick={openSetup}>
           <Plus className="h-4 w-4" /> Add
         </Button>
       </div>
@@ -1259,10 +1290,7 @@ export default function Page() {
       {stage === "setup" && (
         <SetupFlow
           onFinish={addItemFromSetup}
-          onCancel={() => {
-            setStage("app");
-            setTab("home");
-          }}
+          onCancel={exitSetup}
           initialCode={initialSetupCode}
         />
       )}
