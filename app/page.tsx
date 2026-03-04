@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 /**
- * Stick & Track — Demo Prototype
+ * Stick 'n Track — Demo Prototype
  * Self-contained (Tailwind + lucide-react only)
  *
  * ✅ Works as a Next.js App Router page (app/page.tsx)
@@ -222,12 +222,9 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen w-full bg-neutral-950 text-neutral-50 flex items-center justify-center p-6">
       <div className="w-[390px] max-w-full">
         <div className="rounded-[2.2rem] border border-neutral-800 bg-neutral-950 shadow-2xl overflow-hidden">
+          {/* Top bar (removed Connected label) */}
           <div className="h-10 flex items-center justify-between px-5 border-b border-neutral-900">
             <div className="text-xs text-neutral-400">Stick 'n Track</div>
-            <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-emerald-500" />
-              <div className="text-xs text-neutral-500">Connected</div>
-            </div>
           </div>
           <div className="bg-neutral-950">{children}</div>
         </div>
@@ -451,15 +448,16 @@ function ItemCard({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Quick share icon */}
-            <button
-              onClick={onQuickShare}
-              className="h-10 w-10 rounded-2xl bg-neutral-900 flex items-center justify-center hover:bg-neutral-800 transition"
-              aria-label="Share"
-              disabled={isSharedWithMe}
-            >
-              <Share2 className="h-5 w-5" />
-            </button>
+            {/* Remove share button entirely for "Shared with me" items */}
+            {!isSharedWithMe && (
+              <button
+                onClick={onQuickShare}
+                className="h-10 w-10 rounded-2xl bg-neutral-900 flex items-center justify-center hover:bg-neutral-800 transition"
+                aria-label="Share"
+              >
+                <Share2 className="h-5 w-5" />
+              </button>
+            )}
 
             <button
               onClick={onOpen}
@@ -471,7 +469,9 @@ function ItemCard({
           </div>
         </div>
 
-        <div className={cx("mt-4 grid gap-2", isPro ? "grid-cols-2" : "grid-cols-1")}>
+        <div
+          className={cx("mt-4 grid gap-2", isPro ? "grid-cols-2" : "grid-cols-1")}
+        >
           <Button variant="secondary" onClick={onPing}>
             <Bell className="h-4 w-4" /> Ping
           </Button>
@@ -640,7 +640,8 @@ function SetupFlow({
 }) {
   const [step, setStep] = useState(0);
   const [code, setCode] = useState(initialCode || "STICK-4FNN");
-  const [name, setName] = useState("Wallet");
+  // Default registration name: Keys (instead of Wallet)
+  const [name, setName] = useState("Keys");
   const [model, setModel] = useState<"Slim" | "Pro">("Slim");
   const [isPublic, setIsPublic] = useState(false);
 
@@ -689,11 +690,8 @@ function SetupFlow({
                 Pro
               </Button>
             </div>
-            <div className="text-xs text-neutral-500">
-              {model === "Slim"
-                ? "Ideal for wallets, water bottles, books"
-                : "Best for keys, backpacks, laptops"}
-            </div>
+
+            {/* Removed model description text under buttons */}
           </div>
         </div>
       ),
@@ -705,7 +703,8 @@ function SetupFlow({
         <div className="space-y-3">
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
             <div className="min-w-0">
-              <div className="text-sm text-neutral-200">Public (followers)</div>
+              {/* Public (followers) -> Public */}
+              <div className="text-sm text-neutral-200">Public</div>
               <div className="text-xs text-neutral-500">
                 Friends can view location to help you find it
               </div>
@@ -742,9 +741,9 @@ function SetupFlow({
             {steps[step].title}
           </div>
         </div>
-        <Button variant="ghost" size="sm" onClick={onCancel}>
-          Cancel
-        </Button>
+
+        {/* Removed Cancel button; rely on Back controls only */}
+        <div className="w-[64px]" />
       </div>
 
       <div className="text-sm text-neutral-400">{steps[step].desc}</div>
@@ -937,7 +936,9 @@ export default function Page() {
         <div className="inline-flex items-center gap-2 rounded-2xl bg-neutral-900 px-3 py-1 text-xs text-neutral-200">
           <CheckCircle2 className="h-4 w-4" /> Demo storefront
         </div>
-        <div className="mt-4 text-2xl font-semibold text-neutral-50">Stick 'n Track</div>
+        <div className="mt-4 text-2xl font-semibold text-neutral-50">
+          Stick 'n Track
+        </div>
         <div className="mt-1 text-sm text-neutral-400">
           Stick it. Forget it. We’ll track it.
         </div>
@@ -1031,7 +1032,6 @@ export default function Page() {
 
   const MapTab = () => (
     <div className="px-5 pb-4 space-y-3">
-      {/* removed redundant subheading */}
       <MapMock
         selectedId={selectedItemId}
         setSelectedId={setSelectedItemId}
@@ -1081,9 +1081,6 @@ export default function Page() {
 
     return (
       <div className="px-5 pb-4 space-y-3">
-        {/* removed redundant subheading + removed top Share button */}
-
-        {/* Dropdown for owned items */}
         <Card>
           <CardContent className="p-4 space-y-2">
             <div className="text-xs text-neutral-500">Select item</div>
@@ -1114,8 +1111,15 @@ export default function Page() {
                 <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">
                   {followers.length}
                 </Badge>
-                <Button size="sm" onClick={() => setShareOpen(true)} disabled={!it}>
-                  <Plus className="h-4 w-4" /> Add new followers
+
+                {/* Smaller font + cleaner label */}
+                <Button
+                  size="sm"
+                  className="text-[11px] px-3"
+                  onClick={() => setShareOpen(true)}
+                  disabled={!it}
+                >
+                  <Plus className="h-4 w-4" /> Add followers
                 </Button>
               </div>
             </div>
@@ -1153,7 +1157,9 @@ export default function Page() {
             <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
               <div>
                 <div className="text-sm text-neutral-200">Public</div>
-                <div className="text-xs text-neutral-500">Allow followers to see location</div>
+                <div className="text-xs text-neutral-500">
+                  Allow followers to see location
+                </div>
               </div>
               <Switch
                 checked={!!it?.isPublic}
@@ -1186,8 +1192,6 @@ export default function Page() {
 
   const SettingsTab = () => (
     <div className="px-5 pb-4 space-y-3">
-      {/* removed redundant subheading */}
-
       <Card>
         <CardContent className="p-4 space-y-4">
           <div className="flex items-center justify-between">
@@ -1282,7 +1286,6 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Update + Public/Private (replaces duplicate Share button) */}
           <div className="grid grid-cols-2 gap-2">
             <Button onClick={() => showToast("Requested location update")}>
               <MapPin className="h-4 w-4" /> Update
@@ -1309,7 +1312,6 @@ export default function Page() {
             </Button>
           </div>
 
-          {/* Keep access to Share tab (for Map info use-case) without duplicating Share button */}
           {selectedItem?.status !== "shared_with_me" && (
             <Button
               variant="ghost"
