@@ -638,11 +638,11 @@ function MapMock({
   onOpenSelected: () => void;
 }) {
   const placeToCoords: Record<string, { lat: number; lng: number }> = {
-    "Memorial Union": { lat: 38.5427, lng: -121.7493 },
-    "Shields Library": { lat: 38.5398, lng: -121.7519 },
-    "Teaching & Learning Complex": { lat: 38.5386, lng: -121.7598 },
-    "East Quad": { lat: 38.5421, lng: -121.7538 },
-    Nearby: { lat: 38.5449, lng: -121.7405 },
+    "Memorial Union": { lat: 38.54241, lng: -121.74958 },
+    "Shields Library": { lat: 38.54018, lng: -121.74885 },
+    "Teaching & Learning Complex": { lat: 38.53869, lng: -121.75398 },
+    "East Quad": { lat: 38.54118, lng: -121.74895 },
+    Nearby: { lat: 38.5415, lng: -121.7505 },
   };
 
   const selected = items.find((x) => x.id === selectedId) || items[0];
