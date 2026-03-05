@@ -712,7 +712,10 @@ function MapMock({
 
   const clampZoom = (value: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
 
-  const getTouchDistance = (a: Touch, b: Touch) => {
+  const getTouchDistance = (
+    a: { clientX: number; clientY: number },
+    b: { clientX: number; clientY: number }
+  ) => {
     const dx = a.clientX - b.clientX;
     const dy = a.clientY - b.clientY;
     return Math.sqrt(dx * dx + dy * dy);
