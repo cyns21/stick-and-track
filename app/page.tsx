@@ -1500,12 +1500,7 @@ export default function Page() {
     <div className="px-5 pb-4">
       <div className="space-y-3">
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="text-sm text-neutral-200">Live map</div>
-            <div className="text-xs text-neutral-500">
-              View your items, shared items, and nearby friends in one place.
-            </div>
-          </div>
+          <div className="text-sm text-neutral-200">Stick it. Track it. Forget it</div>
           <Button size="sm" onClick={openSetup}>
             <Plus className="h-4 w-4" /> Add
           </Button>
