@@ -783,6 +783,22 @@ function MapMock({
         fillColor: isSharedWithMe ? "#0ea5e9" : "#10b981",
         fillOpacity: 0.95,
       }).addTo(layer);
+      const ownerLine =
+        it.status === "shared_with_me" && it.owner
+          ? `<div style="margin-top:2px;">Owner: ${escapeHtml(it.owner)}</div>`
+          : "";
+      const popupHtml = `<div style="
+        min-width: 150px;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        color: #111827;
+        line-height: 1.35;
+      ">
+        <div style="font-weight: 700;">${escapeHtml(it.name)}</div>
+        <div style="font-size:12px; margin-top:2px;">${escapeHtml(it.place)}</div>
+        <div style="font-size:12px; margin-top:2px;">Last seen: ${escapeHtml(it.lastSeen)}</div>
+        ${ownerLine}
+      </div>`;
+      marker.bindPopup(popupHtml, { closeButton: false, offset: [0, -8] });
 
       const label = L.marker([coords.lat, coords.lng], {
         icon: L.divIcon({
@@ -805,8 +821,14 @@ function MapMock({
         interactive: true,
       }).addTo(layer);
 
-      marker.on("click", () => setSelectedId(it.id));
-      label.on("click", () => setSelectedId(it.id));
+      marker.on("click", () => {
+        setSelectedId(it.id);
+        marker.openPopup();
+      });
+      label.on("click", () => {
+        setSelectedId(it.id);
+        marker.openPopup();
+      });
     });
 
     const friendCountByPlace = new Map<string, number>();
