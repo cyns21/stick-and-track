@@ -748,6 +748,14 @@ function MapMock({
     };
 
     const itemCountByPlace = new Map<string, number>();
+    const escapeHtml = (value: string) =>
+      value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+
     items.forEach((it) => {
       const base = getCoordsForPlace(it.place);
       const count = itemCountByPlace.get(it.place) ?? 0;
@@ -773,13 +781,29 @@ function MapMock({
         fillOpacity: 0.95,
       }).addTo(layer);
 
-      marker.bindTooltip(it.name, {
-        direction: "top",
-        offset: [0, -6],
-        opacity: 0.9,
-      });
+      const label = L.marker([coords.lat, coords.lng], {
+        icon: L.divIcon({
+          className: "",
+          iconSize: [0, 0],
+          html: `<div style="
+            transform: translate(-50%, -34px);
+            display: inline-block;
+            border: 1px solid rgba(255,255,255,0.22);
+            background: rgba(10,10,10,0.86);
+            color: #f5f5f5;
+            border-radius: 9999px;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+          ">${escapeHtml(it.name)}</div>`,
+        }),
+        interactive: true,
+      }).addTo(layer);
 
       marker.on("click", () => setSelectedId(it.id));
+      label.on("click", () => setSelectedId(it.id));
     });
 
     const friendCountByPlace = new Map<string, number>();
