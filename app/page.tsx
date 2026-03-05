@@ -19,6 +19,7 @@ import {
   Info,
   CheckCircle2,
   Plus,
+  Minus,
 } from "lucide-react";
 
 /**
@@ -644,6 +645,9 @@ function MapMock({
   friendLocations: FriendLocation[];
   onOpenSelected: () => void;
 }) {
+  const MIN_ZOOM = 0.75;
+  const MAX_ZOOM = 2;
+  const ZOOM_STEP = 0.25;
   const placeToXY: Record<string, { x: number; y: number }> = {
     "Memorial Union": { x: 58, y: 33 },
     "Shields Library": { x: 72, y: 63 },
@@ -666,6 +670,7 @@ function MapMock({
 
   const selected = items.find((x) => x.id === selectedId) || items[0];
   const viewportRef = useRef<HTMLDivElement>(null);
+  const [zoom, setZoom] = useState(1);
 
   // Only 2 pin colors: My items (green) vs Shared with me (blue)
   const pinColor = (isSharedWithMe: boolean) =>
@@ -694,6 +699,18 @@ function MapMock({
     centerOnPoint(selXY.x, selXY.y);
   }, [selectedId]);
 
+  const updateZoom = (direction: "in" | "out") => {
+    setZoom((current) => {
+      const next =
+        direction === "in"
+          ? Math.min(MAX_ZOOM, current + ZOOM_STEP)
+          : Math.max(MIN_ZOOM, current - ZOOM_STEP);
+
+      requestAnimationFrame(() => centerOnPoint(selXY.x, selXY.y));
+      return next;
+    });
+  };
+
   return (
     <div className="rounded-3xl overflow-hidden border border-neutral-900 bg-neutral-950">
       <div className="p-4 border-b border-neutral-900 flex items-center justify-between">
@@ -703,15 +720,38 @@ function MapMock({
             Drag the map and tap pins to view last seen
           </div>
         </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          className="rounded-2xl"
-          onClick={() => centerOnPoint(selXY.x, selXY.y)}
-        >
-          <LocateFixed className="h-4 w-4" />
-          Center
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            className="rounded-2xl px-2.5"
+            onClick={() => updateZoom("out")}
+            disabled={zoom <= MIN_ZOOM}
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <div className="w-12 text-center text-xs text-neutral-400">
+            {Math.round(zoom * 100)}%
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="rounded-2xl px-2.5"
+            onClick={() => updateZoom("in")}
+            disabled={zoom >= MAX_ZOOM}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="rounded-2xl"
+            onClick={() => centerOnPoint(selXY.x, selXY.y)}
+          >
+            <LocateFixed className="h-4 w-4" />
+            Center
+          </Button>
+        </div>
       </div>
 
       <div
@@ -719,8 +759,12 @@ function MapMock({
         className="h-[58dvh] min-h-[420px] max-h-[680px] overflow-auto overscroll-contain touch-pan-x touch-pan-y"
       >
         <div
-          className="relative h-[760px] min-w-[150%]"
-          style={{ aspectRatio: `${MAP_IMAGE_WIDTH} / ${MAP_IMAGE_HEIGHT}` }}
+          className="relative"
+          style={{
+            aspectRatio: `${MAP_IMAGE_WIDTH} / ${MAP_IMAGE_HEIGHT}`,
+            height: `${760 * zoom}px`,
+            minWidth: `${150 * zoom}%`,
+          }}
         >
           <img
             src={MAP_IMAGE_SRC}
