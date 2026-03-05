@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   MapPin,
   Users,
@@ -22,20 +22,13 @@ import {
 } from "lucide-react";
 
 /**
- * Stick 'n Track — Demo Prototype
+ * Stick 'n Track â€” Demo Prototype
  * Self-contained (Tailwind + lucide-react only)
  *
- * ✅ Works as a Next.js App Router page (app/page.tsx)
- * ✅ Deploys cleanly to Vercel
- * ✅ Future NFC deep-link ready: /?setup=1&code=STICK-1234
- *
- * MAP IMAGE:
- * Put your UC Davis map image in: /public/ucdmap.jpeg
+ * âœ… Works as a Next.js App Router page (app/page.tsx)
+ * âœ… Deploys cleanly to Vercel
+ * âœ… Future NFC deep-link ready: /?setup=1&code=STICK-1234
  */
-
-const MAP_IMAGE_SRC = "/ucdmap.jpeg";
-const MAP_IMAGE_WIDTH = 3236;
-const MAP_IMAGE_HEIGHT = 1465;
 
 type FollowerProfile = {
   id: string;
@@ -581,7 +574,7 @@ function ItemCard({
 
             <div className="text-xs text-neutral-500 mt-1">
               Last seen <span className="text-neutral-300">{item.lastSeen}</span>
-              <span className="text-neutral-600"> · </span>
+              <span className="text-neutral-600"> Â· </span>
               <span className="text-neutral-300">{item.place}</span>
             </div>
           </div>
@@ -644,159 +637,26 @@ function MapMock({
   friendLocations: FriendLocation[];
   onOpenSelected: () => void;
 }) {
-  const MIN_ZOOM = 0.75;
-  const MAX_ZOOM = 2;
-  const placeToXY: Record<string, { x: number; y: number }> = {
-    "Memorial Union": { x: 58, y: 33 },
-    "Shields Library": { x: 72, y: 63 },
-    "Teaching & Learning Complex": { x: 22, y: 74 },
-    "East Quad": { x: 60, y: 52 },
-    Nearby: { x: 48, y: 45 },
+  const placeToCoords: Record<string, { lat: number; lng: number }> = {
+    "Memorial Union": { lat: 38.5427, lng: -121.7493 },
+    "Shields Library": { lat: 38.5398, lng: -121.7519 },
+    "Teaching & Learning Complex": { lat: 38.5386, lng: -121.7598 },
+    "East Quad": { lat: 38.5421, lng: -121.7538 },
+    Nearby: { lat: 38.5449, lng: -121.7405 },
   };
-
-  const pins = useMemo(() => {
-    return items.map((it) => {
-      const xy = placeToXY[it.place] || placeToXY["Nearby"];
-      return {
-        id: it.id,
-        x: xy.x,
-        y: xy.y,
-        isSharedWithMe: it.status === "shared_with_me",
-      };
-    });
-  }, [items]);
 
   const selected = items.find((x) => x.id === selectedId) || items[0];
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const [zoom, setZoom] = useState(1);
-  const pinchRef = useRef<{
-    active: boolean;
-    startDistance: number;
-    startZoom: number;
-    startContentX: number;
-    startContentY: number;
-  }>({
-    active: false,
-    startDistance: 0,
-    startZoom: 1,
-    startContentX: 0,
-    startContentY: 0,
-  });
+  const selectedCoords = placeToCoords[selected.place] || placeToCoords["Nearby"];
+  const [reloadMapKey, setReloadMapKey] = useState(0);
 
-  // Only 2 pin colors: My items (green) vs Shared with me (blue)
-  const pinColor = (isSharedWithMe: boolean) =>
-    isSharedWithMe ? "bg-sky-500" : "bg-emerald-500";
-
-  const selXY = placeToXY[selected.place] || placeToXY["Nearby"];
-
-  const centerOnPoint = (x: number, y: number) => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-
-    const content = viewport.firstElementChild as HTMLDivElement | null;
-    if (!content) return;
-
-    const targetLeft = (content.scrollWidth * x) / 100 - viewport.clientWidth / 2;
-    const targetTop = (content.scrollHeight * y) / 100 - viewport.clientHeight / 2;
-
-    viewport.scrollTo({
-      left: Math.max(0, targetLeft),
-      top: Math.max(0, targetTop),
-      behavior: "smooth",
-    });
-  };
-
-  useEffect(() => {
-    centerOnPoint(selXY.x, selXY.y);
-  }, [selectedId]);
-
-  const clampZoom = (value: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
-
-  const getTouchDistance = (
-    a: { clientX: number; clientY: number },
-    b: { clientX: number; clientY: number }
-  ) => {
-    const dx = a.clientX - b.clientX;
-    const dy = a.clientY - b.clientY;
-    return Math.sqrt(dx * dx + dy * dy);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches.length !== 2) return;
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-
-    const t1 = e.touches[0];
-    const t2 = e.touches[1];
-    const rect = viewport.getBoundingClientRect();
-    const midX = (t1.clientX + t2.clientX) / 2 - rect.left;
-    const midY = (t1.clientY + t2.clientY) / 2 - rect.top;
-
-    const startDistance = getTouchDistance(t1, t2);
-    if (startDistance <= 0) return;
-
-    pinchRef.current = {
-      active: true,
-      startDistance,
-      startZoom: zoom,
-      startContentX: viewport.scrollLeft + midX,
-      startContentY: viewport.scrollTop + midY,
-    };
-  };
-
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!pinchRef.current.active || e.touches.length !== 2) return;
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-
-    e.preventDefault();
-    const t1 = e.touches[0];
-    const t2 = e.touches[1];
-    const rect = viewport.getBoundingClientRect();
-    const midX = (t1.clientX + t2.clientX) / 2 - rect.left;
-    const midY = (t1.clientY + t2.clientY) / 2 - rect.top;
-    const distance = getTouchDistance(t1, t2);
-
-    const nextZoom = clampZoom(
-      pinchRef.current.startZoom * (distance / pinchRef.current.startDistance)
-    );
-    const factor = nextZoom / pinchRef.current.startZoom;
-
-    setZoom(nextZoom);
-    requestAnimationFrame(() => {
-      viewport.scrollLeft = Math.max(0, pinchRef.current.startContentX * factor - midX);
-      viewport.scrollTop = Math.max(0, pinchRef.current.startContentY * factor - midY);
-    });
-  };
-
-  const handleTouchEnd = () => {
-    pinchRef.current.active = false;
-  };
-
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (!e.ctrlKey) return;
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-
-    e.preventDefault();
-    const rect = viewport.getBoundingClientRect();
-    const midX = e.clientX - rect.left;
-    const midY = e.clientY - rect.top;
-    const contentX = viewport.scrollLeft + midX;
-    const contentY = viewport.scrollTop + midY;
-
-    setZoom((current) => {
-      const scale = Math.exp(-e.deltaY * 0.002);
-      const next = clampZoom(current * scale);
-      const factor = next / current;
-
-      requestAnimationFrame(() => {
-        viewport.scrollLeft = Math.max(0, contentX * factor - midX);
-        viewport.scrollTop = Math.max(0, contentY * factor - midY);
-      });
-      return next;
-    });
-  };
+  const mapSrc = useMemo(() => {
+    const span = 0.015;
+    const left = selectedCoords.lng - span;
+    const right = selectedCoords.lng + span;
+    const top = selectedCoords.lat + span;
+    const bottom = selectedCoords.lat - span;
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${selectedCoords.lat}%2C${selectedCoords.lng}&_k=${reloadMapKey}`;
+  }, [selectedCoords.lat, selectedCoords.lng, reloadMapKey]);
 
   return (
     <div className="rounded-3xl overflow-hidden border border-neutral-900 bg-neutral-950">
@@ -804,144 +664,84 @@ function MapMock({
         <div>
           <div className="text-sm text-neutral-100">Campus Map</div>
           <div className="text-xs text-neutral-500">
-            Drag the map and tap pins to view last seen
+            Live OpenStreetMap centered on Davis
           </div>
         </div>
         <Button
           variant="secondary"
           size="sm"
           className="rounded-2xl"
-          onClick={() => centerOnPoint(selXY.x, selXY.y)}
+          onClick={() => setReloadMapKey((x) => x + 1)}
         >
           <LocateFixed className="h-4 w-4" />
           Center
         </Button>
       </div>
 
-      <div
-        ref={viewportRef}
-        className="h-[58dvh] min-h-[420px] max-h-[680px] overflow-auto overscroll-contain touch-pan-x touch-pan-y"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
-        onWheel={handleWheel}
-      >
-        <div
-          className="relative"
-          style={{
-            aspectRatio: `${MAP_IMAGE_WIDTH} / ${MAP_IMAGE_HEIGHT}`,
-            height: `${760 * zoom}px`,
-            minWidth: `${150 * zoom}%`,
-          }}
-        >
-          <img
-            src={MAP_IMAGE_SRC}
-            alt="Map"
-            className="absolute inset-0 h-full w-full object-fill"
-          />
-          <div className="absolute inset-0 bg-neutral-950/30" />
-
-          {pins.map((p) => {
-          const isSel = p.id === selectedId;
-          return (
-            <button
-              key={p.id}
-              onClick={() => setSelectedId(p.id)}
-              className={cx(
-                "absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition",
-                isSel ? "scale-110" : "scale-100"
-              )}
-              style={{ left: `${p.x}%`, top: `${p.y}%` }}
-              aria-label="pin"
-            >
-              <div
-                className={cx(
-                  "h-4 w-4 rounded-full",
-                  pinColor(p.isSharedWithMe),
-                  isSel ? "ring-4 ring-white/30" : "ring-2 ring-white/15"
-                )}
-              />
-              <div className="h-4 w-4 rounded-full -mt-2 opacity-20 bg-black/20" />
-            </button>
-          );
-          })}
-
-          {friendLocations.map((friend, index) => {
-          const xy = placeToXY[friend.place] || placeToXY["Nearby"];
-          return (
-            <div
-              key={friend.id}
-              className="absolute -translate-x-1/2 -translate-y-1/2"
-              style={{
-                left: `${xy.x + (index % 2 === 0 ? -3 : 3)}%`,
-                top: `${xy.y + (index % 2 === 0 ? 3 : -3)}%`,
-              }}
-            >
-              <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-sky-500/90 text-[9px] font-semibold text-white shadow-lg">
-                {friend.name.slice(0, 1).toUpperCase()}
-              </div>
-            </div>
-          );
-          })}
-
-        {/* Floating info bubble */}
-        {selected && (
-          <div
-            className="absolute -translate-x-1/2 -translate-y-[115%]"
-            style={{ left: `${selXY.x}%`, top: `${selXY.y}%` }}
-          >
-            <div className="max-w-[250px] rounded-2xl border border-neutral-800 bg-neutral-950/90 backdrop-blur px-3 py-2 shadow-2xl">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="text-sm font-medium text-neutral-50 truncate">
-                    {selected.name}
-                  </div>
-                  <div className="text-[11px] text-neutral-500 truncate">
-                    {selected.place} · {selected.lastSeen}
-                    {selected.status === "shared_with_me" && selected.owner
-                      ? ` · Owner: ${selected.owner}`
-                      : ""}
-                  </div>
-                </div>
-                <button
-                  onClick={onOpenSelected}
-                  className="h-7 w-7 rounded-xl bg-neutral-900 hover:bg-neutral-800 transition flex items-center justify-center"
-                  aria-label="details"
-                >
-                  <Info className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-            <div className="mx-auto h-0 w-0 border-x-[8px] border-x-transparent border-t-[10px] border-t-neutral-950/90" />
-          </div>
-        )}
-          <div className="pointer-events-none absolute bottom-3 right-3 rounded-2xl border border-neutral-800 bg-neutral-950/80 px-3 py-1.5 text-[11px] text-neutral-300 backdrop-blur">
-            Drag to pan, pinch to zoom
-          </div>
+      <div className="relative h-[58dvh] min-h-[420px] max-h-[680px]">
+        <iframe
+          title="Davis OpenStreetMap"
+          src={mapSrc}
+          className="h-full w-full border-0"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+        <div className="pointer-events-none absolute bottom-3 right-3 rounded-2xl border border-neutral-800 bg-neutral-950/80 px-3 py-1.5 text-[11px] text-neutral-300 backdrop-blur">
+          Use map gestures to pan and pinch-zoom
         </div>
       </div>
 
       <div className="p-4">
-        <div className="flex items-center gap-4 text-xs text-neutral-500">
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" /> My items
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-sky-500" /> Shared with me
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <span className="flex h-3 w-3 items-center justify-center rounded-full bg-sky-500/90 text-[7px] font-semibold text-white">
-              A
-            </span>{" "}
-            Friends
-          </span>
+        <div className="rounded-2xl border border-neutral-900 bg-neutral-900/50 p-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-sm font-medium text-neutral-50 truncate">
+                {selected.name}
+              </div>
+              <div className="text-[11px] text-neutral-500 truncate">
+                {selected.place} · {selected.lastSeen}
+                {selected.status === "shared_with_me" && selected.owner
+                  ? ` · Owner: ${selected.owner}`
+                  : ""}
+              </div>
+            </div>
+            <button
+              onClick={onOpenSelected}
+              className="h-7 w-7 rounded-xl bg-neutral-950 hover:bg-neutral-800 transition flex items-center justify-center"
+              aria-label="details"
+            >
+              <Info className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {items.map((it) => {
+            const isSel = it.id === selectedId;
+            return (
+              <button
+                key={it.id}
+                onClick={() => setSelectedId(it.id)}
+                className={cx(
+                  "rounded-full border px-3 py-1 text-xs transition",
+                  isSel
+                    ? "border-white/40 bg-white/10 text-white"
+                    : "border-neutral-800 bg-neutral-900 text-neutral-300 hover:bg-neutral-800"
+                )}
+              >
+                {it.name}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-3 text-xs text-neutral-500">
+          {friendLocations.length} friends currently sharing location
         </div>
       </div>
     </div>
   );
 }
-
 function SetupFlow({
   onFinish,
   onCancel,
@@ -1005,12 +805,12 @@ function SetupFlow({
     },
     {
       title: "Name your item",
-      desc: "Choose a label so it’s easy to spot.",
+      desc: "Choose a label so itâ€™s easy to spot.",
       content: (
         <div className="space-y-3">
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 space-y-2">
             <div className="text-xs text-neutral-500">Item name</div>
-            <Input value={name} onChange={setName} placeholder="Keys, Bike, Bottle…" />
+            <Input value={name} onChange={setName} placeholder="Keys, Bike, Bottleâ€¦" />
           </div>
 
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 space-y-2">
@@ -1357,7 +1157,7 @@ export default function Page() {
       <div className="text-xl font-semibold text-neutral-50">{title}</div>
       {(stage === "marketing" || (stage === "app" && tab === "find")) && (
         <div className="text-sm text-neutral-500">
-          Stick it. Forget it. We’ll track it.
+          Stick it. Forget it. Weâ€™ll track it.
         </div>
       )}
     </div>
@@ -1373,7 +1173,7 @@ export default function Page() {
           Stick 'n Track
         </div>
         <div className="mt-1 text-sm text-neutral-400">
-          Stick it. Forget it. We’ll track it.
+          Stick it. Forget it. Weâ€™ll track it.
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-3">
@@ -1460,7 +1260,7 @@ export default function Page() {
               showToast("Opened sharing");
             }}
             onPing={() => showToast("Ping sent")}
-            onPlaySound={() => showToast("Playing sound…")}
+            onPlaySound={() => showToast("Playing soundâ€¦")}
           />
         ))}
       </div>
@@ -1498,7 +1298,7 @@ export default function Page() {
                       : ""}
                   </div>
                   <div className="text-xs text-neutral-600 truncate">
-                    {it.place} · {it.lastSeen}
+                    {it.place} Â· {it.lastSeen}
                   </div>
                 </div>
                 <div className="text-xs text-neutral-500">View</div>
@@ -1579,7 +1379,7 @@ export default function Page() {
                           : ""}
                       </div>
                       <div className="mt-1 text-xs text-neutral-500 truncate">
-                        {it.place} · {it.lastSeen}
+                        {it.place} Â· {it.lastSeen}
                       </div>
                     </div>
                     <Badge
@@ -1611,7 +1411,7 @@ export default function Page() {
                   <div>
                     <div className="text-sm text-neutral-100">{friend.name}</div>
                     <div className="text-xs text-neutral-500">
-                      {friend.place} · {friend.lastSeen}
+                      {friend.place} Â· {friend.lastSeen}
                     </div>
                   </div>
                   <div className="text-xs text-sky-300">{friend.handle}</div>
@@ -1840,7 +1640,7 @@ export default function Page() {
         open={detailsOpen}
         onClose={() => setDetailsOpen(false)}
         title={selectedItem?.name || "Item"}
-        subtitle={`Model: ${selectedItem?.model} · Battery: ${selectedItem?.battery}%`}
+        subtitle={`Model: ${selectedItem?.model} Â· Battery: ${selectedItem?.battery}%`}
       >
         <div className="space-y-3">
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4">
@@ -1849,7 +1649,7 @@ export default function Page() {
             <div className="text-xs text-neutral-600">
               Updated {selectedItem?.lastSeen}
               {selectedItem?.status === "shared_with_me" && selectedItem?.owner
-                ? ` · Owner: ${selectedItem.owner}`
+                ? ` Â· Owner: ${selectedItem.owner}`
                 : ""}
             </div>
           </div>
@@ -1918,7 +1718,7 @@ export default function Page() {
       <Modal
         open={shareOpen}
         onClose={() => setShareOpen(false)}
-        title={`Add followers — ${shareItem?.name || "item"}`}
+        title={`Add followers â€” ${shareItem?.name || "item"}`}
       >
         <FollowerPicker
           people={allFollowers}
@@ -2007,3 +1807,5 @@ export default function Page() {
     </PhoneFrame>
   );
 }
+
+
