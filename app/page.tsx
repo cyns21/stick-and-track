@@ -831,27 +831,6 @@ function MapMock({
       });
     });
 
-    const friendCountByPlace = new Map<string, number>();
-    friendLocations.forEach((friend) => {
-      const base = getCoordsForPlace(friend.place);
-      const count = friendCountByPlace.get(friend.place) ?? 0;
-      friendCountByPlace.set(friend.place, count + 1);
-      const coords = offsetPoint(base, count + 1);
-      const marker = L.circleMarker([coords.lat, coords.lng], {
-        radius: 6,
-        color: "#ffffff",
-        weight: 1,
-        fillColor: "#38bdf8",
-        fillOpacity: 0.9,
-      }).addTo(layer);
-
-      marker.bindTooltip(friend.name, {
-        direction: "top",
-        offset: [0, -4],
-        opacity: 0.9,
-      });
-    });
-
     layer.addTo(map);
     markerLayerRef.current = layer;
   }, [items, friendLocations, selectedId, setSelectedId, mapReady]);
@@ -943,9 +922,6 @@ function MapMock({
           </span>
           <span className="inline-flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-sky-500" /> Shared with me
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-sky-400" /> Friends
           </span>
         </div>
       </div>
