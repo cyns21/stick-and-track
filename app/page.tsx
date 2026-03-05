@@ -804,20 +804,15 @@ function MapMock({
             Drag the map and tap pins to view last seen
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-16 text-center text-xs text-neutral-400">
-            {Math.round(zoom * 100)}%
-          </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="rounded-2xl"
-            onClick={() => centerOnPoint(selXY.x, selXY.y)}
-          >
-            <LocateFixed className="h-4 w-4" />
-            Center
-          </Button>
-        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="rounded-2xl"
+          onClick={() => centerOnPoint(selXY.x, selXY.y)}
+        >
+          <LocateFixed className="h-4 w-4" />
+          Center
+        </Button>
       </div>
 
       <div
