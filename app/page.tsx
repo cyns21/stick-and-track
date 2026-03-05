@@ -34,6 +34,8 @@ import {
  */
 
 const MAP_IMAGE_SRC = "/ucdmap.jpeg";
+const MAP_IMAGE_WIDTH = 3236;
+const MAP_IMAGE_HEIGHT = 1465;
 
 type FollowerProfile = {
   id: string;
@@ -714,13 +716,16 @@ function MapMock({
 
       <div
         ref={viewportRef}
-        className="h-[52dvh] min-h-[380px] max-h-[560px] overflow-auto overscroll-contain touch-pan-x touch-pan-y"
+        className="h-[58dvh] min-h-[420px] max-h-[680px] overflow-auto overscroll-contain touch-pan-x touch-pan-y"
       >
-        <div className="relative h-[720px] min-w-[150%]">
+        <div
+          className="relative h-[760px] min-w-[150%]"
+          style={{ aspectRatio: `${MAP_IMAGE_WIDTH} / ${MAP_IMAGE_HEIGHT}` }}
+        >
           <img
             src={MAP_IMAGE_SRC}
             alt="Map"
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-fill"
           />
           <div className="absolute inset-0 bg-neutral-950/30" />
 
