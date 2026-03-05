@@ -652,6 +652,7 @@ function MapMock({
   const mapRef = useRef<any>(null);
   const markerLayerRef = useRef<any>(null);
   const leafletLoadRef = useRef<Promise<any> | null>(null);
+  const [mapReady, setMapReady] = useState(false);
 
   const getCoordsForPlace = (place: string) =>
     placeToCoords[place] || placeToCoords["Nearby"];
@@ -710,6 +711,7 @@ function MapMock({
         }).addTo(map);
 
         mapRef.current = map;
+        setMapReady(true);
       } catch {
         // Keep UI stable if map CDN is blocked.
       }
@@ -724,6 +726,7 @@ function MapMock({
         mapRef.current = null;
       }
       markerLayerRef.current = null;
+      setMapReady(false);
     };
   }, []);
 
@@ -829,7 +832,7 @@ function MapMock({
 
     layer.addTo(map);
     markerLayerRef.current = layer;
-  }, [items, friendLocations, selectedId, setSelectedId]);
+  }, [items, friendLocations, selectedId, setSelectedId, mapReady]);
 
   useEffect(() => {
     const map = mapRef.current;
