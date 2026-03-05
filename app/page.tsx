@@ -737,10 +737,33 @@ function MapMock({
     }
     const layer = L.layerGroup();
 
+    const offsetPoint = (coords: { lat: number; lng: number }, n: number) => {
+      if (n === 0) return coords;
+      const angle = (n * 137.5 * Math.PI) / 180;
+      const distance = 0.00018 * Math.ceil(n / 2);
+      return {
+        lat: coords.lat + Math.sin(angle) * distance,
+        lng: coords.lng + Math.cos(angle) * distance,
+      };
+    };
+
+    const itemCountByPlace = new Map<string, number>();
     items.forEach((it) => {
-      const coords = getCoordsForPlace(it.place);
+      const base = getCoordsForPlace(it.place);
+      const count = itemCountByPlace.get(it.place) ?? 0;
+      itemCountByPlace.set(it.place, count + 1);
+      const coords = offsetPoint(base, count);
       const isSel = it.id === selectedId;
       const isSharedWithMe = it.status === "shared_with_me";
+
+      // Outer glow ring so tracked-item circles are always easy to spot.
+      L.circleMarker([coords.lat, coords.lng], {
+        radius: isSel ? 14 : 11,
+        color: isSharedWithMe ? "#38bdf8" : "#34d399",
+        weight: isSel ? 2 : 1,
+        fillOpacity: 0.2,
+        opacity: 0.9,
+      }).addTo(layer);
 
       const marker = L.circleMarker([coords.lat, coords.lng], {
         radius: isSel ? 10 : 8,
@@ -759,8 +782,12 @@ function MapMock({
       marker.on("click", () => setSelectedId(it.id));
     });
 
+    const friendCountByPlace = new Map<string, number>();
     friendLocations.forEach((friend) => {
-      const coords = getCoordsForPlace(friend.place);
+      const base = getCoordsForPlace(friend.place);
+      const count = friendCountByPlace.get(friend.place) ?? 0;
+      friendCountByPlace.set(friend.place, count + 1);
+      const coords = offsetPoint(base, count + 1);
       const marker = L.circleMarker([coords.lat, coords.lng], {
         radius: 6,
         color: "#ffffff",
