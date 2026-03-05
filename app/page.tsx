@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   MapPin,
   Users,
@@ -647,16 +647,144 @@ function MapMock({
 
   const selected = items.find((x) => x.id === selectedId) || items[0];
   const selectedCoords = placeToCoords[selected.place] || placeToCoords["Nearby"];
-  const [reloadMapKey, setReloadMapKey] = useState(0);
 
-  const mapSrc = useMemo(() => {
-    const span = 0.015;
-    const left = selectedCoords.lng - span;
-    const right = selectedCoords.lng + span;
-    const top = selectedCoords.lat + span;
-    const bottom = selectedCoords.lat - span;
-    return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${selectedCoords.lat}%2C${selectedCoords.lng}&_k=${reloadMapKey}`;
-  }, [selectedCoords.lat, selectedCoords.lng, reloadMapKey]);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<any>(null);
+  const markerLayerRef = useRef<any>(null);
+  const leafletLoadRef = useRef<Promise<any> | null>(null);
+
+  const getCoordsForPlace = (place: string) =>
+    placeToCoords[place] || placeToCoords["Nearby"];
+
+  const loadLeaflet = () => {
+    if (typeof window === "undefined") return Promise.reject(new Error("No window"));
+    if ((window as any).L) return Promise.resolve((window as any).L);
+    if (leafletLoadRef.current) return leafletLoadRef.current;
+
+    leafletLoadRef.current = new Promise((resolve, reject) => {
+      const cssId = "leaflet-css-cdn";
+      if (!document.getElementById(cssId)) {
+        const link = document.createElement("link");
+        link.id = cssId;
+        link.rel = "stylesheet";
+        link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+        document.head.appendChild(link);
+      }
+
+      const existing = document.getElementById("leaflet-js-cdn") as HTMLScriptElement | null;
+      if (existing) {
+        existing.addEventListener("load", () => resolve((window as any).L));
+        existing.addEventListener("error", () => reject(new Error("Failed to load Leaflet")));
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.id = "leaflet-js-cdn";
+      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.async = true;
+      script.onload = () => resolve((window as any).L);
+      script.onerror = () => reject(new Error("Failed to load Leaflet"));
+      document.body.appendChild(script);
+    });
+
+    return leafletLoadRef.current;
+  };
+
+  useEffect(() => {
+    let disposed = false;
+
+    const initMap = async () => {
+      try {
+        const L = await loadLeaflet();
+        if (disposed || !mapContainerRef.current || mapRef.current) return;
+
+        const map = L.map(mapContainerRef.current, {
+          zoomControl: true,
+          attributionControl: true,
+        }).setView([selectedCoords.lat, selectedCoords.lng], 15);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          detectRetina: true,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(map);
+
+        mapRef.current = map;
+      } catch {
+        // Keep UI stable if map CDN is blocked.
+      }
+    };
+
+    initMap();
+
+    return () => {
+      disposed = true;
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+      markerLayerRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !(window as any).L) return;
+    const L = (window as any).L;
+
+    if (markerLayerRef.current) {
+      markerLayerRef.current.remove();
+    }
+    const layer = L.layerGroup();
+
+    items.forEach((it) => {
+      const coords = getCoordsForPlace(it.place);
+      const isSel = it.id === selectedId;
+      const isSharedWithMe = it.status === "shared_with_me";
+
+      const marker = L.circleMarker([coords.lat, coords.lng], {
+        radius: isSel ? 10 : 8,
+        color: "#ffffff",
+        weight: isSel ? 2 : 1.5,
+        fillColor: isSharedWithMe ? "#0ea5e9" : "#10b981",
+        fillOpacity: 0.95,
+      }).addTo(layer);
+
+      marker.bindTooltip(it.name, {
+        direction: "top",
+        offset: [0, -6],
+        opacity: 0.9,
+      });
+
+      marker.on("click", () => setSelectedId(it.id));
+    });
+
+    friendLocations.forEach((friend) => {
+      const coords = getCoordsForPlace(friend.place);
+      const marker = L.circleMarker([coords.lat, coords.lng], {
+        radius: 6,
+        color: "#ffffff",
+        weight: 1,
+        fillColor: "#38bdf8",
+        fillOpacity: 0.9,
+      }).addTo(layer);
+
+      marker.bindTooltip(friend.name, {
+        direction: "top",
+        offset: [0, -4],
+        opacity: 0.9,
+      });
+    });
+
+    layer.addTo(map);
+    markerLayerRef.current = layer;
+  }, [items, friendLocations, selectedId, setSelectedId]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    map.panTo([selectedCoords.lat, selectedCoords.lng], { animate: true, duration: 0.35 });
+  }, [selectedCoords.lat, selectedCoords.lng]);
 
   return (
     <div className="rounded-3xl overflow-hidden border border-neutral-900 bg-neutral-950">
@@ -664,14 +792,18 @@ function MapMock({
         <div>
           <div className="text-sm text-neutral-100">Campus Map</div>
           <div className="text-xs text-neutral-500">
-            Live OpenStreetMap centered on Davis
+            Real map of Davis with demo item markers
           </div>
         </div>
         <Button
           variant="secondary"
           size="sm"
           className="rounded-2xl"
-          onClick={() => setReloadMapKey((x) => x + 1)}
+          onClick={() => {
+            const map = mapRef.current;
+            if (!map) return;
+            map.setView([selectedCoords.lat, selectedCoords.lng], 16, { animate: true });
+          }}
         >
           <LocateFixed className="h-4 w-4" />
           Center
@@ -679,15 +811,9 @@ function MapMock({
       </div>
 
       <div className="relative h-[58dvh] min-h-[420px] max-h-[680px]">
-        <iframe
-          title="Davis OpenStreetMap"
-          src={mapSrc}
-          className="h-full w-full border-0"
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-        />
+        <div ref={mapContainerRef} className="h-full w-full" />
         <div className="pointer-events-none absolute bottom-3 right-3 rounded-2xl border border-neutral-800 bg-neutral-950/80 px-3 py-1.5 text-[11px] text-neutral-300 backdrop-blur">
-          Use map gestures to pan and pinch-zoom
+          Drag to pan, pinch to zoom
         </div>
       </div>
 
@@ -699,9 +825,9 @@ function MapMock({
                 {selected.name}
               </div>
               <div className="text-[11px] text-neutral-500 truncate">
-                {selected.place} · {selected.lastSeen}
+                {selected.place} - {selected.lastSeen}
                 {selected.status === "shared_with_me" && selected.owner
-                  ? ` · Owner: ${selected.owner}`
+                  ? ` - Owner: ${selected.owner}`
                   : ""}
               </div>
             </div>
@@ -735,8 +861,16 @@ function MapMock({
           })}
         </div>
 
-        <div className="mt-3 text-xs text-neutral-500">
-          {friendLocations.length} friends currently sharing location
+        <div className="mt-3 flex items-center gap-4 text-xs text-neutral-500">
+          <span className="inline-flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" /> My items
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-sky-500" /> Shared with me
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-sky-400" /> Friends
+          </span>
         </div>
       </div>
     </div>
@@ -1807,5 +1941,6 @@ export default function Page() {
     </PhoneFrame>
   );
 }
+
 
 
