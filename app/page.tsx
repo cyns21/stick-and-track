@@ -19,7 +19,6 @@ import {
   Info,
   CheckCircle2,
   Plus,
-  Minus,
 } from "lucide-react";
 
 /**
@@ -647,7 +646,6 @@ function MapMock({
 }) {
   const MIN_ZOOM = 0.75;
   const MAX_ZOOM = 2;
-  const ZOOM_STEP = 0.25;
   const placeToXY: Record<string, { x: number; y: number }> = {
     "Memorial Union": { x: 58, y: 33 },
     "Shields Library": { x: 72, y: 63 },
@@ -671,6 +669,19 @@ function MapMock({
   const selected = items.find((x) => x.id === selectedId) || items[0];
   const viewportRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
+  const pinchRef = useRef<{
+    active: boolean;
+    startDistance: number;
+    startZoom: number;
+    startContentX: number;
+    startContentY: number;
+  }>({
+    active: false,
+    startDistance: 0,
+    startZoom: 1,
+    startContentX: 0,
+    startContentY: 0,
+  });
 
   // Only 2 pin colors: My items (green) vs Shared with me (blue)
   const pinColor = (isSharedWithMe: boolean) =>
@@ -699,14 +710,87 @@ function MapMock({
     centerOnPoint(selXY.x, selXY.y);
   }, [selectedId]);
 
-  const updateZoom = (direction: "in" | "out") => {
-    setZoom((current) => {
-      const next =
-        direction === "in"
-          ? Math.min(MAX_ZOOM, current + ZOOM_STEP)
-          : Math.max(MIN_ZOOM, current - ZOOM_STEP);
+  const clampZoom = (value: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
 
-      requestAnimationFrame(() => centerOnPoint(selXY.x, selXY.y));
+  const getTouchDistance = (a: Touch, b: Touch) => {
+    const dx = a.clientX - b.clientX;
+    const dy = a.clientY - b.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length !== 2) return;
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const t1 = e.touches[0];
+    const t2 = e.touches[1];
+    const rect = viewport.getBoundingClientRect();
+    const midX = (t1.clientX + t2.clientX) / 2 - rect.left;
+    const midY = (t1.clientY + t2.clientY) / 2 - rect.top;
+
+    const startDistance = getTouchDistance(t1, t2);
+    if (startDistance <= 0) return;
+
+    pinchRef.current = {
+      active: true,
+      startDistance,
+      startZoom: zoom,
+      startContentX: viewport.scrollLeft + midX,
+      startContentY: viewport.scrollTop + midY,
+    };
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!pinchRef.current.active || e.touches.length !== 2) return;
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    e.preventDefault();
+    const t1 = e.touches[0];
+    const t2 = e.touches[1];
+    const rect = viewport.getBoundingClientRect();
+    const midX = (t1.clientX + t2.clientX) / 2 - rect.left;
+    const midY = (t1.clientY + t2.clientY) / 2 - rect.top;
+    const distance = getTouchDistance(t1, t2);
+
+    const nextZoom = clampZoom(
+      pinchRef.current.startZoom * (distance / pinchRef.current.startDistance)
+    );
+    const factor = nextZoom / pinchRef.current.startZoom;
+
+    setZoom(nextZoom);
+    requestAnimationFrame(() => {
+      viewport.scrollLeft = Math.max(0, pinchRef.current.startContentX * factor - midX);
+      viewport.scrollTop = Math.max(0, pinchRef.current.startContentY * factor - midY);
+    });
+  };
+
+  const handleTouchEnd = () => {
+    pinchRef.current.active = false;
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (!e.ctrlKey) return;
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    e.preventDefault();
+    const rect = viewport.getBoundingClientRect();
+    const midX = e.clientX - rect.left;
+    const midY = e.clientY - rect.top;
+    const contentX = viewport.scrollLeft + midX;
+    const contentY = viewport.scrollTop + midY;
+
+    setZoom((current) => {
+      const scale = Math.exp(-e.deltaY * 0.002);
+      const next = clampZoom(current * scale);
+      const factor = next / current;
+
+      requestAnimationFrame(() => {
+        viewport.scrollLeft = Math.max(0, contentX * factor - midX);
+        viewport.scrollTop = Math.max(0, contentY * factor - midY);
+      });
       return next;
     });
   };
@@ -721,27 +805,9 @@ function MapMock({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            className="rounded-2xl px-2.5"
-            onClick={() => updateZoom("out")}
-            disabled={zoom <= MIN_ZOOM}
-          >
-            <Minus className="h-4 w-4" />
-          </Button>
-          <div className="w-12 text-center text-xs text-neutral-400">
+          <div className="w-16 text-center text-xs text-neutral-400">
             {Math.round(zoom * 100)}%
           </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="rounded-2xl px-2.5"
-            onClick={() => updateZoom("in")}
-            disabled={zoom >= MAX_ZOOM}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
           <Button
             variant="secondary"
             size="sm"
@@ -757,6 +823,11 @@ function MapMock({
       <div
         ref={viewportRef}
         className="h-[58dvh] min-h-[420px] max-h-[680px] overflow-auto overscroll-contain touch-pan-x touch-pan-y"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        onWheel={handleWheel}
       >
         <div
           className="relative"
@@ -848,7 +919,7 @@ function MapMock({
           </div>
         )}
           <div className="pointer-events-none absolute bottom-3 right-3 rounded-2xl border border-neutral-800 bg-neutral-950/80 px-3 py-1.5 text-[11px] text-neutral-300 backdrop-blur">
-            Drag to pan
+            Drag to pan, pinch to zoom
           </div>
         </div>
       </div>
