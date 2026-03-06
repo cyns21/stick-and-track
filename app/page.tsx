@@ -847,7 +847,7 @@ function MapMock({
         <div>
           <div className="text-sm text-neutral-100">Campus Map</div>
           <div className="text-xs text-neutral-500">
-            Real map of Davis with demo item markers
+            Map of Davis with demo item markers
           </div>
         </div>
         <Button
