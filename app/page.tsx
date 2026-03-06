@@ -574,7 +574,7 @@ function ItemCard({
 
             <div className="text-xs text-neutral-500 mt-1">
               Last seen <span className="text-neutral-300">{item.lastSeen}</span>
-              <span className="text-neutral-600"> Â· </span>
+              <span className="text-neutral-600"> - </span>
               <span className="text-neutral-300">{item.place}</span>
             </div>
           </div>
@@ -842,7 +842,7 @@ function MapMock({
   }, [selectedCoords.lat, selectedCoords.lng]);
 
   return (
-    <div className="rounded-3xl overflow-hidden border border-neutral-900 bg-neutral-950">
+    <div className="relative z-0 rounded-3xl overflow-hidden border border-neutral-900 bg-neutral-950">
       <div className="p-4 border-b border-neutral-900 flex items-center justify-between">
         <div>
           <div className="text-sm text-neutral-100">Campus Map</div>
@@ -1493,7 +1493,7 @@ export default function Page() {
                       : ""}
                   </div>
                   <div className="text-xs text-neutral-600 truncate">
-                    {it.place} Â· {it.lastSeen}
+                    {it.place} - {it.lastSeen}
                   </div>
                 </div>
                 <div className="text-xs text-neutral-500">View</div>
@@ -1516,7 +1516,7 @@ export default function Page() {
           onOpenSelected={() => setDetailsOpen(true)}
         />
 
-        <Card className="overflow-hidden">
+        <Card className="relative z-20 overflow-hidden">
           <CardContent className="p-0">
             <button
               onClick={() => setFindSheetExpanded((current) => !current)}
@@ -1562,7 +1562,7 @@ export default function Page() {
                           : ""}
                       </div>
                       <div className="mt-1 text-xs text-neutral-500 truncate">
-                        {it.place} Â· {it.lastSeen}
+                        {it.place} - {it.lastSeen}
                       </div>
                     </div>
                     <Badge
@@ -1582,27 +1582,6 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-sm text-neutral-200">Friends on the map</div>
-            <div className="mt-3 space-y-2">
-              {friendLocations.map((friend) => (
-                <div
-                  key={friend.id}
-                  className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3"
-                >
-                  <div>
-                    <div className="text-sm text-neutral-100">{friend.name}</div>
-                    <div className="text-xs text-neutral-500">
-                      {friend.place} Â· {friend.lastSeen}
-                    </div>
-                  </div>
-                  <div className="text-xs text-sky-300">{friend.handle}</div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
@@ -1823,7 +1802,7 @@ export default function Page() {
         open={detailsOpen}
         onClose={() => setDetailsOpen(false)}
         title={selectedItem?.name || "Item"}
-        subtitle={`Model: ${selectedItem?.model} Â· Battery: ${selectedItem?.battery}%`}
+        subtitle={`Model: ${selectedItem?.model} - Battery: ${selectedItem?.battery}%`}
       >
         <div className="space-y-3">
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4">
@@ -1832,7 +1811,7 @@ export default function Page() {
             <div className="text-xs text-neutral-600">
               Updated {selectedItem?.lastSeen}
               {selectedItem?.status === "shared_with_me" && selectedItem?.owner
-                ? ` Â· Owner: ${selectedItem.owner}`
+                ? ` - Owner: ${selectedItem.owner}`
                 : ""}
             </div>
           </div>
@@ -1990,5 +1969,4 @@ export default function Page() {
     </PhoneFrame>
   );
 }
-
 
