@@ -1340,12 +1340,21 @@ export default function Page() {
 
   const Header = ({ title }: { title: string }) => (
     <div className="px-5 pt-5 pb-3">
-      <div className="text-xl font-semibold text-neutral-50">{title}</div>
-      {(stage === "marketing" || (stage === "app" && tab === "find")) && (
-        <div className="text-sm text-neutral-500">
-          Stick it. Forget it. Weâ€™ll track it.
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="text-xl font-semibold text-neutral-50">{title}</div>
+          {(stage === "marketing" || (stage === "app" && tab === "find")) && (
+            <div className="text-sm text-neutral-500">
+              Stick it. Track it. Forget it
+            </div>
+          )}
         </div>
-      )}
+        {stage === "app" && tab === "find" && (
+          <Button size="sm" onClick={openSetup}>
+            <Plus className="h-4 w-4" /> Add
+          </Button>
+        )}
+      </div>
     </div>
   );
 
@@ -1359,7 +1368,7 @@ export default function Page() {
           Stick 'n Track
         </div>
         <div className="mt-1 text-sm text-neutral-400">
-          Stick it. Forget it. Weâ€™ll track it.
+          Stick it. Track it. Forget it
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-3">
@@ -1499,13 +1508,6 @@ export default function Page() {
   const FindTab = () => (
     <div className="px-5 pb-4">
       <div className="space-y-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="text-sm text-neutral-200">Stick it. Track it. Forget it</div>
-          <Button size="sm" onClick={openSetup}>
-            <Plus className="h-4 w-4" /> Add
-          </Button>
-        </div>
-
         <MapMock
           selectedId={selectedItemId}
           setSelectedId={setSelectedItemId}
@@ -1988,6 +1990,5 @@ export default function Page() {
     </PhoneFrame>
   );
 }
-
 
 
