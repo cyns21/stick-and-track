@@ -991,7 +991,7 @@ function SetupFlow({
     },
     {
       title: "Name your item",
-      desc: "Choose a label so itâ€™s easy to spot.",
+      desc: "Choose a label so it's easy to spot.",
       content: (
         <div className="space-y-3">
           <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 space-y-2">
