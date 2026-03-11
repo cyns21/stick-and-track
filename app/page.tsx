@@ -113,10 +113,10 @@ function StarAccent({
 function CornerFrame({ className = "" }: { className?: string }) {
   return (
     <div className={cx("pointer-events-none absolute inset-0", className)} aria-hidden="true">
-      <div className="absolute left-0 top-0 h-12 w-12 border-l-[5px] border-t-[5px] border-[var(--accent)]" />
-      <div className="absolute right-0 top-0 h-12 w-12 border-r-[5px] border-t-[5px] border-[var(--accent)]" />
-      <div className="absolute left-0 bottom-0 h-12 w-12 border-b-[5px] border-l-[5px] border-[var(--accent)]" />
-      <div className="absolute right-0 bottom-0 h-12 w-12 border-b-[5px] border-r-[5px] border-[var(--accent)]" />
+      <div className="absolute left-0 top-0 h-12 w-12 border-l-[3px] border-t-[3px] border-[var(--accent)]" />
+      <div className="absolute right-0 top-0 h-12 w-12 border-r-[3px] border-t-[3px] border-[var(--accent)]" />
+      <div className="absolute left-0 bottom-0 h-12 w-12 border-b-[3px] border-l-[3px] border-[var(--accent)]" />
+      <div className="absolute right-0 bottom-0 h-12 w-12 border-b-[3px] border-r-[3px] border-[var(--accent)]" />
     </div>
   );
 }
@@ -139,12 +139,12 @@ function Button({
   type?: "button" | "submit";
 }) {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-[1.1rem] border-2 px-4 text-[0.95rem] font-semibold uppercase tracking-[0.08em] transition select-none active:translate-y-px disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center gap-2 rounded-[1.1rem] border px-4 text-[0.95rem] font-semibold uppercase tracking-[0.08em] transition select-none active:translate-y-px disabled:cursor-not-allowed";
   const variants = {
     primary:
-      "border-[var(--accent-dark)] bg-[var(--accent)] text-[#fff7f0] shadow-[4px_4px_0_0_rgba(0,0,0,0.18)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_0_rgba(0,0,0,0.18)] disabled:border-black/25 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
+      "border-[var(--accent-dark)]/70 bg-[var(--accent)] text-[#fff7f0] shadow-[4px_4px_0_0_rgba(0,0,0,0.18)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_0_rgba(0,0,0,0.18)] disabled:border-black/25 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
     secondary:
-      "border-black bg-[var(--paper-strong)] text-black shadow-[4px_4px_0_0_rgba(215,24,24,0.18)] hover:bg-white disabled:opacity-60 disabled:shadow-none",
+      "border-black/65 bg-[var(--paper-strong)] text-black shadow-[4px_4px_0_0_rgba(215,24,24,0.18)] hover:bg-white disabled:opacity-60 disabled:shadow-none",
     ghost:
       "border-black/15 bg-transparent text-black hover:bg-black/5",
   };
@@ -181,7 +181,7 @@ function Input({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       className={cx(
-        "w-full rounded-[1.15rem] border-2 border-black bg-[var(--paper-strong)] px-4 py-2.5 text-[1rem] text-black placeholder:text-black/35 outline-none focus:ring-2 focus:ring-[var(--accent)]/25",
+        "w-full rounded-[1.15rem] border border-black/65 bg-[var(--paper-strong)] px-4 py-2.5 text-[1rem] text-black placeholder:text-black/35 outline-none focus:ring-2 focus:ring-[var(--accent)]/25",
         className
       )}
     />
@@ -217,7 +217,7 @@ function Card({
   return (
     <div
       className={cx(
-        "paper-panel rounded-[1.8rem] border-2 border-black/90 text-black",
+        "paper-panel rounded-[1.8rem] border border-black/70 text-black",
         className
       )}
     >
@@ -258,7 +258,7 @@ function Switch({
       type="button"
       onClick={() => onChange(!checked)}
       className={cx(
-        "h-8 w-14 rounded-full border-2 border-black p-1 transition",
+        "h-8 w-14 rounded-full border border-black/70 p-1 transition",
         checked ? "bg-[var(--accent)]" : "bg-black"
       )}
       aria-label="switch"
@@ -275,7 +275,7 @@ function Switch({
 
 function Progress({ value }: { value: number }) {
   return (
-    <div className="h-3 w-full overflow-hidden rounded-full border-2 border-black bg-black/10">
+    <div className="h-3 w-full overflow-hidden rounded-full border border-black/70 bg-black/10">
       <div
         className="h-full bg-[var(--accent)]"
         style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
@@ -290,8 +290,8 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
       <StarAccent className="pointer-events-none absolute left-3 top-5 h-28 w-28 opacity-70 sm:left-6" tone="outline" />
       <StarAccent className="pointer-events-none absolute bottom-8 right-3 h-24 w-24 opacity-80 sm:right-6" tone="ink" />
       <div className="w-[390px] max-w-full">
-        <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border-[3px] border-black bg-[var(--paper-strong)] shadow-[0_26px_70px_rgba(0,0,0,0.22)] sm:h-[min(100dvh-3rem,844px)]">
-          <div className="relative flex h-11 shrink-0 items-center justify-between border-b-2 border-black px-5">
+        <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border-2 border-black/75 bg-[var(--paper-strong)] shadow-[0_26px_70px_rgba(0,0,0,0.22)] sm:h-[min(100dvh-3rem,844px)]">
+          <div className="relative flex h-11 shrink-0 items-center justify-between border-b border-black/70 px-5">
             <div className="display-type text-[0.82rem] tracking-[0.18em] text-black/70">
               Stick 'n Track
             </div>
@@ -316,9 +316,9 @@ function Pill({
   right: string;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-[1.25rem] border-2 border-black bg-[var(--paper-strong)] px-4 py-3 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)]">
+    <div className="flex items-center justify-between rounded-[1.25rem] border border-black/70 bg-[var(--paper-strong)] px-4 py-3 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)]">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-[1rem] border-2 border-black bg-[var(--accent)]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-[1rem] border border-black/70 bg-[var(--accent)]">
           <Icon className="h-4 w-4 text-white" />
         </div>
         <div className="text-[1rem] font-medium text-black">{label}</div>
@@ -380,7 +380,7 @@ function FollowerPicker({
         />
       </div>
 
-      <div className="rounded-[1.35rem] border-2 border-black bg-[var(--paper-strong)] p-4">
+      <div className="rounded-[1.35rem] border border-black/70 bg-[var(--paper-strong)] p-4">
         <div className="flex items-center justify-between gap-3">
           <div className="display-type text-xs tracking-[0.16em] text-black/55">
             {title}
@@ -391,7 +391,7 @@ function FollowerPicker({
         </div>
 
         {customFollower && !hasCustomMatch && (
-          <div className="mt-3 rounded-[1.15rem] border-2 border-black bg-white px-4 py-3">
+          <div className="mt-3 rounded-[1.15rem] border border-black/65 bg-white px-4 py-3">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="text-[1rem] font-medium text-black">{customFollower.name}</div>
@@ -418,7 +418,7 @@ function FollowerPicker({
               return (
                 <div
                   key={friend.id}
-                  className="flex items-center justify-between rounded-[1.15rem] border-2 border-black bg-white px-4 py-3"
+                  className="flex items-center justify-between rounded-[1.15rem] border border-black/65 bg-white px-4 py-3"
                 >
                   <div>
                     <div className="text-[1rem] font-medium text-black">{friend.name}</div>
@@ -478,7 +478,7 @@ function BottomNav({
   );
 
   return (
-    <div className="shrink-0 border-t-2 border-black bg-[var(--paper)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--paper)]/90">
+    <div className="shrink-0 border-t border-black/65 bg-[var(--paper)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--paper)]/90">
       <div className="grid grid-cols-3 gap-2 px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
         <Item id="find" Icon={MapPin} label="Find" />
         <Item id="friends" Icon={Users} label="Share" />
@@ -504,14 +504,14 @@ function Modal({
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" onClick={onClose} />
       <div className="absolute left-1/2 top-1/2 w-[92%] max-w-[420px] -translate-x-1/2 -translate-y-1/2">
-        <div className="paper-panel relative max-h-[min(84dvh,720px)] overflow-y-auto rounded-[2rem] border-[3px] border-black p-4 shadow-[0_20px_50px_rgba(0,0,0,0.22)]">
+        <div className="paper-panel relative max-h-[min(84dvh,720px)] overflow-y-auto rounded-[2rem] border-2 border-black/75 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.22)]">
           <CornerFrame className="opacity-90" />
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="display-type text-lg text-black">{title}</div>
             </div>
             <button
-              className="h-9 w-9 rounded-[1rem] border-2 border-black bg-[var(--paper-strong)] transition hover:bg-white"
+              className="h-9 w-9 rounded-[1rem] border border-black/70 bg-[var(--paper-strong)] transition hover:bg-white"
               onClick={onClose}
               aria-label="close"
             >
@@ -543,7 +543,7 @@ function Sheet({
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" onClick={onClose} />
       <div className="absolute left-0 right-0 bottom-0">
-        <div className="paper-panel rounded-t-[2rem] border-[3px] border-b-0 border-black p-4 shadow-[0_-16px_40px_rgba(0,0,0,0.2)]">
+        <div className="paper-panel rounded-t-[2rem] border-2 border-b-0 border-black/75 p-4 shadow-[0_-16px_40px_rgba(0,0,0,0.2)]">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="display-type text-lg text-black truncate">
@@ -801,8 +801,8 @@ function MapMock({
   }, [selectedCoords.lat, selectedCoords.lng]);
 
   return (
-    <div className="paper-panel relative z-0 overflow-hidden rounded-[1.9rem] border-[3px] border-black">
-      <div className="flex items-center justify-between border-b-2 border-black p-4">
+    <div className="paper-panel relative z-0 overflow-hidden rounded-[1.9rem] border-2 border-black/75">
+      <div className="flex items-center justify-between border-b border-black/70 p-4">
         <div>
           <div className="display-type text-sm text-black">Campus Map</div>
           <div className="text-xs uppercase tracking-[0.12em] text-black/55">
@@ -826,13 +826,13 @@ function MapMock({
 
       <div className="relative h-[58dvh] min-h-[420px] max-h-[680px]">
         <div ref={mapContainerRef} className="h-full w-full" />
-        <div className="pointer-events-none absolute bottom-3 right-3 rounded-full border-2 border-black bg-[var(--paper-strong)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-black/70 backdrop-blur">
+        <div className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-black/65 bg-[var(--paper-strong)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-black/70 backdrop-blur">
           Drag to pan, pinch to zoom
         </div>
       </div>
 
       <div className="p-4">
-        <div className="rounded-[1.25rem] border-2 border-black bg-white/70 p-3">
+        <div className="rounded-[1.25rem] border border-black/65 bg-white/70 p-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="display-type text-sm text-black truncate">
@@ -847,7 +847,7 @@ function MapMock({
             </div>
             <button
               onClick={onOpenSelected}
-              className="flex h-8 w-8 items-center justify-center rounded-[0.9rem] border-2 border-black bg-black transition hover:bg-black/85"
+              className="flex h-8 w-8 items-center justify-center rounded-[0.9rem] border border-black/70 bg-black transition hover:bg-black/85"
               aria-label="details"
             >
               <Info className="h-4 w-4 text-white" />
@@ -863,7 +863,7 @@ function MapMock({
                 key={it.id}
                 onClick={() => setSelectedId(it.id)}
                 className={cx(
-                  "display-type rounded-full border-2 px-3 py-1 text-xs transition",
+                  "display-type rounded-full border px-3 py-1 text-xs transition",
                   isSel
                     ? "border-black bg-[var(--accent)] text-white"
                     : "border-black bg-[var(--paper-strong)] text-black/65 hover:bg-white"
@@ -940,7 +940,7 @@ function SetupFlow({
       content: (
         <div className="space-y-3">
           <Pill icon={ScanLine} label="Tap sticker" right="Hold phone near sticker" />
-          <div className="rounded-[1.25rem] border-2 border-black bg-white/75 p-4 space-y-2">
+          <div className="rounded-[1.25rem] border border-black/65 bg-white/75 p-4 space-y-2">
             <div className="display-type text-xs tracking-[0.15em] text-black/50">
               Setup code
             </div>
@@ -957,14 +957,14 @@ function SetupFlow({
       desc: "Choose a label so it's easy to spot.",
       content: (
         <div className="space-y-3">
-          <div className="rounded-[1.25rem] border-2 border-black bg-white/75 p-4 space-y-2">
+          <div className="rounded-[1.25rem] border border-black/65 bg-white/75 p-4 space-y-2">
             <div className="display-type text-xs tracking-[0.15em] text-black/50">
               Item name
             </div>
             <Input value={name} onChange={setName} placeholder="Keys, Bike, Bottle..." />
           </div>
 
-          <div className="rounded-[1.25rem] border-2 border-black bg-white/75 p-4 space-y-2">
+          <div className="rounded-[1.25rem] border border-black/65 bg-white/75 p-4 space-y-2">
             <div className="display-type text-xs tracking-[0.15em] text-black/50">
               Model
             </div>
@@ -993,7 +993,7 @@ function SetupFlow({
       desc: "Make items private or share with followers.",
       content: (
         <div className="space-y-3">
-          <div className="flex items-center justify-between rounded-[1.25rem] border-2 border-black bg-white/75 p-4">
+          <div className="flex items-center justify-between rounded-[1.25rem] border border-black/65 bg-white/75 p-4">
             <div className="min-w-0">
               <div className="display-type text-sm text-black">Public</div>
               <div className="text-xs uppercase tracking-[0.1em] text-black/50">
@@ -1012,7 +1012,7 @@ function SetupFlow({
               title="Suggested followers"
             />
           ) : (
-            <div className="rounded-[1.25rem] border-2 border-dashed border-black bg-white/55 p-4">
+            <div className="rounded-[1.25rem] border border-dashed border-black/60 bg-white/55 p-4">
               <div className="display-type text-sm text-black">Private for now</div>
               <div className="mt-1 text-xs uppercase tracking-[0.1em] text-black/50">
                 Turn on Public to pick friends who can help locate this item.
@@ -1028,7 +1028,7 @@ function SetupFlow({
 
   return (
     <div className="p-5 space-y-4">
-      <div className="relative overflow-hidden rounded-[2rem] border-[3px] border-black bg-[var(--paper)] px-5 py-5">
+      <div className="relative overflow-hidden rounded-[2rem] border-2 border-black/75 bg-[var(--paper)] px-5 py-5">
         <StarAccent
           className="pointer-events-none absolute right-4 top-4 h-16 w-16 opacity-85"
           tone="outline"
@@ -1314,7 +1314,7 @@ export default function Page() {
 
   const Header = ({ title }: { title: string }) => (
     <div className="px-5 pt-5 pb-3">
-      <div className="relative overflow-hidden rounded-[1.75rem] border-[3px] border-black bg-[var(--paper)] px-4 py-4">
+      <div className="relative overflow-hidden rounded-[1.75rem] border-2 border-black/75 bg-[var(--paper)] px-4 py-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-3">
@@ -1340,12 +1340,12 @@ export default function Page() {
   const Marketing = () => (
     <div className="h-full overflow-y-auto overscroll-contain">
       <div className="space-y-4 p-5">
-        <div className="relative overflow-hidden rounded-[2rem] border-[3px] border-black bg-[var(--paper)] p-6">
+        <div className="relative overflow-hidden rounded-[2rem] border-2 border-black/75 bg-[var(--paper)] p-6">
           <StarAccent
             className="pointer-events-none absolute right-4 top-4 h-20 w-20 opacity-85"
             tone="outline"
           />
-          <div className="inline-flex items-center gap-2 rounded-full border-2 border-black bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--paper-strong)]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-black/70 bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--paper-strong)]">
             <CheckCircle2 className="h-4 w-4" /> Demo storefront
           </div>
           <div className="mt-5 space-y-4">
@@ -1469,7 +1469,7 @@ export default function Page() {
                     setDetailsOpen(true);
                   }}
                   className={cx(
-                    "w-full rounded-[1.2rem] border-2 bg-white/75 px-4 py-3 text-left",
+                    "w-full rounded-[1.2rem] border bg-white/75 px-4 py-3 text-left",
                     it.id === selectedItemId
                       ? "border-black shadow-[4px_4px_0_0_rgba(215,24,24,0.18)]"
                       : "border-black/75"
@@ -1528,7 +1528,7 @@ export default function Page() {
             <select
               value={shareItemId}
               onChange={(e) => setShareItemId(e.target.value)}
-              className="w-full rounded-[1.15rem] border-2 border-black bg-[var(--paper-strong)] px-3 py-2 text-black outline-none focus:ring-2 focus:ring-[var(--accent)]/25"
+              className="w-full rounded-[1.15rem] border border-black/65 bg-[var(--paper-strong)] px-3 py-2 text-black outline-none focus:ring-2 focus:ring-[var(--accent)]/25"
             >
               {ownedItems.map((x) => (
                 <option key={x.id} value={x.id}>
@@ -1537,7 +1537,7 @@ export default function Page() {
               ))}
             </select>
             {it && (
-              <div className="rounded-[1.2rem] border-2 border-black bg-white/75 px-4 py-3">
+              <div className="rounded-[1.2rem] border border-black/65 bg-white/75 px-4 py-3">
                 <div className="display-type text-xs tracking-[0.18em] text-black/50">
                   Selected item
                 </div>
@@ -1581,7 +1581,7 @@ export default function Page() {
                 {followers.map((f: any) => (
                   <div
                     key={f.id}
-                    className="flex items-center justify-between rounded-[1.2rem] border-2 border-black bg-white/75 px-4 py-3"
+                    className="flex items-center justify-between rounded-[1.2rem] border border-black/65 bg-white/75 px-4 py-3"
                   >
                     <div>
                       <div className="text-sm font-medium text-black">{f.name}</div>
@@ -1608,7 +1608,7 @@ export default function Page() {
               <div className="text-sm text-black/55">No followers yet.</div>
             )}
 
-            <div className="flex items-center justify-between rounded-[1.2rem] border-2 border-black bg-white/75 p-4">
+            <div className="flex items-center justify-between rounded-[1.2rem] border border-black/65 bg-white/75 p-4">
               <div>
                 <div className="display-type text-sm text-black">Public</div>
                 <div className="text-xs uppercase tracking-[0.1em] text-black/50">
@@ -1632,7 +1632,7 @@ export default function Page() {
             <div className="text-xs uppercase tracking-[0.1em] text-black/65">
               Demo link for follower access.
             </div>
-            <div className="overflow-hidden rounded-[1.1rem] border-2 border-black/20 bg-white/65 px-3 py-2 font-mono text-xs text-black text-ellipsis">
+            <div className="overflow-hidden rounded-[1.1rem] border border-black/20 bg-white/65 px-3 py-2 font-mono text-xs text-black text-ellipsis">
               sticktrack.app/follow/{it?.id}
             </div>
             <Button variant="secondary" onClick={() => showToast("Copied link")}>
@@ -1658,7 +1658,7 @@ export default function Page() {
             <Badge className="bg-black text-[var(--paper-strong)]">Demo</Badge>
           </div>
 
-          <div className="flex items-center justify-between rounded-[1.2rem] border-2 border-black bg-white/75 p-4">
+          <div className="flex items-center justify-between rounded-[1.2rem] border border-black/65 bg-white/75 p-4">
             <div className="min-w-0">
               <div className="display-type text-sm text-black">Notifications</div>
               <div className="text-xs uppercase tracking-[0.1em] text-black/50">
@@ -1668,7 +1668,7 @@ export default function Page() {
             <Switch checked={notifOn} onChange={setNotifOn} />
           </div>
 
-          <div className="flex items-center justify-between rounded-[1.2rem] border-2 border-black bg-white/75 p-4">
+          <div className="flex items-center justify-between rounded-[1.2rem] border border-black/65 bg-white/75 p-4">
             <div className="min-w-0">
               <div className="display-type text-sm text-black">Location</div>
               <div className="text-xs uppercase tracking-[0.1em] text-black/50">
@@ -1732,7 +1732,7 @@ export default function Page() {
         subtitle={`Model: ${selectedItem?.model} - Battery: ${selectedItem?.battery}%`}
       >
         <div className="space-y-3">
-          <div className="rounded-[1.2rem] border-2 border-black bg-white/75 p-4">
+          <div className="rounded-[1.2rem] border border-black/65 bg-white/75 p-4">
             <div className="display-type text-xs tracking-[0.16em] text-black/50">
               Last known location
             </div>
@@ -1892,7 +1892,7 @@ export default function Page() {
 
       {toast && (
         <div className="fixed left-1/2 bottom-24 z-50 -translate-x-1/2">
-          <div className="rounded-full border-2 border-black bg-[var(--accent)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-[4px_4px_0_0_rgba(0,0,0,0.18)]">
+          <div className="rounded-full border border-black/65 bg-[var(--accent)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-[4px_4px_0_0_rgba(0,0,0,0.18)]">
             {toast}
           </div>
         </div>
