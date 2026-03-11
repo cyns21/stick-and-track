@@ -1567,7 +1567,7 @@ export default function Page() {
                 {/* Smaller font + cleaner label */}
                 <Button
                   size="sm"
-                  className="text-[11px] px-3"
+                  className="border border-black/40 px-3 text-[0.64rem] tracking-[0.04em] shadow-[3px_3px_0_0_rgba(215,24,24,0.12)]"
                   onClick={() => setShareOpen(true)}
                   disabled={!it}
                 >
