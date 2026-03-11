@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import {
   MapPin,
   Users,
@@ -139,7 +139,7 @@ function Button({
   type?: "button" | "submit";
 }) {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-[1.1rem] border px-4 text-[0.95rem] font-semibold uppercase tracking-[0.08em] transition select-none active:translate-y-px disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center gap-2 rounded-[1.1rem] border px-4 text-[0.95rem] font-semibold uppercase tracking-[0.08em] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] select-none active:translate-y-px disabled:cursor-not-allowed";
   const variants = {
     primary:
       "border-[var(--accent-dark)]/55 bg-[var(--accent)] text-[#fff7f0] shadow-[2px_2px_0_0_rgba(0,0,0,0.12)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,0.12)] disabled:border-black/25 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
@@ -464,16 +464,24 @@ function BottomNav({
     label: string;
   }) => (
     <button
-      onClick={() => setTab(id)}
+      onClick={() => {
+        startTransition(() => setTab(id));
+      }}
       className={cx(
-        "flex flex-col items-center gap-1 px-2 py-2 transition",
+        "relative flex flex-col items-center gap-1 px-2 py-2 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
         tab === id
-          ? "text-[var(--accent)]"
+          ? "translate-y-[-1px] text-[var(--accent)]"
           : "text-black/50 hover:text-black"
       )}
     >
-      <Icon className="h-5 w-5" />
+      <Icon className={cx("h-5 w-5 transition-transform duration-200", tab === id && "scale-105")} />
       <span className="tab-type text-[0.72rem] leading-none">{label}</span>
+      <span
+        className={cx(
+          "absolute -bottom-0.5 h-[3px] rounded-full bg-[var(--accent)] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          tab === id ? "w-8 opacity-100" : "w-0 opacity-0"
+        )}
+      />
     </button>
   );
 
@@ -502,8 +510,11 @@ function Modal({
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" onClick={onClose} />
-      <div className="absolute left-1/2 top-1/2 w-[92%] max-w-[420px] -translate-x-1/2 -translate-y-1/2">
+      <div
+        className="ui-overlay-enter absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+        onClick={onClose}
+      />
+      <div className="ui-modal-enter absolute left-1/2 top-1/2 w-[92%] max-w-[420px] -translate-x-1/2 -translate-y-1/2">
         <div className="paper-panel relative max-h-[min(84dvh,720px)] overflow-y-auto rounded-[2rem] border-2 border-black/75 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.22)]">
           <CornerFrame className="opacity-90" />
           <div className="flex items-start justify-between gap-3">
@@ -541,8 +552,11 @@ function Sheet({
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" onClick={onClose} />
-      <div className="absolute left-0 right-0 bottom-0">
+      <div
+        className="ui-overlay-enter absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+        onClick={onClose}
+      />
+      <div className="ui-sheet-enter absolute left-0 right-0 bottom-0">
         <div className="paper-panel rounded-t-[2rem] border-2 border-b-0 border-black/75 p-4 shadow-[0_-16px_40px_rgba(0,0,0,0.2)]">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -1249,8 +1263,10 @@ export default function Page() {
   }, []);
 
   const goToApp = (defaultTab: TabKey = "find") => {
-    setStage("app");
-    setTab(defaultTab);
+    startTransition(() => {
+      setStage("app");
+      setTab(defaultTab);
+    });
   };
 
   const openSetup = () => {
@@ -1258,7 +1274,7 @@ export default function Page() {
       stage: stage === "app" ? "app" : "marketing",
       tab,
     });
-    setStage("setup");
+    startTransition(() => setStage("setup"));
   };
 
   const exitSetup = () => {
@@ -1267,7 +1283,7 @@ export default function Page() {
       return;
     }
 
-    setStage("marketing");
+    startTransition(() => setStage("marketing"));
   };
 
   const addItemFromSetup = ({
@@ -1338,7 +1354,7 @@ export default function Page() {
   );
 
   const renderMarketing = () => (
-    <div className="h-full overflow-y-auto overscroll-contain">
+    <div className="ui-panel-enter h-full overflow-y-auto overscroll-contain">
       <div className="space-y-4 p-5">
         <div className="relative overflow-hidden rounded-[2rem] border border-black/55 bg-[var(--paper)] p-6">
           <StarAccent
@@ -1426,7 +1442,7 @@ export default function Page() {
   );
 
   const renderFindTab = () => (
-    <div className="px-5 pb-4">
+    <div className="ui-panel-enter px-5 pb-4">
       <div className="space-y-3">
         <MapMock
           selectedId={selectedItemId}
@@ -1457,7 +1473,7 @@ export default function Page() {
             </div>
             <div
               className={cx(
-                "space-y-2 overflow-y-auto px-4 pb-4 transition-all",
+                "space-y-2 overflow-y-auto px-4 pb-4 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                 findSheetExpanded ? "max-h-[320px]" : "max-h-[184px]"
               )}
             >
@@ -1514,7 +1530,7 @@ export default function Page() {
     );
 
     return (
-      <div className="px-5 pb-4 space-y-3">
+      <div className="ui-panel-enter px-5 pb-4 space-y-3">
         <Card>
           <CardContent className="p-4 space-y-3">
             <div>
@@ -1646,7 +1662,7 @@ export default function Page() {
   };
 
   const renderSettingsTab = () => (
-    <div className="px-5 pb-4 space-y-3">
+    <div className="ui-panel-enter px-5 pb-4 space-y-3">
       <Card>
         <CardContent className="p-4 space-y-4">
           <div className="flex items-center justify-between">
@@ -1694,17 +1710,19 @@ export default function Page() {
   const renderAppShell = () => (
     <div className="h-full min-h-0 flex flex-col">
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        {renderHeader({
-          title:
-            tab === "find"
-              ? "Find"
-              : tab === "friends"
-                ? "Share"
-                : "Settings",
-        })}
-        {tab === "find" && renderFindTab()}
-        {tab === "friends" && renderFriendsTab()}
-        {tab === "settings" && renderSettingsTab()}
+        <div key={tab} className="ui-panel-enter">
+          {renderHeader({
+            title:
+              tab === "find"
+                ? "Find"
+                : tab === "friends"
+                  ? "Share"
+                  : "Settings",
+          })}
+          {tab === "find" && renderFindTab()}
+          {tab === "friends" && renderFriendsTab()}
+          {tab === "settings" && renderSettingsTab()}
+        </div>
       </div>
       <BottomNav tab={tab} setTab={setTab} />
     </div>
@@ -1714,7 +1732,7 @@ export default function Page() {
     <PhoneFrame>
       {stage === "marketing" && renderMarketing()}
       {stage === "setup" && (
-        <div className="h-full overflow-y-auto overscroll-contain">
+        <div className="ui-panel-enter h-full overflow-y-auto overscroll-contain">
           <SetupFlow
             onFinish={addItemFromSetup}
             onCancel={exitSetup}
