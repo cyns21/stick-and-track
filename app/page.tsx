@@ -1339,81 +1339,83 @@ export default function Page() {
   );
 
   const Marketing = () => (
-    <div className="space-y-4 p-5">
-      <div className="relative overflow-hidden rounded-[2rem] border-[3px] border-black bg-[var(--paper)] p-6">
-        <CornerFrame />
-        <div className="halftone-dots absolute inset-y-0 right-0 w-32 opacity-20" />
-        <StarAccent className="absolute -right-3 top-4 h-24 w-24 opacity-85" tone="outline" />
-        <div className="inline-flex items-center gap-2 rounded-full border-2 border-black bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--paper-strong)]">
-          <CheckCircle2 className="h-4 w-4" /> Demo storefront
-        </div>
-        <div className="mt-5 space-y-4">
-          <div className="display-type poster-shadow text-[3rem] leading-[0.92] text-[var(--accent)]">
-            Stick 'n Track
+    <div className="h-full overflow-y-auto overscroll-contain">
+      <div className="space-y-4 p-5">
+        <div className="relative overflow-hidden rounded-[2rem] border-[3px] border-black bg-[var(--paper)] p-6">
+          <CornerFrame />
+          <div className="halftone-dots absolute inset-y-0 right-0 w-32 opacity-20" />
+          <StarAccent className="absolute -right-3 top-4 h-24 w-24 opacity-85" tone="outline" />
+          <div className="inline-flex items-center gap-2 rounded-full border-2 border-black bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--paper-strong)]">
+            <CheckCircle2 className="h-4 w-4" /> Demo storefront
           </div>
-          <div className="poster-kicker text-[3.35rem] text-black">
-            Stick it.
-            <br />
-            Track it.
-            <br />
-            Forget it.
+          <div className="mt-5 space-y-4">
+            <div className="display-type poster-shadow text-[3rem] leading-[0.92] text-[var(--accent)]">
+              Stick 'n Track
+            </div>
+            <div className="poster-kicker text-[3.35rem] text-black">
+              Stick it.
+              <br />
+              Track it.
+              <br />
+              Forget it.
+            </div>
+            <div className="max-w-[16rem] text-sm uppercase tracking-[0.14em] text-black/55">
+              Discreet tracking for everyday things that should never slow you down.
+            </div>
           </div>
-          <div className="max-w-[16rem] text-sm uppercase tracking-[0.14em] text-black/55">
-            Discreet tracking for everyday things that should never slow you down.
+
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <Card className="bg-white/80">
+              <CardHeader>
+                <div className="display-type text-sm text-black">Slim</div>
+                <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-black/50">
+                  Ultra-thin, silent, sticker-first
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-2 pt-0">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-black/65">
+                  <VolumeX className="h-4 w-4 text-[var(--accent)]" /> No speaker
+                </div>
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-black/65">
+                  <BatteryFull className="h-4 w-4 text-[var(--accent)]" /> 2+ years battery
+                </div>
+                <div className="text-xs uppercase tracking-[0.1em] text-black/55">
+                  Ideal for wallets, water bottles, books
+                </div>
+                <div className="display-type text-sm text-black">$15</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-black text-[var(--paper-strong)] shadow-[0_16px_36px_rgba(0,0,0,0.18)]">
+              <CardHeader>
+                <div className="display-type text-sm text-white">Pro</div>
+                <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-white/65">
+                  Compact + speaker
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-2 pt-0">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white/80">
+                  <Volume2 className="h-4 w-4 text-[var(--accent)]" /> Sound alerts
+                </div>
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white/80">
+                  <BatteryFull className="h-4 w-4 text-[var(--accent)]" /> 2+ years battery
+                </div>
+                <div className="text-xs uppercase tracking-[0.1em] text-white/65">
+                  Best for keys, backpacks, laptops
+                </div>
+                <div className="display-type text-sm text-white">$25</div>
+              </CardContent>
+            </Card>
           </div>
-        </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          <Card className="bg-white/80">
-            <CardHeader>
-              <div className="display-type text-sm text-black">Slim</div>
-              <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-black/50">
-                Ultra-thin, silent, sticker-first
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-2 pt-0">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-black/65">
-                <VolumeX className="h-4 w-4 text-[var(--accent)]" /> No speaker
-              </div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-black/65">
-                <BatteryFull className="h-4 w-4 text-[var(--accent)]" /> 2+ years battery
-              </div>
-              <div className="text-xs uppercase tracking-[0.1em] text-black/55">
-                Ideal for wallets, water bottles, books
-              </div>
-              <div className="display-type text-sm text-black">$15</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-black text-[var(--paper-strong)] shadow-[0_16px_36px_rgba(0,0,0,0.18)]">
-            <CardHeader>
-              <div className="display-type text-sm text-white">Pro</div>
-              <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-white/65">
-                Compact + speaker
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-2 pt-0">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white/80">
-                <Volume2 className="h-4 w-4 text-[var(--accent)]" /> Sound alerts
-              </div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white/80">
-                <BatteryFull className="h-4 w-4 text-[var(--accent)]" /> 2+ years battery
-              </div>
-              <div className="text-xs uppercase tracking-[0.1em] text-white/65">
-                Best for keys, backpacks, laptops
-              </div>
-              <div className="display-type text-sm text-white">$25</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="mt-4 flex gap-2">
-          <Button onClick={openSetup}>
-            <Plus className="h-4 w-4" /> Add a tracker
-          </Button>
-          <Button variant="secondary" onClick={() => goToApp("find")}>
-            View app
-          </Button>
+          <div className="mt-4 flex gap-2">
+            <Button onClick={openSetup}>
+              <Plus className="h-4 w-4" /> Add a tracker
+            </Button>
+            <Button variant="secondary" onClick={() => goToApp("find")}>
+              View app
+            </Button>
+          </div>
         </div>
       </div>
     </div>
