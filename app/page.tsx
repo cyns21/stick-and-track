@@ -142,9 +142,9 @@ function Button({
     "inline-flex items-center justify-center gap-2 rounded-[1.1rem] border px-4 text-[0.95rem] font-semibold uppercase tracking-[0.08em] transition select-none active:translate-y-px disabled:cursor-not-allowed";
   const variants = {
     primary:
-      "border-[var(--accent-dark)]/70 bg-[var(--accent)] text-[#fff7f0] shadow-[4px_4px_0_0_rgba(0,0,0,0.18)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_0_rgba(0,0,0,0.18)] disabled:border-black/25 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
+      "border-[var(--accent-dark)]/55 bg-[var(--accent)] text-[#fff7f0] shadow-[4px_4px_0_0_rgba(0,0,0,0.18)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_0_rgba(0,0,0,0.18)] disabled:border-black/25 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
     secondary:
-      "border-black/65 bg-[var(--paper-strong)] text-black shadow-[4px_4px_0_0_rgba(215,24,24,0.18)] hover:bg-white disabled:opacity-60 disabled:shadow-none",
+      "border-black/50 bg-[var(--paper-strong)] text-black shadow-[4px_4px_0_0_rgba(215,24,24,0.18)] hover:bg-white disabled:opacity-60 disabled:shadow-none",
     ghost:
       "border-black/15 bg-transparent text-black hover:bg-black/5",
   };
@@ -181,7 +181,7 @@ function Input({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       className={cx(
-        "w-full rounded-[1.15rem] border border-black/65 bg-[var(--paper-strong)] px-4 py-2.5 text-[1rem] text-black placeholder:text-black/35 outline-none focus:ring-2 focus:ring-[var(--accent)]/25",
+        "w-full rounded-[1.15rem] border border-black/50 bg-[var(--paper-strong)] px-4 py-2.5 text-[1rem] text-black placeholder:text-black/35 outline-none focus:ring-2 focus:ring-[var(--accent)]/25",
         className
       )}
     />
@@ -217,7 +217,7 @@ function Card({
   return (
     <div
       className={cx(
-        "paper-panel rounded-[1.8rem] border border-black/70 text-black",
+        "paper-panel rounded-[1.8rem] border border-black/55 text-black",
         className
       )}
     >
@@ -258,7 +258,7 @@ function Switch({
       type="button"
       onClick={() => onChange(!checked)}
       className={cx(
-        "h-8 w-14 rounded-full border border-black/70 p-1 transition",
+        "h-8 w-14 rounded-full border border-black/55 p-1 transition",
         checked ? "bg-[var(--accent)]" : "bg-black"
       )}
       aria-label="switch"
@@ -275,7 +275,7 @@ function Switch({
 
 function Progress({ value }: { value: number }) {
   return (
-    <div className="h-3 w-full overflow-hidden rounded-full border border-black/70 bg-black/10">
+    <div className="h-3 w-full overflow-hidden rounded-full border border-black/55 bg-black/10">
       <div
         className="h-full bg-[var(--accent)]"
         style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
@@ -290,8 +290,8 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
       <StarAccent className="pointer-events-none absolute left-3 top-5 h-28 w-28 opacity-70 sm:left-6" tone="outline" />
       <StarAccent className="pointer-events-none absolute bottom-8 right-3 h-24 w-24 opacity-80 sm:right-6" tone="ink" />
       <div className="w-[390px] max-w-full">
-        <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border-2 border-black/75 bg-[var(--paper-strong)] shadow-[0_26px_70px_rgba(0,0,0,0.22)] sm:h-[min(100dvh-3rem,844px)]">
-          <div className="relative flex h-11 shrink-0 items-center justify-between border-b border-black/70 px-5">
+        <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border border-black/60 bg-[var(--paper-strong)] shadow-[0_26px_70px_rgba(0,0,0,0.22)] sm:h-[min(100dvh-3rem,844px)]">
+          <div className="relative flex h-11 shrink-0 items-center justify-between border-b border-black/50 px-5">
             <div className="display-type text-[0.82rem] tracking-[0.18em] text-black/70">
               Stick 'n Track
             </div>
@@ -316,9 +316,9 @@ function Pill({
   right: string;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-[1.25rem] border border-black/70 bg-[var(--paper-strong)] px-4 py-3 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)]">
+    <div className="flex items-center justify-between rounded-[1.25rem] border border-black/55 bg-[var(--paper-strong)] px-4 py-3 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)]">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-[1rem] border border-black/70 bg-[var(--accent)]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-[1rem] border border-black/55 bg-[var(--accent)]">
           <Icon className="h-4 w-4 text-white" />
         </div>
         <div className="text-[1rem] font-medium text-black">{label}</div>
@@ -1567,11 +1567,12 @@ export default function Page() {
                 {/* Smaller font + cleaner label */}
                 <Button
                   size="sm"
-                  className="border border-black/40 px-3 text-[0.64rem] tracking-[0.04em] shadow-[3px_3px_0_0_rgba(215,24,24,0.12)]"
+                  className="border border-black/30 px-3 text-[0.58rem] tracking-[0.03em] shadow-[3px_3px_0_0_rgba(215,24,24,0.10)]"
                   onClick={() => setShareOpen(true)}
                   disabled={!it}
                 >
-                  <Plus className="h-4 w-4" /> Add followers
+                  <Plus className="h-4 w-4" />
+                  <span className="translate-y-[1px]">Add followers</span>
                 </Button>
               </div>
             </div>
