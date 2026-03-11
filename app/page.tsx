@@ -1695,13 +1695,12 @@ export default function Page() {
     <div className="h-full min-h-0 flex flex-col">
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {renderHeader({
-          title={
+          title:
             tab === "find"
               ? "Find"
               : tab === "friends"
-              ? "Share"
-              : "Settings"
-          },
+                ? "Share"
+                : "Settings",
         })}
         {tab === "find" && renderFindTab()}
         {tab === "friends" && renderFriendsTab()}
