@@ -47,9 +47,9 @@ textarea {
 }
 
 .display-type {
-  font-family: var(--font-display), var(--font-app-sans), Arial, sans-serif;
+  font-family: var(--font-tab-display), var(--font-display), Impact, sans-serif;
   text-transform: uppercase;
-  letter-spacing: -0.04em;
+  letter-spacing: 0.01em;
 }
 
 .poster-kicker {

@@ -86,7 +86,7 @@ function StarAccent({
   if (tone === "outline") {
     return (
       <svg
-        viewBox="0 0 100 100"
+        viewBox="-8 -8 116 116"
         className={className}
         fill="none"
         stroke="var(--accent)"
@@ -100,7 +100,7 @@ function StarAccent({
 
   return (
     <svg
-      viewBox="0 0 100 100"
+      viewBox="-8 -8 116 116"
       className={className}
       fill={tone === "ink" ? "#090909" : "var(--accent)"}
       aria-hidden="true"
@@ -466,10 +466,10 @@ function BottomNav({
     <button
       onClick={() => setTab(id)}
       className={cx(
-        "flex flex-col items-center gap-1 rounded-[1.1rem] border-2 px-2 py-2 transition",
+        "flex flex-col items-center gap-1 px-2 py-2 transition",
         tab === id
-          ? "border-black bg-[var(--accent)] text-white shadow-[3px_3px_0_0_rgba(0,0,0,0.18)]"
-          : "border-black/10 bg-transparent text-black/50 hover:bg-black/5 hover:text-black"
+          ? "text-[var(--accent)]"
+          : "text-black/50 hover:text-black"
       )}
     >
       <Icon className="h-5 w-5" />
@@ -1029,7 +1029,10 @@ function SetupFlow({
   return (
     <div className="p-5 space-y-4">
       <div className="relative overflow-hidden rounded-[2rem] border-[3px] border-black bg-[var(--paper)] px-5 py-5">
-        <StarAccent className="absolute -right-6 -top-6 h-20 w-20 opacity-85" tone="outline" />
+        <StarAccent
+          className="pointer-events-none absolute right-4 top-4 h-16 w-16 opacity-85"
+          tone="outline"
+        />
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <div className="display-type text-xs tracking-[0.18em] text-black/50">
@@ -1339,7 +1342,7 @@ export default function Page() {
       <div className="space-y-4 p-5">
         <div className="relative overflow-hidden rounded-[2rem] border-[3px] border-black bg-[var(--paper)] p-6">
           <StarAccent
-            className="pointer-events-none absolute -right-3 top-4 h-24 w-24 opacity-85"
+            className="pointer-events-none absolute right-4 top-4 h-20 w-20 opacity-85"
             tone="outline"
           />
           <div className="inline-flex items-center gap-2 rounded-full border-2 border-black bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--paper-strong)]">
