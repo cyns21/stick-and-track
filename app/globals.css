@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #e8e5de;
+  --foreground: #090909;
+  --paper: rgba(255, 252, 246, 0.9);
+  --paper-strong: #f8f4ed;
+  --accent: #d71818;
+  --accent-dark: #8e0d0d;
+  --shadow: rgba(9, 9, 9, 0.18);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-app-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--background);
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(circle at top left, rgba(215, 24, 24, 0.08), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(0, 0, 0, 0.06), transparent 32%),
+    linear-gradient(180deg, #ece8e0 0%, #dfdbd4 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-app-sans), Arial, Helvetica, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(215, 24, 24, 0.2);
+}
+
+.display-type {
+  font-family: var(--font-display), var(--font-app-sans), Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+}
+
+.poster-kicker {
+  font-family: var(--font-display), var(--font-app-sans), Arial, sans-serif;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  line-height: 0.88;
+}
+
+.poster-shadow {
+  text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.16);
+}
+
+.paper-panel {
+  background: linear-gradient(180deg, rgba(255, 252, 246, 0.94), rgba(243, 238, 230, 0.92));
+  box-shadow: 0 16px 36px var(--shadow);
+}
+
+.halftone-dots {
+  background-image: radial-gradient(circle, rgba(9, 9, 9, 0.16) 1px, transparent 1.2px);
+  background-size: 12px 12px;
+}
+
+.poster-grid {
+  background-image:
+    linear-gradient(rgba(9, 9, 9, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(9, 9, 9, 0.045) 1px, transparent 1px);
+  background-size: 26px 26px;
 }

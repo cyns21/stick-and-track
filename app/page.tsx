@@ -6,8 +6,6 @@ import {
   Users,
   Settings,
   ScanLine,
-  Share2,
-  Bell,
   BatteryFull,
   Volume2,
   VolumeX,
@@ -22,12 +20,12 @@ import {
 } from "lucide-react";
 
 /**
- * Stick 'n Track â€” Demo Prototype
+ * Stick 'n Track - Demo Prototype
  * Self-contained (Tailwind + lucide-react only)
  *
- * âœ… Works as a Next.js App Router page (app/page.tsx)
- * âœ… Deploys cleanly to Vercel
- * âœ… Future NFC deep-link ready: /?setup=1&code=STICK-1234
+ * Works as a Next.js App Router page (app/page.tsx)
+ * Deploys cleanly to Vercel
+ * Future NFC deep-link ready: /?setup=1&code=STICK-1234
  */
 
 type FollowerProfile = {
@@ -76,6 +74,53 @@ function cx(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
 }
 
+function StarAccent({
+  className = "",
+  tone = "solid",
+}: {
+  className?: string;
+  tone?: "solid" | "outline" | "ink";
+}) {
+  const points = "50,4 61,36 95,36 68,56 79,90 50,69 21,90 32,56 5,36 39,36";
+
+  if (tone === "outline") {
+    return (
+      <svg
+        viewBox="0 0 100 100"
+        className={className}
+        fill="none"
+        stroke="var(--accent)"
+        strokeWidth="8"
+        aria-hidden="true"
+      >
+        <polygon points={points} />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      className={className}
+      fill={tone === "ink" ? "#090909" : "var(--accent)"}
+      aria-hidden="true"
+    >
+      <polygon points={points} />
+    </svg>
+  );
+}
+
+function CornerFrame({ className = "" }: { className?: string }) {
+  return (
+    <div className={cx("pointer-events-none absolute inset-0", className)} aria-hidden="true">
+      <div className="absolute left-0 top-0 h-12 w-12 border-l-[5px] border-t-[5px] border-[var(--accent)]" />
+      <div className="absolute right-0 top-0 h-12 w-12 border-r-[5px] border-t-[5px] border-[var(--accent)]" />
+      <div className="absolute left-0 bottom-0 h-12 w-12 border-b-[5px] border-l-[5px] border-[var(--accent)]" />
+      <div className="absolute right-0 bottom-0 h-12 w-12 border-b-[5px] border-r-[5px] border-[var(--accent)]" />
+    </div>
+  );
+}
+
 function Button({
   children,
   onClick,
@@ -94,25 +139,25 @@ function Button({
   type?: "button" | "submit";
 }) {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-2xl transition select-none";
+    "inline-flex items-center justify-center gap-2 rounded-[1.1rem] border-2 px-4 text-[0.95rem] font-semibold uppercase tracking-[0.08em] transition select-none active:translate-y-px disabled:cursor-not-allowed";
   const variants = {
     primary:
-      "bg-white text-black hover:bg-neutral-200 disabled:bg-neutral-600 disabled:text-neutral-200",
+      "border-[var(--accent-dark)] bg-[var(--accent)] text-[#fff7f0] shadow-[4px_4px_0_0_rgba(0,0,0,0.18)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_0_rgba(0,0,0,0.18)] disabled:border-black/25 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
     secondary:
-      "bg-neutral-900 text-neutral-100 hover:bg-neutral-800 border border-neutral-800 disabled:opacity-60",
+      "border-black bg-[var(--paper-strong)] text-black shadow-[4px_4px_0_0_rgba(215,24,24,0.18)] hover:bg-white disabled:opacity-60 disabled:shadow-none",
     ghost:
-      "bg-transparent text-neutral-200 hover:bg-neutral-900 border border-neutral-900",
+      "border-black/15 bg-transparent text-black hover:bg-black/5",
   };
   const sizes = {
-    sm: "h-9 px-3 text-sm",
-    md: "h-10 px-4 text-sm",
+    sm: "h-10 px-3 text-[0.82rem]",
+    md: "h-11 px-4 text-[0.92rem]",
   };
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={cx(base, variants[variant], sizes[size], className)}
+      className={cx(base, "display-type", variants[variant], sizes[size], className)}
     >
       {children}
     </button>
@@ -136,7 +181,7 @@ function Input({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       className={cx(
-        "w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-3 py-2 text-neutral-100 placeholder:text-neutral-600 outline-none focus:ring-2 focus:ring-white/20",
+        "w-full rounded-[1.15rem] border-2 border-black bg-[var(--paper-strong)] px-4 py-2.5 text-[1rem] text-black placeholder:text-black/35 outline-none focus:ring-2 focus:ring-[var(--accent)]/25",
         className
       )}
     />
@@ -153,7 +198,7 @@ function Badge({
   return (
     <span
       className={cx(
-        "inline-flex items-center rounded-xl px-2.5 py-1 text-xs",
+        "inline-flex items-center rounded-full border border-black/15 px-2.5 py-1 text-[0.78rem] font-semibold uppercase tracking-[0.1em]",
         className
       )}
     >
@@ -172,7 +217,7 @@ function Card({
   return (
     <div
       className={cx(
-        "rounded-3xl border border-neutral-900 bg-neutral-950/70",
+        "paper-panel rounded-[1.8rem] border-2 border-black/90 text-black",
         className
       )}
     >
@@ -213,15 +258,15 @@ function Switch({
       type="button"
       onClick={() => onChange(!checked)}
       className={cx(
-        "w-12 h-7 rounded-full border border-neutral-800 p-1 transition",
-        checked ? "bg-white" : "bg-neutral-900"
+        "h-8 w-14 rounded-full border-2 border-black p-1 transition",
+        checked ? "bg-[var(--accent)]" : "bg-black"
       )}
       aria-label="switch"
     >
       <div
         className={cx(
-          "h-5 w-5 rounded-full transition",
-          checked ? "bg-black translate-x-5" : "bg-neutral-300 translate-x-0"
+          "h-5.5 w-5.5 rounded-full transition",
+          checked ? "bg-[var(--paper-strong)] translate-x-6" : "bg-[var(--paper-strong)] translate-x-0"
         )}
       />
     </button>
@@ -230,9 +275,9 @@ function Switch({
 
 function Progress({ value }: { value: number }) {
   return (
-    <div className="h-2 w-full rounded-full bg-neutral-900 border border-neutral-800 overflow-hidden">
+    <div className="h-3 w-full overflow-hidden rounded-full border-2 border-black bg-black/10">
       <div
-        className="h-full bg-white"
+        className="h-full bg-[var(--accent)]"
         style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
       />
     </div>
@@ -241,14 +286,21 @@ function Progress({ value }: { value: number }) {
 
 function PhoneFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen w-full bg-neutral-950 text-neutral-50 flex items-center justify-center p-3 sm:p-6">
+    <div className="poster-grid relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[var(--background)] p-3 text-black sm:p-6">
+      <StarAccent className="absolute left-[-2.5rem] top-6 h-28 w-28 opacity-70" tone="outline" />
+      <StarAccent className="absolute bottom-10 right-[-1.75rem] h-24 w-24 opacity-80" tone="ink" />
       <div className="w-[390px] max-w-full">
-        <div className="h-[min(100dvh-1.5rem,844px)] sm:h-[min(100dvh-3rem,844px)] rounded-[2.2rem] border border-neutral-800 bg-neutral-950 shadow-2xl overflow-hidden flex flex-col">
-          {/* Top bar (removed Connected label) */}
-          <div className="h-10 shrink-0 flex items-center justify-between px-5 border-b border-neutral-900">
-            <div className="text-xs text-neutral-400">Stick 'n Track</div>
+        <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border-[3px] border-black bg-[var(--paper-strong)] shadow-[0_26px_70px_rgba(0,0,0,0.22)] sm:h-[min(100dvh-3rem,844px)]">
+          <div className="halftone-dots absolute inset-x-0 top-0 h-24 opacity-25" />
+          <div className="relative flex h-11 shrink-0 items-center justify-between border-b-2 border-black px-5">
+            <div className="display-type text-[0.82rem] tracking-[0.18em] text-black/70">
+              Stick 'n Track
+            </div>
+            <div className="rounded-full border border-black/15 bg-[var(--accent)] px-2 py-0.5 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-white">
+              Demo
+            </div>
           </div>
-          <div className="min-h-0 flex-1 bg-neutral-950">{children}</div>
+          <div className="min-h-0 flex-1 bg-[var(--background)]">{children}</div>
         </div>
       </div>
     </div>
@@ -265,14 +317,14 @@ function Pill({
   right: string;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3">
+    <div className="flex items-center justify-between rounded-[1.25rem] border-2 border-black bg-[var(--paper-strong)] px-4 py-3 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)]">
       <div className="flex items-center gap-3">
-        <div className="h-9 w-9 rounded-2xl bg-neutral-900 flex items-center justify-center">
-          <Icon className="h-4 w-4 text-neutral-200" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-[1rem] border-2 border-black bg-[var(--accent)]">
+          <Icon className="h-4 w-4 text-white" />
         </div>
-        <div className="text-sm text-neutral-200">{label}</div>
+        <div className="text-[1rem] font-medium text-black">{label}</div>
       </div>
-      <div className="text-xs text-neutral-500">{right}</div>
+      <div className="text-xs uppercase tracking-[0.12em] text-black/55">{right}</div>
     </div>
   );
 }
@@ -319,7 +371,9 @@ function FollowerPicker({
   return (
     <div className="space-y-3">
       <div className="space-y-2">
-        <div className="text-xs text-neutral-500">Search by name or username</div>
+        <div className="display-type text-xs tracking-[0.16em] text-black/50">
+          Search by name or username
+        </div>
         <Input
           value={query}
           onChange={setQuery}
@@ -327,20 +381,22 @@ function FollowerPicker({
         />
       </div>
 
-      <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4">
+      <div className="rounded-[1.35rem] border-2 border-black bg-[var(--paper-strong)] p-4">
         <div className="flex items-center justify-between gap-3">
-          <div className="text-xs text-neutral-500">{title}</div>
-          <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">
+          <div className="display-type text-xs tracking-[0.16em] text-black/55">
+            {title}
+          </div>
+          <Badge className="bg-black text-[var(--paper-strong)]">
             {selectedIds.length} added
           </Badge>
         </div>
 
         {customFollower && !hasCustomMatch && (
-          <div className="mt-3 rounded-2xl border border-neutral-900 bg-neutral-950 px-4 py-3">
+          <div className="mt-3 rounded-[1.15rem] border-2 border-black bg-white px-4 py-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-sm text-neutral-200">{customFollower.name}</div>
-                <div className="text-xs text-neutral-600">
+                <div className="text-[1rem] font-medium text-black">{customFollower.name}</div>
+                <div className="text-xs uppercase tracking-[0.12em] text-black/45">
                   {customFollower.handle}
                 </div>
               </div>
@@ -363,11 +419,13 @@ function FollowerPicker({
               return (
                 <div
                   key={friend.id}
-                  className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950 px-4 py-3"
+                  className="flex items-center justify-between rounded-[1.15rem] border-2 border-black bg-white px-4 py-3"
                 >
                   <div>
-                    <div className="text-sm text-neutral-200">{friend.name}</div>
-                    <div className="text-xs text-neutral-600">{friend.handle}</div>
+                    <div className="text-[1rem] font-medium text-black">{friend.name}</div>
+                    <div className="text-xs uppercase tracking-[0.12em] text-black/45">
+                      {friend.handle}
+                    </div>
                   </div>
                   <Button
                     variant={isSelected ? "secondary" : "primary"}
@@ -381,7 +439,7 @@ function FollowerPicker({
             })}
           </div>
         ) : (
-          <div className="mt-3 text-sm text-neutral-500">{emptyLabel}</div>
+          <div className="mt-3 text-sm text-black/55">{emptyLabel}</div>
         )}
       </div>
     </div>
@@ -409,17 +467,19 @@ function BottomNav({
     <button
       onClick={() => setTab(id)}
       className={cx(
-        "flex flex-col items-center gap-1 py-2 px-2 rounded-2xl transition",
-        tab === id ? "text-neutral-50" : "text-neutral-500 hover:text-neutral-300"
+        "display-type flex flex-col items-center gap-1 rounded-[1.1rem] border-2 px-2 py-2 transition",
+        tab === id
+          ? "border-black bg-[var(--accent)] text-white shadow-[3px_3px_0_0_rgba(0,0,0,0.18)]"
+          : "border-black/10 bg-transparent text-black/50 hover:bg-black/5 hover:text-black"
       )}
     >
-      <Icon className={cx("h-5 w-5", tab === id ? "" : "opacity-90")} />
+      <Icon className="h-5 w-5" />
       <span className="text-[11px]">{label}</span>
     </button>
   );
 
   return (
-    <div className="shrink-0 border-t border-neutral-900 bg-neutral-950/95 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/85">
+    <div className="shrink-0 border-t-2 border-black bg-[var(--paper)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--paper)]/90">
       <div className="grid grid-cols-3 gap-2 px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
         <Item id="find" Icon={MapPin} label="Find" />
         <Item id="friends" Icon={Users} label="Share" />
@@ -443,18 +503,21 @@ function Modal({
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" onClick={onClose} />
       <div className="absolute left-1/2 top-1/2 w-[92%] max-w-[420px] -translate-x-1/2 -translate-y-1/2">
-        <div className="max-h-[min(84dvh,720px)] overflow-y-auto rounded-3xl border border-neutral-800 bg-neutral-950 p-4 shadow-2xl">
+        <div className="paper-panel relative max-h-[min(84dvh,720px)] overflow-y-auto rounded-[2rem] border-[3px] border-black p-4 shadow-[0_20px_50px_rgba(0,0,0,0.22)]">
+          <CornerFrame className="opacity-90" />
           <div className="flex items-start justify-between gap-3">
             <div>
-              <div className="text-lg font-semibold text-neutral-50">{title}</div>
+              <div className="display-type text-lg text-black">{title}</div>
             </div>
             <button
-              className="h-9 w-9 rounded-2xl bg-neutral-900 hover:bg-neutral-800 transition"
+              className="h-9 w-9 rounded-[1rem] border-2 border-black bg-[var(--paper-strong)] transition hover:bg-white"
               onClick={onClose}
               aria-label="close"
-            />
+            >
+              <span className="display-type text-sm text-black">X</span>
+            </button>
           </div>
           <div className="mt-3">{children}</div>
         </div>
@@ -479,16 +542,16 @@ function Sheet({
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" onClick={onClose} />
       <div className="absolute left-0 right-0 bottom-0">
-        <div className="rounded-t-3xl border border-neutral-800 bg-neutral-950 p-4 shadow-2xl">
+        <div className="paper-panel rounded-t-[2rem] border-[3px] border-b-0 border-black p-4 shadow-[0_-16px_40px_rgba(0,0,0,0.2)]">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <div className="text-lg font-semibold text-neutral-50 truncate">
+              <div className="display-type text-lg text-black truncate">
                 {title}
               </div>
               {subtitle && (
-                <div className="text-sm text-neutral-500 mt-1 truncate">
+                <div className="mt-1 text-sm uppercase tracking-[0.12em] text-black/50 truncate">
                   {subtitle}
                 </div>
               )}
@@ -518,111 +581,6 @@ type Item = {
   followers: string[];
   owner?: string;
 };
-
-function statusMeta(status: StatusKey) {
-  if (status === "shared_with_me")
-    return {
-      label: "Shared with me",
-      badge: "bg-sky-500/15 text-sky-300",
-      dot: "bg-sky-500",
-    };
-  return {
-    label: "My item",
-    badge: "bg-emerald-500/15 text-emerald-300",
-    dot: "bg-emerald-500",
-  };
-}
-
-function ItemCard({
-  item,
-  onOpen,
-  onQuickShare,
-  onPing,
-  onPlaySound,
-}: {
-  item: Item;
-  onOpen: () => void;
-  onQuickShare: () => void;
-  onPing: () => void;
-  onPlaySound: () => void;
-}) {
-  const meta = statusMeta(item.status);
-  const isPro = item.model === "Pro";
-  const isSharedWithMe = item.status === "shared_with_me";
-
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className={cx("h-2 w-2 rounded-full", meta.dot)} />
-                <div className="text-base text-neutral-50 font-medium truncate">
-                  {item.name}
-                </div>
-              </div>
-
-              <Badge className={cx("rounded-xl", meta.badge)}>{meta.label}</Badge>
-
-              {isSharedWithMe && item.owner && (
-                <Badge className="rounded-xl bg-neutral-900 text-neutral-200">
-                  Owner: {item.owner}
-                </Badge>
-              )}
-            </div>
-
-            <div className="text-xs text-neutral-500 mt-1">
-              Last seen <span className="text-neutral-300">{item.lastSeen}</span>
-              <span className="text-neutral-600"> - </span>
-              <span className="text-neutral-300">{item.place}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Remove share button entirely for "Shared with me" items */}
-            {!isSharedWithMe && (
-              <button
-                onClick={onQuickShare}
-                className="h-10 w-10 rounded-2xl bg-neutral-900 flex items-center justify-center hover:bg-neutral-800 transition"
-                aria-label="Share"
-              >
-                <Share2 className="h-5 w-5" />
-              </button>
-            )}
-
-            <button
-              onClick={onOpen}
-              className="h-10 w-10 rounded-2xl bg-neutral-900 flex items-center justify-center hover:bg-neutral-800 transition"
-              aria-label="Info"
-            >
-              <Info className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-
-        <div
-          className={cx("mt-4 grid gap-2", isPro ? "grid-cols-2" : "grid-cols-1")}
-        >
-          <Button variant="secondary" onClick={onPing}>
-            <Bell className="h-4 w-4" /> Ping
-          </Button>
-          {isPro && (
-            <Button variant="secondary" onClick={onPlaySound}>
-              <Volume2 className="h-5 w-5" /> Play sound
-            </Button>
-          )}
-        </div>
-
-        {isSharedWithMe && (
-          <div className="mt-3 text-xs text-neutral-600">
-            Shared with you. Controls are limited.
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
 
 function MapMock({
   selectedId,
@@ -770,7 +728,7 @@ function MapMock({
       // Outer glow ring so tracked-item circles are always easy to spot.
       L.circleMarker([coords.lat, coords.lng], {
         radius: isSel ? 14 : 11,
-        color: isSharedWithMe ? "#38bdf8" : "#34d399",
+        color: isSharedWithMe ? "#090909" : "#d71818",
         weight: isSel ? 2 : 1,
         fillOpacity: 0.2,
         opacity: 0.9,
@@ -778,9 +736,9 @@ function MapMock({
 
       const marker = L.circleMarker([coords.lat, coords.lng], {
         radius: isSel ? 10 : 8,
-        color: "#ffffff",
+        color: "#fff7f0",
         weight: isSel ? 2 : 1.5,
-        fillColor: isSharedWithMe ? "#0ea5e9" : "#10b981",
+        fillColor: isSharedWithMe ? "#090909" : "#d71818",
         fillOpacity: 0.95,
       }).addTo(layer);
       const ownerLine =
@@ -789,12 +747,12 @@ function MapMock({
           : "";
       const popupHtml = `<div style="
         min-width: 150px;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        font-family: var(--font-app-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
         color: #111827;
         line-height: 1.35;
       ">
-        <div style="font-weight: 700;">${escapeHtml(it.name)}</div>
-        <div style="font-size:12px; margin-top:2px;">${escapeHtml(it.place)}</div>
+        <div style="font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;">${escapeHtml(it.name)}</div>
+        <div style="font-size:12px; margin-top:2px; text-transform: uppercase; letter-spacing: 0.05em;">${escapeHtml(it.place)}</div>
         <div style="font-size:12px; margin-top:2px;">Last seen: ${escapeHtml(it.lastSeen)}</div>
         ${ownerLine}
       </div>`;
@@ -807,15 +765,17 @@ function MapMock({
           html: `<div style="
             transform: translate(-50%, -34px);
             display: inline-block;
-            border: 1px solid rgba(255,255,255,0.22);
-            background: rgba(10,10,10,0.86);
-            color: #f5f5f5;
+            border: 2px solid rgba(9,9,9,0.92);
+            background: rgba(255, 252, 246, 0.96);
+            color: #090909;
             border-radius: 9999px;
             padding: 3px 8px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             white-space: nowrap;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+            box-shadow: 4px 4px 0 rgba(215,24,24,0.18);
           ">${escapeHtml(it.name)}</div>`,
         }),
         interactive: true,
@@ -842,18 +802,18 @@ function MapMock({
   }, [selectedCoords.lat, selectedCoords.lng]);
 
   return (
-    <div className="relative z-0 rounded-3xl overflow-hidden border border-neutral-900 bg-neutral-950">
-      <div className="p-4 border-b border-neutral-900 flex items-center justify-between">
+    <div className="paper-panel relative z-0 overflow-hidden rounded-[1.9rem] border-[3px] border-black">
+      <div className="flex items-center justify-between border-b-2 border-black p-4">
         <div>
-          <div className="text-sm text-neutral-100">Campus Map</div>
-          <div className="text-xs text-neutral-500">
+          <div className="display-type text-sm text-black">Campus Map</div>
+          <div className="text-xs uppercase tracking-[0.12em] text-black/55">
             Map of Davis with demo item markers
           </div>
         </div>
         <Button
           variant="secondary"
           size="sm"
-          className="rounded-2xl"
+          className="rounded-[1rem]"
           onClick={() => {
             const map = mapRef.current;
             if (!map) return;
@@ -867,31 +827,31 @@ function MapMock({
 
       <div className="relative h-[58dvh] min-h-[420px] max-h-[680px]">
         <div ref={mapContainerRef} className="h-full w-full" />
-        <div className="pointer-events-none absolute bottom-3 right-3 rounded-2xl border border-neutral-800 bg-neutral-950/80 px-3 py-1.5 text-[11px] text-neutral-300 backdrop-blur">
+        <div className="pointer-events-none absolute bottom-3 right-3 rounded-full border-2 border-black bg-[var(--paper-strong)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-black/70 backdrop-blur">
           Drag to pan, pinch to zoom
         </div>
       </div>
 
       <div className="p-4">
-        <div className="rounded-2xl border border-neutral-900 bg-neutral-900/50 p-3">
+        <div className="rounded-[1.25rem] border-2 border-black bg-white/70 p-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <div className="text-sm font-medium text-neutral-50 truncate">
+              <div className="display-type text-sm text-black truncate">
                 {selected.name}
               </div>
-              <div className="text-[11px] text-neutral-500 truncate">
-                {selected.place} - {selected.lastSeen}
+              <div className="text-[11px] uppercase tracking-[0.1em] text-black/55 truncate">
+                {selected.place} / {selected.lastSeen}
                 {selected.status === "shared_with_me" && selected.owner
-                  ? ` - Owner: ${selected.owner}`
+                  ? ` / Owner: ${selected.owner}`
                   : ""}
               </div>
             </div>
             <button
               onClick={onOpenSelected}
-              className="h-7 w-7 rounded-xl bg-neutral-950 hover:bg-neutral-800 transition flex items-center justify-center"
+              className="flex h-8 w-8 items-center justify-center rounded-[0.9rem] border-2 border-black bg-black transition hover:bg-black/85"
               aria-label="details"
             >
-              <Info className="h-4 w-4" />
+              <Info className="h-4 w-4 text-white" />
             </button>
           </div>
         </div>
@@ -904,10 +864,10 @@ function MapMock({
                 key={it.id}
                 onClick={() => setSelectedId(it.id)}
                 className={cx(
-                  "rounded-full border px-3 py-1 text-xs transition",
+                  "display-type rounded-full border-2 px-3 py-1 text-xs transition",
                   isSel
-                    ? "border-white/40 bg-white/10 text-white"
-                    : "border-neutral-800 bg-neutral-900 text-neutral-300 hover:bg-neutral-800"
+                    ? "border-black bg-[var(--accent)] text-white"
+                    : "border-black bg-[var(--paper-strong)] text-black/65 hover:bg-white"
                 )}
               >
                 {it.name}
@@ -916,12 +876,12 @@ function MapMock({
           })}
         </div>
 
-        <div className="mt-3 flex items-center gap-4 text-xs text-neutral-500">
+        <div className="mt-3 flex items-center gap-4 text-xs uppercase tracking-[0.1em] text-black/55">
           <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" /> My items
+            <span className="h-2 w-2 rounded-full bg-[var(--accent)]" /> My items
           </span>
           <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-sky-500" /> Shared with me
+            <span className="h-2 w-2 rounded-full bg-black" /> Shared with me
           </span>
         </div>
       </div>
@@ -981,10 +941,14 @@ function SetupFlow({
       content: (
         <div className="space-y-3">
           <Pill icon={ScanLine} label="Tap sticker" right="Hold phone near sticker" />
-          <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 space-y-2">
-            <div className="text-xs text-neutral-500">Setup code</div>
+          <div className="rounded-[1.25rem] border-2 border-black bg-white/75 p-4 space-y-2">
+            <div className="display-type text-xs tracking-[0.15em] text-black/50">
+              Setup code
+            </div>
             <Input value={code} onChange={setCode} />
-            <div className="text-xs text-neutral-600">(Demo: any code works)</div>
+            <div className="text-xs uppercase tracking-[0.1em] text-black/50">
+              Demo mode: any code works
+            </div>
           </div>
         </div>
       ),
@@ -994,13 +958,17 @@ function SetupFlow({
       desc: "Choose a label so it's easy to spot.",
       content: (
         <div className="space-y-3">
-          <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 space-y-2">
-            <div className="text-xs text-neutral-500">Item name</div>
-            <Input value={name} onChange={setName} placeholder="Keys, Bike, Bottleâ€¦" />
+          <div className="rounded-[1.25rem] border-2 border-black bg-white/75 p-4 space-y-2">
+            <div className="display-type text-xs tracking-[0.15em] text-black/50">
+              Item name
+            </div>
+            <Input value={name} onChange={setName} placeholder="Keys, Bike, Bottle..." />
           </div>
 
-          <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 space-y-2">
-            <div className="text-xs text-neutral-500">Model</div>
+          <div className="rounded-[1.25rem] border-2 border-black bg-white/75 p-4 space-y-2">
+            <div className="display-type text-xs tracking-[0.15em] text-black/50">
+              Model
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant={model === "Slim" ? "primary" : "secondary"}
@@ -1026,11 +994,10 @@ function SetupFlow({
       desc: "Make items private or share with followers.",
       content: (
         <div className="space-y-3">
-          <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
+          <div className="flex items-center justify-between rounded-[1.25rem] border-2 border-black bg-white/75 p-4">
             <div className="min-w-0">
-              {/* Public (followers) -> Public */}
-              <div className="text-sm text-neutral-200">Public</div>
-              <div className="text-xs text-neutral-500">
+              <div className="display-type text-sm text-black">Public</div>
+              <div className="text-xs uppercase tracking-[0.1em] text-black/50">
                 Friends can view location to help you find it
               </div>
             </div>
@@ -1046,9 +1013,9 @@ function SetupFlow({
               title="Suggested followers"
             />
           ) : (
-            <div className="rounded-2xl border border-dashed border-neutral-800 bg-neutral-950/40 p-4">
-              <div className="text-sm text-neutral-300">Private for now</div>
-              <div className="mt-1 text-xs text-neutral-500">
+            <div className="rounded-[1.25rem] border-2 border-dashed border-black bg-white/55 p-4">
+              <div className="display-type text-sm text-black">Private for now</div>
+              <div className="mt-1 text-xs uppercase tracking-[0.1em] text-black/50">
                 Turn on Public to pick friends who can help locate this item.
               </div>
             </div>
@@ -1062,24 +1029,31 @@ function SetupFlow({
 
   return (
     <div className="p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <div className="text-xs text-neutral-500">Setup</div>
-          <div className="text-xl font-semibold text-neutral-50">
-            {steps[step].title}
+      <div className="relative overflow-hidden rounded-[2rem] border-[3px] border-black bg-[var(--paper)] px-5 py-5">
+        <CornerFrame className="opacity-90" />
+        <StarAccent className="absolute -right-6 -top-6 h-20 w-20 opacity-85" tone="outline" />
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <div className="display-type text-xs tracking-[0.18em] text-black/50">
+              Setup
+            </div>
+            <div className="poster-kicker text-[2.35rem] text-black">
+              {steps[step].title}
+            </div>
           </div>
+
+          <div className="w-[64px]" />
         </div>
-
-        {/* Removed Cancel button; rely on Back controls only */}
-        <div className="w-[64px]" />
+        <div className="mt-3 text-sm uppercase tracking-[0.12em] text-black/55">
+          {steps[step].desc}
+        </div>
       </div>
-
-      <div className="text-sm text-neutral-400">{steps[step].desc}</div>
 
       <Progress value={pct} />
 
-      <Card>
-        <CardContent className="p-4">{steps[step].content}</CardContent>
+      <Card className="relative overflow-hidden">
+        <div className="halftone-dots absolute inset-x-0 bottom-0 h-20 opacity-20" />
+        <CardContent className="relative p-4">{steps[step].content}</CardContent>
       </Card>
 
       <div className="flex items-center justify-between gap-3">
@@ -1340,77 +1314,95 @@ export default function Page() {
 
   const Header = ({ title }: { title: string }) => (
     <div className="px-5 pt-5 pb-3">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <div className="text-xl font-semibold text-neutral-50">{title}</div>
-          {(stage === "marketing" || (stage === "app" && tab === "find")) && (
-            <div className="text-sm text-neutral-500">
-              Stick it. Track it. Forget it
+      <div className="relative overflow-hidden rounded-[1.75rem] border-[3px] border-black bg-[var(--paper)] px-4 py-4">
+        <CornerFrame />
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-3">
+              <StarAccent className="h-8 w-8 shrink-0" />
+              <div className="poster-kicker text-[2.05rem] text-black">{title}</div>
             </div>
+            {(stage === "marketing" || (stage === "app" && tab === "find")) && (
+              <div className="mt-1 pl-11 text-sm uppercase tracking-[0.14em] text-black/55">
+                Stick it. Track it. Forget it.
+              </div>
+            )}
+          </div>
+          {stage === "app" && tab === "find" && (
+            <Button size="sm" onClick={openSetup}>
+              <Plus className="h-4 w-4" /> Add
+            </Button>
           )}
         </div>
-        {stage === "app" && tab === "find" && (
-          <Button size="sm" onClick={openSetup}>
-            <Plus className="h-4 w-4" /> Add
-          </Button>
-        )}
       </div>
     </div>
   );
 
   const Marketing = () => (
-    <div className="p-5 space-y-4">
-      <div className="rounded-3xl border border-neutral-900 bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6">
-        <div className="inline-flex items-center gap-2 rounded-2xl bg-neutral-900 px-3 py-1 text-xs text-neutral-200">
+    <div className="space-y-4 p-5">
+      <div className="relative overflow-hidden rounded-[2rem] border-[3px] border-black bg-[var(--paper)] p-6">
+        <CornerFrame />
+        <div className="halftone-dots absolute inset-y-0 right-0 w-32 opacity-20" />
+        <StarAccent className="absolute -right-3 top-4 h-24 w-24 opacity-85" tone="outline" />
+        <div className="inline-flex items-center gap-2 rounded-full border-2 border-black bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--paper-strong)]">
           <CheckCircle2 className="h-4 w-4" /> Demo storefront
         </div>
-        <div className="mt-4 text-2xl font-semibold text-neutral-50">
-          Stick 'n Track
-        </div>
-        <div className="mt-1 text-sm text-neutral-400">
-          Stick it. Track it. Forget it
+        <div className="mt-5 space-y-4">
+          <div className="display-type poster-shadow text-[3rem] leading-[0.92] text-[var(--accent)]">
+            Stick 'n Track
+          </div>
+          <div className="poster-kicker text-[3.35rem] text-black">
+            Stick it.
+            <br />
+            Track it.
+            <br />
+            Forget it.
+          </div>
+          <div className="max-w-[16rem] text-sm uppercase tracking-[0.14em] text-black/55">
+            Discreet tracking for everyday things that should never slow you down.
+          </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          <Card>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <Card className="bg-white/80">
             <CardHeader>
-              <div className="text-sm text-neutral-100">Slim</div>
-              <div className="min-h-[2.5rem] text-xs text-neutral-500">
-                Ultra-thin, silent
+              <div className="display-type text-sm text-black">Slim</div>
+              <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-black/50">
+                Ultra-thin, silent, sticker-first
               </div>
             </CardHeader>
-            <CardContent className="pt-0 space-y-2">
-              <div className="flex items-center gap-2 text-xs text-neutral-400">
-                <VolumeX className="h-4 w-4" /> No speaker
+            <CardContent className="space-y-2 pt-0">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-black/65">
+                <VolumeX className="h-4 w-4 text-[var(--accent)]" /> No speaker
               </div>
-              <div className="flex items-center gap-2 text-xs text-neutral-400">
-                <BatteryFull className="h-4 w-4" /> 2+ years battery
+              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-black/65">
+                <BatteryFull className="h-4 w-4 text-[var(--accent)]" /> 2+ years battery
               </div>
-              <div className="text-xs text-neutral-500">
+              <div className="text-xs uppercase tracking-[0.1em] text-black/55">
                 Ideal for wallets, water bottles, books
               </div>
-              <div className="text-sm text-neutral-50 font-medium">$15</div>
+              <div className="display-type text-sm text-black">$15</div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-black text-[var(--paper-strong)] shadow-[0_16px_36px_rgba(0,0,0,0.18)]">
             <CardHeader>
-              <div className="text-sm text-neutral-100">Pro</div>
-              <div className="min-h-[2.5rem] text-xs text-neutral-500">
+              <div className="display-type text-sm text-white">Pro</div>
+              <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-white/65">
                 Compact + speaker
               </div>
             </CardHeader>
-            <CardContent className="pt-0 space-y-2">
-              <div className="flex items-center gap-2 text-xs text-neutral-400">
-                <Volume2 className="h-4 w-4" /> Sound alerts
+            <CardContent className="space-y-2 pt-0">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white/80">
+                <Volume2 className="h-4 w-4 text-[var(--accent)]" /> Sound alerts
               </div>
-              <div className="flex items-center gap-2 text-xs text-neutral-400">
-                <BatteryFull className="h-4 w-4" /> 2+ years battery
+              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white/80">
+                <BatteryFull className="h-4 w-4 text-[var(--accent)]" /> 2+ years battery
               </div>
-              <div className="text-xs text-neutral-500">
+              <div className="text-xs uppercase tracking-[0.1em] text-white/65">
                 Best for keys, backpacks, laptops
               </div>
-              <div className="text-sm text-neutral-50 font-medium">$25</div>
+              <div className="display-type text-sm text-white">$25</div>
             </CardContent>
           </Card>
         </div>
@@ -1424,84 +1416,6 @@ export default function Page() {
           </Button>
         </div>
       </div>
-    </div>
-  );
-
-  const HomeTab = () => (
-    <div className="px-5 pb-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-neutral-400">Your items</div>
-        <Button size="sm" onClick={openSetup}>
-          <Plus className="h-4 w-4" /> Add
-        </Button>
-      </div>
-
-      <div className="space-y-3">
-        {items.map((it) => (
-          <ItemCard
-            key={it.id}
-            item={it}
-            onOpen={() => {
-              setSelectedItemId(it.id);
-              setDetailsOpen(true);
-            }}
-            onQuickShare={() => {
-              if (it.status === "shared_with_me") {
-                showToast("Shared item");
-                return;
-              }
-              setShareItemId(it.id);
-              setTab("friends");
-              showToast("Opened sharing");
-            }}
-            onPing={() => showToast("Ping sent")}
-            onPlaySound={() => showToast("Playing soundâ€¦")}
-          />
-        ))}
-      </div>
-    </div>
-  );
-
-  const MapTab = () => (
-    <div className="px-5 pb-4 space-y-3">
-      <MapMock
-        selectedId={selectedItemId}
-        setSelectedId={setSelectedItemId}
-        items={items}
-        friendLocations={friendLocations}
-        onOpenSelected={() => setDetailsOpen(true)}
-      />
-
-      <Card>
-        <CardContent className="p-4">
-          <div className="text-sm text-neutral-200">Last known locations</div>
-          <div className="mt-3 space-y-2">
-            {items.map((it) => (
-              <button
-                key={it.id}
-                onClick={() => setSelectedItemId(it.id)}
-                className={cx(
-                  "w-full flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3 text-left",
-                  it.id === selectedItemId ? "border-neutral-700" : ""
-                )}
-              >
-                <div className="min-w-0">
-                  <div className="text-sm text-neutral-200 truncate">
-                    {it.name}
-                    {it.status === "shared_with_me" && it.owner
-                      ? ` (Owner: ${it.owner})`
-                      : ""}
-                  </div>
-                  <div className="text-xs text-neutral-600 truncate">
-                    {it.place} - {it.lastSeen}
-                  </div>
-                </div>
-                <div className="text-xs text-neutral-500">View</div>
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 
@@ -1523,17 +1437,17 @@ export default function Page() {
               className="flex w-full items-center justify-between px-4 py-3 text-left"
             >
               <div>
-                <div className="text-sm font-medium text-neutral-100">Items</div>
-                <div className="text-xs text-neutral-500">
+                <div className="display-type text-sm text-black">Items</div>
+                <div className="text-xs uppercase tracking-[0.1em] text-black/50">
                   Pull up to browse all trackers and their latest activity.
                 </div>
               </div>
-              <div className="text-xs text-neutral-400">
+              <div className="display-type text-xs text-black/60">
                 {findSheetExpanded ? "Collapse" : "Expand"}
               </div>
             </button>
             <div className="flex justify-center pb-2">
-              <div className="h-1.5 w-10 rounded-full bg-neutral-800" />
+              <div className="h-1.5 w-10 rounded-full bg-black/20" />
             </div>
             <div
               className={cx(
@@ -1549,28 +1463,29 @@ export default function Page() {
                     setDetailsOpen(true);
                   }}
                   className={cx(
-                    "w-full rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3 text-left",
-                    it.id === selectedItemId ? "border-neutral-700 bg-neutral-900/80" : ""
+                    "w-full rounded-[1.2rem] border-2 bg-white/75 px-4 py-3 text-left",
+                    it.id === selectedItemId
+                      ? "border-black shadow-[4px_4px_0_0_rgba(215,24,24,0.18)]"
+                      : "border-black/75"
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <div className="text-sm text-neutral-100 truncate">
+                      <div className="display-type truncate text-sm text-black">
                         {it.name}
                         {it.status === "shared_with_me" && it.owner
                           ? ` (Owner: ${it.owner})`
                           : ""}
                       </div>
-                      <div className="mt-1 text-xs text-neutral-500 truncate">
-                        {it.place} - {it.lastSeen}
+                      <div className="mt-1 text-xs uppercase tracking-[0.1em] text-black/50 truncate">
+                        {it.place} / {it.lastSeen}
                       </div>
                     </div>
                     <Badge
                       className={cx(
-                        "rounded-2xl",
                         it.status === "shared_with_me"
-                          ? "bg-sky-500/15 text-sky-300"
-                          : "bg-emerald-500/15 text-emerald-300"
+                          ? "bg-black text-[var(--paper-strong)]"
+                          : "bg-[var(--accent)] text-white"
                       )}
                     >
                       {it.status === "shared_with_me" ? "Shared" : "Mine"}
@@ -1597,17 +1512,17 @@ export default function Page() {
         <Card>
           <CardContent className="p-4 space-y-3">
             <div>
-              <div className="text-sm font-medium text-neutral-100">
+              <div className="display-type text-sm text-black">
                 Followers are assigned per item
               </div>
-              <div className="text-xs text-neutral-500">
+              <div className="text-xs uppercase tracking-[0.1em] text-black/50">
                 Select the tracker you want to share with followers.
               </div>
             </div>
             <select
               value={shareItemId}
               onChange={(e) => setShareItemId(e.target.value)}
-              className="w-full rounded-2xl border border-neutral-800 bg-neutral-950 px-3 py-2 text-neutral-100 outline-none focus:ring-2 focus:ring-white/20"
+              className="w-full rounded-[1.15rem] border-2 border-black bg-[var(--paper-strong)] px-3 py-2 text-black outline-none focus:ring-2 focus:ring-[var(--accent)]/25"
             >
               {ownedItems.map((x) => (
                 <option key={x.id} value={x.id}>
@@ -1616,14 +1531,12 @@ export default function Page() {
               ))}
             </select>
             {it && (
-              <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3">
-                <div className="text-xs uppercase tracking-[0.18em] text-neutral-500">
+              <div className="rounded-[1.2rem] border-2 border-black bg-white/75 px-4 py-3">
+                <div className="display-type text-xs tracking-[0.18em] text-black/50">
                   Selected item
                 </div>
-                <div className="mt-1 text-base font-medium text-neutral-100">
-                  {it.name}
-                </div>
-                <div className="text-xs text-neutral-500">
+                <div className="mt-1 display-type text-base text-black">{it.name}</div>
+                <div className="text-xs uppercase tracking-[0.1em] text-black/50">
                   Only followers for this item can help locate it.
                 </div>
               </div>
@@ -1635,13 +1548,13 @@ export default function Page() {
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-sm text-neutral-200">Followers</div>
-                <div className="text-xs text-neutral-500">
+                <div className="display-type text-sm text-black">Followers</div>
+                <div className="text-xs uppercase tracking-[0.1em] text-black/50">
                   People who can help locate your item
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">
+                <Badge className="bg-black text-[var(--paper-strong)]">
                   {followers.length}
                 </Badge>
 
@@ -1662,11 +1575,13 @@ export default function Page() {
                 {followers.map((f: any) => (
                   <div
                     key={f.id}
-                    className="flex items-center justify-between rounded-2xl border border-neutral-900 bg-neutral-950/60 px-4 py-3"
+                    className="flex items-center justify-between rounded-[1.2rem] border-2 border-black bg-white/75 px-4 py-3"
                   >
                     <div>
-                      <div className="text-sm text-neutral-200">{f.name}</div>
-                      <div className="text-xs text-neutral-600">{f.handle}</div>
+                      <div className="text-sm font-medium text-black">{f.name}</div>
+                      <div className="text-xs uppercase tracking-[0.1em] text-black/45">
+                        {f.handle}
+                      </div>
                     </div>
                     <Button
                       variant="secondary"
@@ -1684,13 +1599,13 @@ export default function Page() {
                 ))}
               </div>
             ) : (
-              <div className="text-sm text-neutral-500">No followers yet.</div>
+              <div className="text-sm text-black/55">No followers yet.</div>
             )}
 
-            <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
+            <div className="flex items-center justify-between rounded-[1.2rem] border-2 border-black bg-white/75 p-4">
               <div>
-                <div className="text-sm text-neutral-200">Public</div>
-                <div className="text-xs text-neutral-500">
+                <div className="display-type text-sm text-black">Public</div>
+                <div className="text-xs uppercase tracking-[0.1em] text-black/50">
                   Allow followers to see location
                 </div>
               </div>
@@ -1705,13 +1620,13 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-black text-[var(--paper-strong)]">
           <CardContent className="p-4 space-y-2">
-            <div className="text-sm text-neutral-200">Share link</div>
-            <div className="text-xs text-neutral-500">
-              (Demo) Send this to friends for follower access.
+            <div className="display-type text-sm text-white">Share link</div>
+            <div className="text-xs uppercase tracking-[0.1em] text-white/65">
+              Demo link for follower access.
             </div>
-            <div className="rounded-2xl bg-neutral-900 px-3 py-2 text-xs text-neutral-200 font-mono overflow-hidden text-ellipsis">
+            <div className="overflow-hidden rounded-[1.1rem] border-2 border-white/25 bg-white/8 px-3 py-2 font-mono text-xs text-white text-ellipsis">
               sticktrack.app/follow/{it?.id}
             </div>
             <Button variant="secondary" onClick={() => showToast("Copied link")}>
@@ -1729,24 +1644,30 @@ export default function Page() {
         <CardContent className="p-4 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm text-neutral-200">Account</div>
-              <div className="text-xs text-neutral-500">Demo User</div>
+              <div className="display-type text-sm text-black">Account</div>
+              <div className="text-xs uppercase tracking-[0.1em] text-black/50">
+                Demo User
+              </div>
             </div>
-            <Badge className="rounded-2xl bg-neutral-900 text-neutral-200">Demo</Badge>
+            <Badge className="bg-black text-[var(--paper-strong)]">Demo</Badge>
           </div>
 
-          <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
+          <div className="flex items-center justify-between rounded-[1.2rem] border-2 border-black bg-white/75 p-4">
             <div className="min-w-0">
-              <div className="text-sm text-neutral-200">Notifications</div>
-              <div className="text-xs text-neutral-500">Alerts when items disconnect</div>
+              <div className="display-type text-sm text-black">Notifications</div>
+              <div className="text-xs uppercase tracking-[0.1em] text-black/50">
+                Alerts when items disconnect
+              </div>
             </div>
             <Switch checked={notifOn} onChange={setNotifOn} />
           </div>
 
-          <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4 flex items-center justify-between">
+          <div className="flex items-center justify-between rounded-[1.2rem] border-2 border-black bg-white/75 p-4">
             <div className="min-w-0">
-              <div className="text-sm text-neutral-200">Location</div>
-              <div className="text-xs text-neutral-500">Required for tracking</div>
+              <div className="display-type text-sm text-black">Location</div>
+              <div className="text-xs uppercase tracking-[0.1em] text-black/50">
+                Required for tracking
+              </div>
             </div>
             <Switch checked={locationOn} onChange={setLocationOn} />
           </div>
@@ -1805,13 +1726,15 @@ export default function Page() {
         subtitle={`Model: ${selectedItem?.model} - Battery: ${selectedItem?.battery}%`}
       >
         <div className="space-y-3">
-          <div className="rounded-2xl border border-neutral-900 bg-neutral-950/60 p-4">
-            <div className="text-xs text-neutral-500">Last known location</div>
-            <div className="mt-2 text-sm text-neutral-200">{selectedItem?.place}</div>
-            <div className="text-xs text-neutral-600">
+          <div className="rounded-[1.2rem] border-2 border-black bg-white/75 p-4">
+            <div className="display-type text-xs tracking-[0.16em] text-black/50">
+              Last known location
+            </div>
+            <div className="mt-2 display-type text-sm text-black">{selectedItem?.place}</div>
+            <div className="text-xs uppercase tracking-[0.1em] text-black/50">
               Updated {selectedItem?.lastSeen}
               {selectedItem?.status === "shared_with_me" && selectedItem?.owner
-                ? ` - Owner: ${selectedItem.owner}`
+                ? ` / Owner: ${selectedItem.owner}`
                 : ""}
             </div>
           </div>
@@ -1870,7 +1793,7 @@ export default function Page() {
           </div>
 
           {selectedItem?.status === "shared_with_me" && (
-            <div className="text-xs text-neutral-600">
+            <div className="text-xs uppercase tracking-[0.1em] text-black/50">
               This item is shared with you. Only the owner can remove it.
             </div>
           )}
@@ -1880,7 +1803,7 @@ export default function Page() {
       <Modal
         open={shareOpen}
         onClose={() => setShareOpen(false)}
-        title={`Add followers â€” ${shareItem?.name || "item"}`}
+        title={`Add followers - ${shareItem?.name || "item"}`}
       >
         <FollowerPicker
           people={allFollowers}
@@ -1920,7 +1843,7 @@ export default function Page() {
 
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit item">
         <div className="space-y-2">
-          <div className="text-xs text-neutral-500">Name</div>
+          <div className="display-type text-xs tracking-[0.14em] text-black/50">Name</div>
           <Input
             value={selectedItem?.name || ""}
             onChange={(v) => updateItem(selectedItem!.id, { name: v })}
@@ -1938,7 +1861,9 @@ export default function Page() {
         onClose={() => setDeleteOpen(false)}
         title="Remove tracker?"
       >
-        <div className="text-sm text-neutral-400">This removes it from your list.</div>
+        <div className="text-sm uppercase tracking-[0.1em] text-black/55">
+          This removes it from your list.
+        </div>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
             Cancel
@@ -1960,8 +1885,8 @@ export default function Page() {
       </Modal>
 
       {toast && (
-        <div className="fixed left-1/2 -translate-x-1/2 bottom-24 z-50">
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-950/90 backdrop-blur px-4 py-2 text-sm text-neutral-100 shadow-xl">
+        <div className="fixed left-1/2 bottom-24 z-50 -translate-x-1/2">
+          <div className="rounded-full border-2 border-black bg-[var(--accent)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-[4px_4px_0_0_rgba(0,0,0,0.18)]">
             {toast}
           </div>
         </div>
