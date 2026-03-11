@@ -287,8 +287,14 @@ function Progress({ value }: { value: number }) {
 function PhoneFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="poster-grid relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[var(--background)] p-3 text-black sm:p-6">
-      <StarAccent className="pointer-events-none absolute left-3 top-5 h-28 w-28 opacity-70 sm:left-6" tone="outline" />
-      <StarAccent className="pointer-events-none absolute bottom-8 right-3 h-24 w-24 opacity-80 sm:right-6" tone="ink" />
+      <StarAccent
+        className="pointer-events-none absolute left-4 top-6 h-20 w-20 opacity-75 sm:left-6 sm:h-28 sm:w-28"
+        tone="outline"
+      />
+      <StarAccent
+        className="pointer-events-none absolute bottom-8 right-4 h-16 w-16 opacity-80 sm:right-6 sm:h-24 sm:w-24"
+        tone="ink"
+      />
       <div className="w-[390px] max-w-full">
         <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border border-black/60 bg-[var(--paper-strong)] shadow-[0_26px_70px_rgba(0,0,0,0.22)] sm:h-[min(100dvh-3rem,844px)]">
           <div className="relative flex h-11 shrink-0 items-center justify-between border-b border-black/50 px-5">
@@ -1117,9 +1123,9 @@ export default function Page() {
     stage: "marketing",
     tab: "find",
   });
-  const [findSheetExpanded, setFindSheetExpanded] = useState(false);
 
   const [selectedItemId, setSelectedItemId] = useState("i2");
+  const appScrollRef = useRef<HTMLDivElement | null>(null);
 
   const [items, setItems] = useState<Item[]>([
     {
@@ -1203,6 +1209,11 @@ export default function Page() {
       setShareItemId(ownedItems[0].id);
     }
   }, [ownedItems, shareItemId]);
+
+  useEffect(() => {
+    if (stage !== "app") return;
+    appScrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
+  }, [stage, tab]);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -1454,29 +1465,18 @@ export default function Page() {
 
         <Card className="relative z-20 overflow-hidden">
           <CardContent className="p-0">
-            <button
-              onClick={() => setFindSheetExpanded((current) => !current)}
-              className="flex w-full items-center justify-between px-4 py-3 text-left"
-            >
+            <div className="px-4 py-3 text-left">
               <div>
                 <div className="display-type text-sm text-black">Items</div>
                 <div className="text-xs uppercase tracking-[0.1em] text-black/50">
-                  Pull up to browse all trackers and their latest activity.
+                  All trackers and their latest activity.
                 </div>
               </div>
-              <div className="display-type text-xs text-black/60">
-                {findSheetExpanded ? "Collapse" : "Expand"}
-              </div>
-            </button>
+            </div>
             <div className="flex justify-center pb-2">
               <div className="h-1.5 w-10 rounded-full bg-black/20" />
             </div>
-            <div
-              className={cx(
-                "space-y-2 overflow-y-auto px-4 pb-4 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                findSheetExpanded ? "max-h-[320px]" : "max-h-[184px]"
-              )}
-            >
+            <div className="space-y-2 px-4 pb-4">
               {items.map((it) => (
                 <button
                   key={it.id}
@@ -1583,7 +1583,7 @@ export default function Page() {
                 {/* Smaller font + cleaner label */}
                 <Button
                   size="sm"
-                  className="border border-black/25 px-3 text-[0.52rem] tracking-[0.02em] shadow-[2px_2px_0_0_rgba(215,24,24,0.08)]"
+                  className="border border-black/25 px-3 text-[0.44rem] tracking-[0.01em] shadow-[2px_2px_0_0_rgba(215,24,24,0.08)]"
                   onClick={() => setShareOpen(true)}
                   disabled={!it}
                 >
@@ -1709,7 +1709,10 @@ export default function Page() {
 
   const renderAppShell = () => (
     <div className="h-full min-h-0 flex flex-col">
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <div
+        ref={appScrollRef}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+      >
         <div key={tab} className="ui-panel-enter">
           {renderHeader({
             title:
