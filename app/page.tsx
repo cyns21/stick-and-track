@@ -291,7 +291,6 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
       <StarAccent className="absolute bottom-10 right-[-1.75rem] h-24 w-24 opacity-80" tone="ink" />
       <div className="w-[390px] max-w-full">
         <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border-[3px] border-black bg-[var(--paper-strong)] shadow-[0_26px_70px_rgba(0,0,0,0.22)] sm:h-[min(100dvh-3rem,844px)]">
-          <div className="halftone-dots absolute inset-x-0 top-0 h-24 opacity-25" />
           <div className="relative flex h-11 shrink-0 items-center justify-between border-b-2 border-black px-5">
             <div className="display-type text-[0.82rem] tracking-[0.18em] text-black/70">
               Stick 'n Track
@@ -1030,7 +1029,6 @@ function SetupFlow({
   return (
     <div className="p-5 space-y-4">
       <div className="relative overflow-hidden rounded-[2rem] border-[3px] border-black bg-[var(--paper)] px-5 py-5">
-        <CornerFrame className="opacity-90" />
         <StarAccent className="absolute -right-6 -top-6 h-20 w-20 opacity-85" tone="outline" />
         <div className="flex items-center justify-between">
           <div className="space-y-1">
@@ -1052,7 +1050,6 @@ function SetupFlow({
       <Progress value={pct} />
 
       <Card className="relative overflow-hidden">
-        <div className="halftone-dots absolute inset-x-0 bottom-0 h-20 opacity-20" />
         <CardContent className="relative p-4">{steps[step].content}</CardContent>
       </Card>
 
@@ -1315,7 +1312,6 @@ export default function Page() {
   const Header = ({ title }: { title: string }) => (
     <div className="px-5 pt-5 pb-3">
       <div className="relative overflow-hidden rounded-[1.75rem] border-[3px] border-black bg-[var(--paper)] px-4 py-4">
-        <CornerFrame />
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-3">
@@ -1342,9 +1338,10 @@ export default function Page() {
     <div className="h-full overflow-y-auto overscroll-contain">
       <div className="space-y-4 p-5">
         <div className="relative overflow-hidden rounded-[2rem] border-[3px] border-black bg-[var(--paper)] p-6">
-          <CornerFrame />
-          <div className="halftone-dots absolute inset-y-0 right-0 w-32 opacity-20" />
-          <StarAccent className="absolute -right-3 top-4 h-24 w-24 opacity-85" tone="outline" />
+          <StarAccent
+            className="pointer-events-none absolute -right-3 top-4 h-24 w-24 opacity-85"
+            tone="outline"
+          />
           <div className="inline-flex items-center gap-2 rounded-full border-2 border-black bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--paper-strong)]">
             <CheckCircle2 className="h-4 w-4" /> Demo storefront
           </div>
@@ -1386,21 +1383,21 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            <Card className="bg-black text-[var(--paper-strong)] shadow-[0_16px_36px_rgba(0,0,0,0.18)]">
+            <Card className="!bg-[#090909] text-[var(--paper-strong)] shadow-[0_16px_36px_rgba(0,0,0,0.22)]">
               <CardHeader>
                 <div className="display-type text-sm text-white">Pro</div>
-                <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-white/65">
+                <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-white/85">
                   Compact + speaker
                 </div>
               </CardHeader>
               <CardContent className="space-y-2 pt-0">
-                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white/80">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white">
                   <Volume2 className="h-4 w-4 text-[var(--accent)]" /> Sound alerts
                 </div>
-                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white/80">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white">
                   <BatteryFull className="h-4 w-4 text-[var(--accent)]" /> 2+ years battery
                 </div>
-                <div className="text-xs uppercase tracking-[0.1em] text-white/65">
+                <div className="text-xs uppercase tracking-[0.1em] text-white/80">
                   Best for keys, backpacks, laptops
                 </div>
                 <div className="display-type text-sm text-white">$25</div>
@@ -1622,13 +1619,13 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        <Card className="bg-black text-[var(--paper-strong)]">
+        <Card className="!bg-[#090909] text-[var(--paper-strong)] shadow-[0_16px_36px_rgba(0,0,0,0.22)]">
           <CardContent className="p-4 space-y-2">
             <div className="display-type text-sm text-white">Share link</div>
-            <div className="text-xs uppercase tracking-[0.1em] text-white/65">
+            <div className="text-xs uppercase tracking-[0.1em] text-white/80">
               Demo link for follower access.
             </div>
-            <div className="overflow-hidden rounded-[1.1rem] border-2 border-white/25 bg-white/8 px-3 py-2 font-mono text-xs text-white text-ellipsis">
+            <div className="overflow-hidden rounded-[1.1rem] border-2 border-white/45 bg-white/16 px-3 py-2 font-mono text-xs text-white text-ellipsis">
               sticktrack.app/follow/{it?.id}
             </div>
             <Button variant="secondary" onClick={() => showToast("Copied link")}>
