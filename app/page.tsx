@@ -287,8 +287,8 @@ function Progress({ value }: { value: number }) {
 function PhoneFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="poster-grid relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[var(--background)] p-3 text-black sm:p-6">
-      <StarAccent className="absolute left-[-2.5rem] top-6 h-28 w-28 opacity-70" tone="outline" />
-      <StarAccent className="absolute bottom-10 right-[-1.75rem] h-24 w-24 opacity-80" tone="ink" />
+      <StarAccent className="pointer-events-none absolute left-3 top-5 h-28 w-28 opacity-70 sm:left-6" tone="outline" />
+      <StarAccent className="pointer-events-none absolute bottom-8 right-3 h-24 w-24 opacity-80 sm:right-6" tone="ink" />
       <div className="w-[390px] max-w-full">
         <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border-[3px] border-black bg-[var(--paper-strong)] shadow-[0_26px_70px_rgba(0,0,0,0.22)] sm:h-[min(100dvh-3rem,844px)]">
           <div className="relative flex h-11 shrink-0 items-center justify-between border-b-2 border-black px-5">
@@ -466,14 +466,14 @@ function BottomNav({
     <button
       onClick={() => setTab(id)}
       className={cx(
-        "display-type flex flex-col items-center gap-1 rounded-[1.1rem] border-2 px-2 py-2 transition",
+        "flex flex-col items-center gap-1 rounded-[1.1rem] border-2 px-2 py-2 transition",
         tab === id
           ? "border-black bg-[var(--accent)] text-white shadow-[3px_3px_0_0_rgba(0,0,0,0.18)]"
           : "border-black/10 bg-transparent text-black/50 hover:bg-black/5 hover:text-black"
       )}
     >
       <Icon className="h-5 w-5" />
-      <span className="text-[11px]">{label}</span>
+      <span className="tab-type text-[0.72rem] leading-none">{label}</span>
     </button>
   );
 
@@ -1316,7 +1316,7 @@ export default function Page() {
           <div className="min-w-0">
             <div className="flex items-center gap-3">
               <StarAccent className="h-8 w-8 shrink-0" />
-              <div className="poster-kicker text-[2.05rem] text-black">{title}</div>
+              <div className="tab-type text-[1.9rem] leading-none text-black">{title}</div>
             </div>
             {(stage === "marketing" || (stage === "app" && tab === "find")) && (
               <div className="mt-1 pl-11 text-sm uppercase tracking-[0.14em] text-black/55">
@@ -1383,33 +1383,37 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            <Card className="!bg-[#090909] text-[var(--paper-strong)] shadow-[0_16px_36px_rgba(0,0,0,0.22)]">
+            <Card className="shadow-[0_16px_36px_rgba(0,0,0,0.18)]">
               <CardHeader>
-                <div className="display-type text-sm text-white">Pro</div>
-                <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-white/85">
+                <div className="display-type text-sm text-[var(--accent-dark)]">Pro</div>
+                <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-black/70">
                   Compact + speaker
                 </div>
               </CardHeader>
               <CardContent className="space-y-2 pt-0">
-                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-black/75">
                   <Volume2 className="h-4 w-4 text-[var(--accent)]" /> Sound alerts
                 </div>
-                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-black/75">
                   <BatteryFull className="h-4 w-4 text-[var(--accent)]" /> 2+ years battery
                 </div>
-                <div className="text-xs uppercase tracking-[0.1em] text-white/80">
+                <div className="text-xs uppercase tracking-[0.1em] text-black/65">
                   Best for keys, backpacks, laptops
                 </div>
-                <div className="display-type text-sm text-white">$25</div>
+                <div className="display-type text-sm text-[var(--accent-dark)]">$25</div>
               </CardContent>
             </Card>
           </div>
 
           <div className="mt-4 flex gap-2">
-            <Button onClick={openSetup}>
+            <Button onClick={openSetup} className="text-[0.76rem] leading-tight">
               <Plus className="h-4 w-4" /> Add a tracker
             </Button>
-            <Button variant="secondary" onClick={() => goToApp("find")}>
+            <Button
+              variant="secondary"
+              onClick={() => goToApp("find")}
+              className="text-[0.78rem] leading-tight"
+            >
               View app
             </Button>
           </div>
@@ -1619,13 +1623,13 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        <Card className="!bg-[#090909] text-[var(--paper-strong)] shadow-[0_16px_36px_rgba(0,0,0,0.22)]">
+        <Card className="shadow-[0_16px_36px_rgba(0,0,0,0.18)]">
           <CardContent className="p-4 space-y-2">
-            <div className="display-type text-sm text-white">Share link</div>
-            <div className="text-xs uppercase tracking-[0.1em] text-white/80">
+            <div className="display-type text-sm text-[var(--accent-dark)]">Share link</div>
+            <div className="text-xs uppercase tracking-[0.1em] text-black/65">
               Demo link for follower access.
             </div>
-            <div className="overflow-hidden rounded-[1.1rem] border-2 border-white/45 bg-white/16 px-3 py-2 font-mono text-xs text-white text-ellipsis">
+            <div className="overflow-hidden rounded-[1.1rem] border-2 border-black/20 bg-white/65 px-3 py-2 font-mono text-xs text-black text-ellipsis">
               sticktrack.app/follow/{it?.id}
             </div>
             <Button variant="secondary" onClick={() => showToast("Copied link")}>
@@ -1685,16 +1689,16 @@ export default function Page() {
 
   const AppShell = () => (
     <div className="h-full min-h-0 flex flex-col">
-      <Header
-        title={
-          tab === "find"
-            ? "Find"
-            : tab === "friends"
-            ? "Share"
-            : "Settings"
-        }
-      />
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <Header
+          title={
+            tab === "find"
+              ? "Find"
+              : tab === "friends"
+              ? "Share"
+              : "Settings"
+          }
+        />
         {tab === "find" && <FindTab />}
         {tab === "friends" && <FriendsTab />}
         {tab === "settings" && <SettingsTab />}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import {
+  Anton,
   Archivo_Black,
   Barlow_Condensed,
   Geist_Mono,
@@ -15,6 +16,12 @@ const appSans = Barlow_Condensed({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const tabDisplay = Anton({
+  variable: "--font-tab-display",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 const display = Archivo_Black({
@@ -36,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${appSans.variable} ${geistMono.variable} ${display.variable} antialiased`}
+        className={`${appSans.variable} ${geistMono.variable} ${tabDisplay.variable} ${display.variable} antialiased`}
       >
         {children}
       </body>
