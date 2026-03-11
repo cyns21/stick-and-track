@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import {
-  Anton,
   Archivo_Black,
   Barlow_Condensed,
   Geist_Mono,
+  Oswald,
 } from "next/font/google";
 import "./globals.css";
 
@@ -18,10 +18,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const tabDisplay = Anton({
+const tabDisplay = Oswald({
   variable: "--font-tab-display",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["500", "600"],
 });
 
 const display = Archivo_Black({
