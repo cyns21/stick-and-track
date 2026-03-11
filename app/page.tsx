@@ -142,9 +142,9 @@ function Button({
     "inline-flex items-center justify-center gap-2 rounded-[1.1rem] border px-4 text-[0.95rem] font-semibold uppercase tracking-[0.08em] transition select-none active:translate-y-px disabled:cursor-not-allowed";
   const variants = {
     primary:
-      "border-[var(--accent-dark)]/55 bg-[var(--accent)] text-[#fff7f0] shadow-[4px_4px_0_0_rgba(0,0,0,0.18)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_0_rgba(0,0,0,0.18)] disabled:border-black/25 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
+      "border-[var(--accent-dark)]/55 bg-[var(--accent)] text-[#fff7f0] shadow-[2px_2px_0_0_rgba(0,0,0,0.12)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,0.12)] disabled:border-black/25 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
     secondary:
-      "border-black/50 bg-[var(--paper-strong)] text-black shadow-[4px_4px_0_0_rgba(215,24,24,0.18)] hover:bg-white disabled:opacity-60 disabled:shadow-none",
+      "border-black/50 bg-[var(--paper-strong)] text-black shadow-[2px_2px_0_0_rgba(215,24,24,0.12)] hover:bg-white disabled:opacity-60 disabled:shadow-none",
     ghost:
       "border-black/15 bg-transparent text-black hover:bg-black/5",
   };
@@ -764,17 +764,17 @@ function MapMock({
           html: `<div style="
             transform: translate(-50%, -34px);
             display: inline-block;
-            border: 2px solid rgba(9,9,9,0.92);
+            border: 1px solid rgba(9,9,9,0.5);
             background: rgba(255, 252, 246, 0.96);
             color: #090909;
             border-radius: 9999px;
-            padding: 3px 8px;
-            font-size: 11px;
-            font-weight: 800;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.03em;
             white-space: nowrap;
-            box-shadow: 4px 4px 0 rgba(215,24,24,0.18);
+            box-shadow: 2px 2px 0 rgba(215,24,24,0.12);
           ">${escapeHtml(it.name)}</div>`,
         }),
         interactive: true,
@@ -801,8 +801,8 @@ function MapMock({
   }, [selectedCoords.lat, selectedCoords.lng]);
 
   return (
-    <div className="paper-panel relative z-0 overflow-hidden rounded-[1.9rem] border-2 border-black/75">
-      <div className="flex items-center justify-between border-b border-black/70 p-4">
+    <div className="paper-panel relative z-0 overflow-hidden rounded-[1.9rem] border border-black/55">
+      <div className="flex items-center justify-between border-b border-black/50 p-4">
         <div>
           <div className="display-type text-sm text-black">Campus Map</div>
           <div className="text-xs uppercase tracking-[0.12em] text-black/55">
@@ -832,10 +832,10 @@ function MapMock({
       </div>
 
       <div className="p-4">
-        <div className="rounded-[1.25rem] border border-black/65 bg-white/70 p-3">
+        <div className="rounded-[1.25rem] border border-black/45 bg-white/70 p-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <div className="display-type text-sm text-black truncate">
+              <div className="tab-type truncate text-[0.82rem] tracking-[0.03em] text-black/90">
                 {selected.name}
               </div>
               <div className="text-[11px] uppercase tracking-[0.1em] text-black/55 truncate">
@@ -863,10 +863,10 @@ function MapMock({
                 key={it.id}
                 onClick={() => setSelectedId(it.id)}
                 className={cx(
-                  "display-type rounded-full border px-3 py-1 text-xs transition",
+                  "tab-type rounded-full border px-3 py-1 text-[0.68rem] tracking-[0.03em] transition",
                   isSel
-                    ? "border-black bg-[var(--accent)] text-white"
-                    : "border-black bg-[var(--paper-strong)] text-black/65 hover:bg-white"
+                    ? "border-black/45 bg-[var(--accent)] text-white"
+                    : "border-black/35 bg-[var(--paper-strong)] text-black/65 hover:bg-white"
                 )}
               >
                 {it.name}
@@ -1312,9 +1312,9 @@ export default function Page() {
     window.history.replaceState({}, "", url.toString());
   };
 
-  const Header = ({ title }: { title: string }) => (
+  const renderHeader = ({ title }: { title: string }) => (
     <div className="px-5 pt-5 pb-3">
-      <div className="relative overflow-hidden rounded-[1.75rem] border-2 border-black/75 bg-[var(--paper)] px-4 py-4">
+      <div className="relative overflow-hidden rounded-[1.75rem] border border-black/50 bg-[var(--paper)] px-4 py-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-3">
@@ -1337,10 +1337,10 @@ export default function Page() {
     </div>
   );
 
-  const Marketing = () => (
+  const renderMarketing = () => (
     <div className="h-full overflow-y-auto overscroll-contain">
       <div className="space-y-4 p-5">
-        <div className="relative overflow-hidden rounded-[2rem] border-2 border-black/75 bg-[var(--paper)] p-6">
+        <div className="relative overflow-hidden rounded-[2rem] border border-black/55 bg-[var(--paper)] p-6">
           <StarAccent
             className="pointer-events-none absolute right-4 top-4 h-20 w-20 opacity-85"
             tone="outline"
@@ -1386,7 +1386,7 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-[0_16px_36px_rgba(0,0,0,0.18)]">
+            <Card className="shadow-[0_10px_20px_rgba(0,0,0,0.10)]">
               <CardHeader>
                 <div className="display-type text-sm text-[var(--accent-dark)]">Pro</div>
                 <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-black/70">
@@ -1425,7 +1425,7 @@ export default function Page() {
     </div>
   );
 
-  const FindTab = () => (
+  const renderFindTab = () => (
     <div className="px-5 pb-4">
       <div className="space-y-3">
         <MapMock
@@ -1471,8 +1471,8 @@ export default function Page() {
                   className={cx(
                     "w-full rounded-[1.2rem] border bg-white/75 px-4 py-3 text-left",
                     it.id === selectedItemId
-                      ? "border-black shadow-[4px_4px_0_0_rgba(215,24,24,0.18)]"
-                      : "border-black/75"
+                      ? "border-black/55 shadow-[2px_2px_0_0_rgba(215,24,24,0.10)]"
+                      : "border-black/45"
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -1507,7 +1507,7 @@ export default function Page() {
     </div>
   );
 
-  const FriendsTab = () => {
+  const renderFriendsTab = () => {
     const it = shareItem;
     const followers = (it?.followers ?? []).map((fid: string) =>
       getFollowerProfile(fid)
@@ -1567,12 +1567,12 @@ export default function Page() {
                 {/* Smaller font + cleaner label */}
                 <Button
                   size="sm"
-                  className="border border-black/30 px-3 text-[0.58rem] tracking-[0.03em] shadow-[3px_3px_0_0_rgba(215,24,24,0.10)]"
+                  className="border border-black/25 px-3 text-[0.52rem] tracking-[0.02em] shadow-[2px_2px_0_0_rgba(215,24,24,0.08)]"
                   onClick={() => setShareOpen(true)}
                   disabled={!it}
                 >
                   <Plus className="h-4 w-4" />
-                  <span className="translate-y-[1px]">Add followers</span>
+                  <span className="translate-y-[2px]">Add followers</span>
                 </Button>
               </div>
             </div>
@@ -1627,7 +1627,7 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-[0_16px_36px_rgba(0,0,0,0.18)]">
+        <Card className="shadow-[0_10px_20px_rgba(0,0,0,0.10)]">
           <CardContent className="p-4 space-y-2">
             <div className="display-type text-sm text-[var(--accent-dark)]">Share link</div>
             <div className="text-xs uppercase tracking-[0.1em] text-black/65">
@@ -1645,7 +1645,7 @@ export default function Page() {
     );
   };
 
-  const SettingsTab = () => (
+  const renderSettingsTab = () => (
     <div className="px-5 pb-4 space-y-3">
       <Card>
         <CardContent className="p-4 space-y-4">
@@ -1691,21 +1691,21 @@ export default function Page() {
     </div>
   );
 
-  const AppShell = () => (
+  const renderAppShell = () => (
     <div className="h-full min-h-0 flex flex-col">
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        <Header
+        {renderHeader({
           title={
             tab === "find"
               ? "Find"
               : tab === "friends"
               ? "Share"
               : "Settings"
-          }
-        />
-        {tab === "find" && <FindTab />}
-        {tab === "friends" && <FriendsTab />}
-        {tab === "settings" && <SettingsTab />}
+          },
+        })}
+        {tab === "find" && renderFindTab()}
+        {tab === "friends" && renderFriendsTab()}
+        {tab === "settings" && renderSettingsTab()}
       </div>
       <BottomNav tab={tab} setTab={setTab} />
     </div>
@@ -1713,7 +1713,7 @@ export default function Page() {
 
   return (
     <PhoneFrame>
-      {stage === "marketing" && <Marketing />}
+      {stage === "marketing" && renderMarketing()}
       {stage === "setup" && (
         <div className="h-full overflow-y-auto overscroll-contain">
           <SetupFlow
@@ -1724,7 +1724,7 @@ export default function Page() {
           />
         </div>
       )}
-      {stage === "app" && <AppShell />}
+      {stage === "app" && renderAppShell()}
 
       <Sheet
         open={detailsOpen}

@@ -67,12 +67,12 @@ textarea {
 }
 
 .poster-shadow {
-  text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.16);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.12);
 }
 
 .paper-panel {
   background: linear-gradient(180deg, rgba(255, 252, 246, 0.94), rgba(243, 238, 230, 0.92));
-  box-shadow: 0 16px 36px var(--shadow);
+  box-shadow: 0 10px 22px rgba(9, 9, 9, 0.12);
 }
 
 .halftone-dots {
