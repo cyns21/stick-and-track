@@ -139,14 +139,14 @@ function Button({
   type?: "button" | "submit";
 }) {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-[1.1rem] border px-4 text-[0.95rem] font-semibold uppercase tracking-[0.08em] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] select-none active:translate-y-px disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center gap-2 rounded-[1rem] border px-4 text-[0.95rem] font-semibold uppercase tracking-[0.08em] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] select-none active:translate-y-px disabled:cursor-not-allowed";
   const variants = {
     primary:
-      "border-[var(--accent-dark)]/55 bg-[var(--accent)] text-[#fff7f0] shadow-[2px_2px_0_0_rgba(0,0,0,0.12)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,0.12)] disabled:border-black/25 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
+      "border-[var(--accent-dark)]/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0)),var(--accent)] text-[#fff7f0] shadow-[0_12px_24px_rgba(215,24,24,0.22)] hover:-translate-y-[1px] hover:shadow-[0_16px_28px_rgba(215,24,24,0.25)] disabled:border-black/15 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
     secondary:
-      "border-black/50 bg-[var(--paper-strong)] text-black shadow-[2px_2px_0_0_rgba(215,24,24,0.12)] hover:bg-white disabled:opacity-60 disabled:shadow-none",
+      "border-black/12 bg-white/62 text-black shadow-[0_10px_22px_rgba(9,9,9,0.08)] backdrop-blur-md hover:-translate-y-[1px] hover:bg-white/78 hover:shadow-[0_14px_24px_rgba(9,9,9,0.1)] disabled:opacity-60 disabled:shadow-none",
     ghost:
-      "border-black/15 bg-transparent text-black hover:bg-black/5",
+      "border-black/10 bg-transparent text-black hover:bg-white/38",
   };
   const sizes = {
     sm: "h-10 px-3 text-[0.82rem]",
@@ -181,7 +181,7 @@ function Input({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       className={cx(
-        "w-full rounded-[1.15rem] border border-black/50 bg-[var(--paper-strong)] px-4 py-2.5 text-[1rem] text-black placeholder:text-black/35 outline-none focus:ring-2 focus:ring-[var(--accent)]/25",
+        "w-full rounded-[1.15rem] border border-black/12 bg-white/64 px-4 py-2.5 text-[1rem] text-black placeholder:text-black/35 outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-md focus:ring-2 focus:ring-[var(--accent)]/18",
         className
       )}
     />
@@ -198,7 +198,7 @@ function Badge({
   return (
     <span
       className={cx(
-        "inline-flex items-center rounded-full border border-black/15 px-2.5 py-1 text-[0.78rem] font-semibold uppercase tracking-[0.1em]",
+        "inline-flex items-center rounded-full border border-black/10 bg-white/55 px-2.5 py-1 text-[0.78rem] font-semibold uppercase tracking-[0.1em] backdrop-blur-sm",
         className
       )}
     >
@@ -217,7 +217,7 @@ function Card({
   return (
     <div
       className={cx(
-        "paper-panel rounded-[1.8rem] border border-black/55 text-black",
+        "paper-panel modern-ring rounded-[1.6rem] text-black",
         className
       )}
     >
@@ -296,12 +296,12 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
         tone="ink"
       />
       <div className="w-[390px] max-w-full">
-        <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border border-black/60 bg-[var(--paper-strong)] shadow-[0_26px_70px_rgba(0,0,0,0.22)] sm:h-[min(100dvh-3rem,844px)]">
-          <div className="relative flex h-11 shrink-0 items-center justify-between border-b border-black/50 px-5">
+        <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border border-white/35 bg-[linear-gradient(180deg,rgba(255,255,255,0.4),rgba(255,255,255,0)),var(--paper-strong)] shadow-[0_28px_80px_rgba(9,9,9,0.18)] backdrop-blur-xl sm:h-[min(100dvh-3rem,844px)]">
+          <div className="relative flex h-11 shrink-0 items-center justify-between border-b border-black/10 bg-white/38 px-5 backdrop-blur-md">
             <div className="display-type text-[0.82rem] tracking-[0.18em] text-black/70">
               Stick 'n Track
             </div>
-            <div className="rounded-full border border-black/15 bg-[var(--accent)] px-2 py-0.5 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-white">
+            <div className="rounded-full border border-white/30 bg-[var(--accent)] px-2 py-0.5 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-white shadow-[0_8px_18px_rgba(215,24,24,0.22)]">
               Demo
             </div>
           </div>
@@ -492,7 +492,7 @@ function BottomNav({
   );
 
   return (
-    <div className="shrink-0 border-t border-black/65 bg-[var(--paper)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--paper)]/90">
+    <div className="shrink-0 border-t border-black/10 bg-white/48 backdrop-blur-xl supports-[backdrop-filter]:bg-white/38">
       <div className="grid grid-cols-3 gap-2 px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
         <Item id="find" Icon={MapPin} label="Find" />
         <Item id="friends" Icon={Users} label="Share" />
@@ -521,7 +521,7 @@ function Modal({
         onClick={onClose}
       />
       <div className="ui-modal-enter absolute left-1/2 top-1/2 w-[92%] max-w-[420px] -translate-x-1/2 -translate-y-1/2">
-        <div className="paper-panel relative max-h-[min(84dvh,720px)] overflow-y-auto rounded-[2rem] border-2 border-black/75 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.22)]">
+        <div className="paper-panel modern-ring relative max-h-[min(84dvh,720px)] overflow-y-auto rounded-[2rem] p-4">
           <CornerFrame className="opacity-90" />
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -563,7 +563,7 @@ function Sheet({
         onClick={onClose}
       />
       <div className="ui-sheet-enter absolute left-0 right-0 bottom-0">
-        <div className="paper-panel rounded-t-[2rem] border-2 border-b-0 border-black/75 p-4 shadow-[0_-16px_40px_rgba(0,0,0,0.2)]">
+        <div className="paper-panel rounded-t-[2rem] border border-b-0 border-black/12 p-4 shadow-[0_-12px_28px_rgba(9,9,9,0.12)] backdrop-blur-xl">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="display-type text-lg text-black truncate">
@@ -821,8 +821,8 @@ function MapMock({
   }, [selectedCoords.lat, selectedCoords.lng]);
 
   return (
-    <div className="paper-panel relative z-0 overflow-hidden rounded-[1.9rem] border border-black/55">
-      <div className="flex items-center justify-between border-b border-black/50 p-4">
+    <div className="paper-panel modern-ring relative z-0 overflow-hidden rounded-[1.9rem]">
+      <div className="flex items-center justify-between border-b border-black/10 bg-white/38 p-4 backdrop-blur-sm">
         <div>
           <div className="display-type text-sm text-black">Campus Map</div>
           <div className="text-xs uppercase tracking-[0.12em] text-black/55">
@@ -846,13 +846,13 @@ function MapMock({
 
       <div className="relative h-[58dvh] min-h-[420px] max-h-[680px]">
         <div ref={mapContainerRef} className="h-full w-full" />
-        <div className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-black/65 bg-[var(--paper-strong)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-black/70 backdrop-blur">
+        <div className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-black/10 bg-white/78 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-black/70 shadow-[0_8px_18px_rgba(9,9,9,0.08)] backdrop-blur">
           Drag to pan, pinch to zoom
         </div>
       </div>
 
       <div className="p-4">
-        <div className="rounded-[1.25rem] border border-black/45 bg-white/70 p-3">
+        <div className="rounded-[1.25rem] border border-black/10 bg-white/72 p-3 shadow-[0_10px_20px_rgba(9,9,9,0.06)] backdrop-blur-sm">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="tab-type truncate text-[0.82rem] tracking-[0.03em] text-black/90">
@@ -1341,11 +1341,14 @@ export default function Page() {
 
   const renderHeader = ({ title }: { title: string }) => (
     <div className="px-5 pt-5 pb-3">
-      <div className="relative overflow-hidden rounded-[1.75rem] border border-black/50 bg-[var(--paper)] px-4 py-4">
+      <div className="relative overflow-hidden rounded-[1.75rem] border border-black/10 bg-white/58 px-4 py-4 shadow-[0_12px_24px_rgba(9,9,9,0.08)] backdrop-blur-xl">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.42),transparent)]" />
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-3">
-              <StarAccent className="h-8 w-8 shrink-0" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] bg-white/68 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+                <StarAccent className="h-6 w-6" />
+              </div>
               <div className="tab-type text-[1.9rem] leading-none text-black">{title}</div>
             </div>
             {(stage === "marketing" || (stage === "app" && tab === "find")) && (
@@ -1367,12 +1370,13 @@ export default function Page() {
   const renderMarketing = () => (
     <div className="ui-panel-enter h-full overflow-y-auto overscroll-contain">
       <div className="space-y-4 p-5">
-        <div className="relative overflow-hidden rounded-[2rem] border border-black/55 bg-[var(--paper)] p-6">
+        <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-white/56 p-6 shadow-[0_18px_34px_rgba(9,9,9,0.1)] backdrop-blur-xl">
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.32),transparent_34%)]" />
           <StarAccent
             className="pointer-events-none absolute right-4 top-4 h-20 w-20 opacity-85"
             tone="outline"
           />
-          <div className="inline-flex items-center gap-2 rounded-full border border-black/70 bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--paper-strong)]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--paper-strong)] shadow-[0_10px_20px_rgba(9,9,9,0.18)]">
             <CheckCircle2 className="h-4 w-4" /> Demo storefront
           </div>
           <div className="mt-5 space-y-4">
@@ -1392,7 +1396,7 @@ export default function Page() {
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-3">
-            <Card className="bg-white/80">
+            <Card className="bg-white/72">
               <CardHeader>
                 <div className="display-type text-sm text-black">Slim</div>
                 <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-black/50">
@@ -1413,7 +1417,7 @@ export default function Page() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-[0_10px_20px_rgba(0,0,0,0.10)]">
+            <Card className="bg-white/72 shadow-[0_10px_20px_rgba(0,0,0,0.08)]">
               <CardHeader>
                 <div className="display-type text-sm text-[var(--accent-dark)]">Pro</div>
                 <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-black/70">
@@ -1485,10 +1489,10 @@ export default function Page() {
                     setDetailsOpen(true);
                   }}
                   className={cx(
-                    "w-full rounded-[1.2rem] border bg-white/75 px-4 py-3 text-left",
+                    "w-full rounded-[1.2rem] border bg-white/72 px-4 py-3 text-left backdrop-blur-sm",
                     it.id === selectedItemId
-                      ? "border-black/55 shadow-[2px_2px_0_0_rgba(215,24,24,0.10)]"
-                      : "border-black/45"
+                      ? "border-black/14 shadow-[0_12px_22px_rgba(215,24,24,0.12)]"
+                      : "border-black/10 shadow-[0_8px_18px_rgba(9,9,9,0.05)]"
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -1553,7 +1557,7 @@ export default function Page() {
               ))}
             </select>
             {it && (
-              <div className="rounded-[1.2rem] border border-black/65 bg-white/75 px-4 py-3">
+              <div className="rounded-[1.2rem] border border-black/10 bg-white/72 px-4 py-3 shadow-[0_8px_18px_rgba(9,9,9,0.05)]">
                 <div className="display-type text-xs tracking-[0.18em] text-black/50">
                   Selected item
                 </div>
@@ -1598,7 +1602,7 @@ export default function Page() {
                 {followers.map((f: any) => (
                   <div
                     key={f.id}
-                    className="flex items-center justify-between rounded-[1.2rem] border border-black/65 bg-white/75 px-4 py-3"
+                    className="flex items-center justify-between rounded-[1.2rem] border border-black/10 bg-white/72 px-4 py-3 shadow-[0_8px_18px_rgba(9,9,9,0.05)]"
                   >
                     <div>
                       <div className="text-sm font-medium text-black">{f.name}</div>
@@ -1625,7 +1629,7 @@ export default function Page() {
               <div className="text-sm text-black/55">No followers yet.</div>
             )}
 
-            <div className="flex items-center justify-between rounded-[1.2rem] border border-black/65 bg-white/75 p-4">
+            <div className="flex items-center justify-between rounded-[1.2rem] border border-black/10 bg-white/72 p-4 shadow-[0_8px_18px_rgba(9,9,9,0.05)]">
               <div>
                 <div className="display-type text-sm text-black">Public</div>
                 <div className="text-xs uppercase tracking-[0.1em] text-black/50">
@@ -1643,7 +1647,7 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-[0_10px_20px_rgba(0,0,0,0.10)]">
+        <Card className="shadow-[0_10px_20px_rgba(0,0,0,0.08)]">
           <CardContent className="p-4 space-y-2">
             <div className="display-type text-sm text-[var(--accent-dark)]">Share link</div>
             <div className="text-xs uppercase tracking-[0.1em] text-black/65">
@@ -1675,7 +1679,7 @@ export default function Page() {
             <Badge className="bg-black text-[var(--paper-strong)]">Demo</Badge>
           </div>
 
-          <div className="flex items-center justify-between rounded-[1.2rem] border border-black/65 bg-white/75 p-4">
+          <div className="flex items-center justify-between rounded-[1.2rem] border border-black/10 bg-white/72 p-4 shadow-[0_8px_18px_rgba(9,9,9,0.05)]">
             <div className="min-w-0">
               <div className="display-type text-sm text-black">Notifications</div>
               <div className="text-xs uppercase tracking-[0.1em] text-black/50">
@@ -1685,7 +1689,7 @@ export default function Page() {
             <Switch checked={notifOn} onChange={setNotifOn} />
           </div>
 
-          <div className="flex items-center justify-between rounded-[1.2rem] border border-black/65 bg-white/75 p-4">
+          <div className="flex items-center justify-between rounded-[1.2rem] border border-black/10 bg-white/72 p-4 shadow-[0_8px_18px_rgba(9,9,9,0.05)]">
             <div className="min-w-0">
               <div className="display-type text-sm text-black">Location</div>
               <div className="text-xs uppercase tracking-[0.1em] text-black/50">
@@ -1753,7 +1757,7 @@ export default function Page() {
         subtitle={`Model: ${selectedItem?.model} - Battery: ${selectedItem?.battery}%`}
       >
         <div className="space-y-3">
-          <div className="rounded-[1.2rem] border border-black/65 bg-white/75 p-4">
+          <div className="rounded-[1.2rem] border border-black/10 bg-white/72 p-4 shadow-[0_8px_18px_rgba(9,9,9,0.05)]">
             <div className="display-type text-xs tracking-[0.16em] text-black/50">
               Last known location
             </div>
