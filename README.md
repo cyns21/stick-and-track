@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stick ’n Track
 
-## Getting Started
+Stick ’n Track is a web app prototype for a sticker-based tracking product designed to help people keep track of everyday items like wallets, water bottles, books, keys, backpacks, and laptops.
 
-First, run the development server:
+This project was developed as a group product concept and prototype for a class presentation. Our team presented Stick ’n Track to a class of 100+ students, and the project idea was voted Top 3 in the class.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Live Demo
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+https://stick-and-track.vercel.app/
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Stick ’n Track explores the idea of small NFC-style sticker trackers that can be attached to everyday belongings without adding bulky hardware. The goal was to create a product concept that felt simple, practical, and easy for users to understand.
 
-## Learn More
+The prototype includes a storefront-style landing page and an app-style interface for viewing, adding, and managing trackers.
 
-To learn more about Next.js, take a look at the following resources:
+The project includes two tracker concepts:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Slim**: an ultra-thin tracker designed for items like wallets, water bottles, and books
+- **Pro**: a compact tracker with additional features for items like keys, backpacks, and laptops
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Features
 
-## Deploy on Vercel
+- Product landing page for introducing the tracker concept
+- App-style interface for managing saved trackers
+- Tracker setup and verification flow
+- Item detail pages with location-style information
+- Public/private sharing concept
+- Shared tracker view for items shared by other users
+- Bottom navigation with Home, Map, Share, and Settings sections
+- Static map prototype with sample tracker locations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Tech Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Lucide React
+- Vercel
+
+## My Contributions
+
+- Helped develop the product concept and user experience
+- Built and refined the front-end prototype using Next.js and React
+- Designed app screens, tracker cards, item detail views, setup flows, and sharing controls
+- Improved layout, navigation, and wording to make the product easier to understand
+- Helped prepare the project for presentation to a class of 100+ students
+
+## Project Outcome
+
+Stick ’n Track was presented as a completed class prototype and product concept. Our group’s idea was voted Top 3 in the entire class, showing strong interest in the problem, product idea, and overall presentation.
+
+## What I Learned
+
+This project helped me practice turning a product idea into an interactive prototype. I gained experience with front-end development, UI design, product thinking, and communicating a technical/creative idea to a larger audience.
