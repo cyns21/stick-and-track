@@ -57,6 +57,24 @@ textarea {
   letter-spacing: 0.01em;
 }
 
+.btn-primary-surface {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0)),
+    var(--accent);
+  color: #fff7f0;
+}
+
+.btn-primary-surface:disabled {
+  background: rgba(9, 9, 9, 0.28);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.phone-shell-surface {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0)),
+    var(--paper-strong);
+}
+
 .poster-kicker {
   font-family: var(--font-display), var(--font-app-sans), Arial, sans-serif;
   font-style: italic;

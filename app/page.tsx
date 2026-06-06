@@ -142,7 +142,7 @@ function Button({
     "inline-flex items-center justify-center gap-2 rounded-[1rem] border px-4 text-[0.95rem] font-semibold uppercase tracking-[0.08em] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] select-none active:translate-y-px disabled:cursor-not-allowed";
   const variants = {
     primary:
-      "border-[var(--accent-dark)]/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0)),var(--accent)] text-[#fff7f0] shadow-[0_12px_24px_rgba(215,24,24,0.22)] hover:-translate-y-[1px] hover:shadow-[0_16px_28px_rgba(215,24,24,0.25)] disabled:border-black/15 disabled:bg-black/25 disabled:text-white/70 disabled:shadow-none",
+      "btn-primary-surface border-[var(--accent-dark)]/18 shadow-[0_12px_24px_rgba(215,24,24,0.22)] hover:-translate-y-[1px] hover:shadow-[0_16px_28px_rgba(215,24,24,0.25)] disabled:border-black/15 disabled:shadow-none",
     secondary:
       "border-black/12 bg-white/62 text-black shadow-[0_10px_22px_rgba(9,9,9,0.08)] backdrop-blur-md hover:-translate-y-[1px] hover:bg-white/78 hover:shadow-[0_14px_24px_rgba(9,9,9,0.1)] disabled:opacity-60 disabled:shadow-none",
     ghost:
@@ -296,7 +296,7 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
         tone="ink"
       />
       <div className="w-[390px] max-w-full">
-        <div className="relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border border-white/35 bg-[linear-gradient(180deg,rgba(255,255,255,0.4),rgba(255,255,255,0)),var(--paper-strong)] shadow-[0_28px_80px_rgba(9,9,9,0.18)] backdrop-blur-xl sm:h-[min(100dvh-3rem,844px)]">
+        <div className="phone-shell-surface relative flex h-[min(100dvh-1.5rem,844px)] flex-col overflow-hidden rounded-[2.35rem] border border-white/35 shadow-[0_28px_80px_rgba(9,9,9,0.18)] backdrop-blur-xl sm:h-[min(100dvh-3rem,844px)]">
           <div className="relative flex h-11 shrink-0 items-center justify-between border-b border-black/10 bg-white/38 px-5 backdrop-blur-md">
             <div className="display-type text-[0.82rem] tracking-[0.18em] text-black/70">
               Stick 'n Track
@@ -1925,4 +1925,3 @@ export default function Page() {
     </PhoneFrame>
   );
 }
-
