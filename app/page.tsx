@@ -391,7 +391,7 @@ function FollowerPicker({
           <div className="display-type text-xs tracking-[0.16em] text-black/55">
             {title}
           </div>
-          <Badge className="bg-black text-[var(--paper-strong)]">
+          <Badge className="badge-inverse-surface">
             {selectedIds.length} added
           </Badge>
         </div>
@@ -1510,8 +1510,8 @@ export default function Page() {
                     <Badge
                       className={cx(
                         it.status === "shared_with_me"
-                          ? "bg-black text-[var(--paper-strong)]"
-                          : "bg-[var(--accent)] text-white"
+                          ? "badge-inverse-surface"
+                          : "badge-accent-surface"
                       )}
                     >
                       {it.status === "shared_with_me" ? "Shared" : "Mine"}
@@ -1580,7 +1580,7 @@ export default function Page() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge className="bg-black text-[var(--paper-strong)]">
+                <Badge className="badge-inverse-surface">
                   {followers.length}
                 </Badge>
 
@@ -1676,7 +1676,7 @@ export default function Page() {
                 Demo User
               </div>
             </div>
-            <Badge className="bg-black text-[var(--paper-strong)]">Demo</Badge>
+            <Badge className="badge-inverse-surface">Demo</Badge>
           </div>
 
           <div className="flex items-center justify-between rounded-[1.2rem] border border-black/10 bg-white/72 p-4 shadow-[0_8px_18px_rgba(9,9,9,0.05)]">
