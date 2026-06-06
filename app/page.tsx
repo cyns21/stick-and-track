@@ -1378,7 +1378,7 @@ export default function Page() {
             <div className="brand-wordmark text-[2.7rem] text-[var(--accent)] sm:text-[2.95rem]">
               Stick 'n Track
             </div>
-            <div className="poster-kicker text-[2.65rem] text-black">
+            <div className="poster-kicker text-[2.25rem] text-black">
               Stick it.
               <br />
               Track it.
