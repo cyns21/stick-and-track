@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   Archivo_Black,
   Barlow_Condensed,
+  Black_Ops_One,
   Geist_Mono,
   Oswald,
 } from "next/font/google";
@@ -30,6 +31,12 @@ const display = Archivo_Black({
   weight: "400",
 });
 
+const wordmark = Black_Ops_One({
+  variable: "--font-wordmark",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 export const metadata: Metadata = {
   title: "Stick 'n Track",
   description: "Presentation-inspired demo prototype for Stick 'n Track",
@@ -43,7 +50,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${appSans.variable} ${geistMono.variable} ${tabDisplay.variable} ${display.variable} antialiased`}
+        className={`${appSans.variable} ${geistMono.variable} ${tabDisplay.variable} ${display.variable} ${wordmark.variable} antialiased`}
       >
         {children}
       </body>

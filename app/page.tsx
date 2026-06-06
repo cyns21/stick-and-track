@@ -1051,10 +1051,10 @@ function SetupFlow({
     <div className="p-5 space-y-4">
       <div className="relative overflow-hidden rounded-[2rem] border-2 border-black/75 bg-[var(--paper)] px-5 py-5">
         <StarAccent
-          className="pointer-events-none absolute right-4 top-4 h-16 w-16 opacity-85"
+          className="pointer-events-none absolute right-3 top-3 z-0 h-20 w-20 opacity-25"
           tone="outline"
         />
-        <div className="flex items-center justify-between">
+        <div className="relative z-10 flex items-center justify-between">
           <div className="space-y-1">
             <div className="poster-kicker text-[2.35rem] text-black">
               {steps[step].title}
@@ -1063,7 +1063,7 @@ function SetupFlow({
 
           <div className="w-[64px]" />
         </div>
-        <div className="mt-3 text-sm uppercase tracking-[0.12em] text-black/55">
+        <div className="relative z-10 mt-3 text-sm uppercase tracking-[0.12em] text-black/55">
           {steps[step].desc}
         </div>
       </div>
@@ -1371,11 +1371,11 @@ export default function Page() {
         <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-white/56 p-6 shadow-[0_18px_34px_rgba(9,9,9,0.1)] backdrop-blur-xl">
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.32),transparent_34%)]" />
           <StarAccent
-            className="pointer-events-none absolute right-4 top-4 h-20 w-20 opacity-85"
+            className="pointer-events-none absolute right-2 top-2 z-0 h-28 w-28 opacity-22"
             tone="outline"
           />
-          <div className="space-y-4">
-            <div className="display-type poster-shadow text-[3rem] leading-[0.92] text-[var(--accent)]">
+          <div className="relative z-10 space-y-4">
+            <div className="brand-wordmark text-[2.25rem] text-[var(--accent)] sm:text-[2.45rem]">
               Stick 'n Track
             </div>
             <div className="poster-kicker text-[3.35rem] text-black">
