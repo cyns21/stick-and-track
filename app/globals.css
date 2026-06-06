@@ -61,7 +61,6 @@ textarea {
   font-family: var(--font-wordmark), var(--font-display), Impact, sans-serif;
   letter-spacing: 0;
   line-height: 0.9;
-  text-shadow: 4px 5px 0 rgba(9, 9, 9, 0.28);
 }
 
 .btn-primary-surface {

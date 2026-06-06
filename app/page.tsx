@@ -1374,11 +1374,11 @@ export default function Page() {
             className="pointer-events-none absolute right-2 top-2 z-0 h-28 w-28 opacity-22"
             tone="outline"
           />
-          <div className="relative z-10 space-y-4">
-            <div className="brand-wordmark text-[2.25rem] text-[var(--accent)] sm:text-[2.45rem]">
+          <div className="relative z-10 space-y-3">
+            <div className="brand-wordmark text-[2.7rem] text-[var(--accent)] sm:text-[2.95rem]">
               Stick 'n Track
             </div>
-            <div className="poster-kicker text-[3.35rem] text-black">
+            <div className="poster-kicker text-[2.65rem] text-black">
               Stick it.
               <br />
               Track it.
