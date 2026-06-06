@@ -15,7 +15,6 @@ import {
   Trash2,
   LocateFixed,
   Info,
-  CheckCircle2,
   Plus,
 } from "lucide-react";
 
@@ -319,7 +318,7 @@ function Pill({
 }: {
   icon: any;
   label: string;
-  right: string;
+  right?: string;
 }) {
   return (
     <div className="flex items-center justify-between rounded-[1.25rem] border border-black/55 bg-[var(--paper-strong)] px-4 py-3 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)]">
@@ -329,7 +328,9 @@ function Pill({
         </div>
         <div className="text-[1rem] font-medium text-black">{label}</div>
       </div>
-      <div className="text-xs uppercase tracking-[0.12em] text-black/55">{right}</div>
+      {right && (
+        <div className="text-xs uppercase tracking-[0.12em] text-black/55">{right}</div>
+      )}
     </div>
   );
 }
@@ -959,7 +960,7 @@ function SetupFlow({
       desc: "Tap the sticker to verify and pair.",
       content: (
         <div className="space-y-3">
-          <Pill icon={ScanLine} label="Tap sticker" right="Hold phone near sticker" />
+          <Pill icon={ScanLine} label="Tap sticker" />
           <div className="rounded-[1.25rem] border border-black/65 bg-white/75 p-4 space-y-2">
             <div className="display-type text-xs tracking-[0.15em] text-black/50">
               Setup code
@@ -1055,9 +1056,6 @@ function SetupFlow({
         />
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <div className="display-type text-xs tracking-[0.18em] text-black/50">
-              Setup
-            </div>
             <div className="poster-kicker text-[2.35rem] text-black">
               {steps[step].title}
             </div>
@@ -1376,10 +1374,7 @@ export default function Page() {
             className="pointer-events-none absolute right-4 top-4 h-20 w-20 opacity-85"
             tone="outline"
           />
-          <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--paper-strong)] shadow-[0_10px_20px_rgba(9,9,9,0.18)]">
-            <CheckCircle2 className="h-4 w-4" /> Demo storefront
-          </div>
-          <div className="mt-5 space-y-4">
+          <div className="space-y-4">
             <div className="display-type poster-shadow text-[3rem] leading-[0.92] text-[var(--accent)]">
               Stick 'n Track
             </div>
@@ -1396,14 +1391,14 @@ export default function Page() {
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-3">
-            <Card className="bg-white/72">
+            <Card className="flex h-full flex-col bg-white/72">
               <CardHeader>
                 <div className="display-type text-sm text-black">Slim</div>
                 <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-black/50">
                   Ultra-thin, silent, sticker-first
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2 pt-0">
+              <CardContent className="flex flex-1 flex-col gap-2 pt-0">
                 <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-black/65">
                   <VolumeX className="h-4 w-4 text-[var(--accent)]" /> No speaker
                 </div>
@@ -1413,18 +1408,18 @@ export default function Page() {
                 <div className="text-xs uppercase tracking-[0.1em] text-black/55">
                   Ideal for wallets, water bottles, books
                 </div>
-                <div className="display-type text-sm text-black">$15</div>
+                <div className="mt-auto display-type text-sm text-black">$15</div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/72 shadow-[0_10px_20px_rgba(0,0,0,0.08)]">
+            <Card className="flex h-full flex-col bg-white/72 shadow-[0_10px_20px_rgba(0,0,0,0.08)]">
               <CardHeader>
                 <div className="display-type text-sm text-[var(--accent-dark)]">Pro</div>
                 <div className="min-h-[2.5rem] text-xs uppercase tracking-[0.1em] text-black/70">
                   Compact + speaker
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2 pt-0">
+              <CardContent className="flex flex-1 flex-col gap-2 pt-0">
                 <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-black/75">
                   <Volume2 className="h-4 w-4 text-[var(--accent)]" /> Sound alerts
                 </div>
@@ -1434,7 +1429,7 @@ export default function Page() {
                 <div className="text-xs uppercase tracking-[0.1em] text-black/65">
                   Best for keys, backpacks, laptops
                 </div>
-                <div className="display-type text-sm text-[var(--accent-dark)]">$25</div>
+                <div className="mt-auto display-type text-sm text-[var(--accent-dark)]">$25</div>
               </CardContent>
             </Card>
           </div>
@@ -1587,12 +1582,12 @@ export default function Page() {
                 {/* Smaller font + cleaner label */}
                 <Button
                   size="sm"
-                  className="border border-black/25 px-3 text-[0.44rem] tracking-[0.01em] shadow-[2px_2px_0_0_rgba(215,24,24,0.08)]"
+                  className="border border-black/25 px-2.5 text-[0.56rem] leading-none tracking-[0.01em] shadow-[2px_2px_0_0_rgba(215,24,24,0.08)]"
                   onClick={() => setShareOpen(true)}
                   disabled={!it}
                 >
-                  <Plus className="h-4 w-4" />
-                  <span className="translate-y-[2px]">Add followers</span>
+                  <Plus className="h-3.5 w-3.5 shrink-0" />
+                  <span className="leading-none">Add followers</span>
                 </Button>
               </div>
             </div>
@@ -1676,7 +1671,6 @@ export default function Page() {
                 Demo User
               </div>
             </div>
-            <Badge className="badge-inverse-surface">Demo</Badge>
           </div>
 
           <div className="flex items-center justify-between rounded-[1.2rem] border border-black/10 bg-white/72 p-4 shadow-[0_8px_18px_rgba(9,9,9,0.05)]">
